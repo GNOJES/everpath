@@ -64,7 +64,7 @@ export class GameSimulation {
   }
   const cfg = ENEMIES[kind], elite = !isBoss(kind) && s.elapsed > B.eliteAfter && this.random() < Math.min(.23, (s.elapsed - B.eliteAfter) / 1800), scale = (1 + s.elapsed * B.enemyHpGrowth) * (1 + s.rank * .35);
   const hp = cfg.hp * (kind === 'warden' ? 1 + s.rank * .35 : scale) * (elite ? 2.3 : 1) * (kind === 'boss' ? 1 + s.bosses * .35 : 1);
-  const enemy: Enemy = { id: ++this.serial, kind, x, y, hp, maxHp: hp, speed: cfg.speed * Math.min(B.maxEnemySpeedScale, 1 + s.elapsed * B.enemySpeedGrowth), damage: cfg.damage * (1 + s.elapsed / 600) * (elite ? 1.3 : 1), radius: cfg.radius * (elite ? 1.2 : 1), elite, timer: isBoss(kind) ? 3 : 1.8 + this.random(), phase: 'chase', aim: { x: 0, y: 1 }, hitFlash: 0, seed: this.random() * Math.PI * 2 };
+  const enemy: Enemy = { id: ++this.serial, kind, x, y, hp, maxHp: hp, speed: cfg.speed * Math.min(B.maxEnemySpeedScale, 1 + s.elapsed * B.enemySpeedGrowth), damage: cfg.damage * (isBoss(kind) ? 1 : .83) * (1 + s.elapsed / 600) * (elite ? 1.3 : 1), radius: cfg.radius * (elite ? 1.2 : 1), elite, timer: isBoss(kind) ? 3 : 1.8 + this.random(), phase: 'chase', aim: { x: 0, y: 1 }, hitFlash: 0, seed: this.random() * Math.PI * 2 };
   s.enemies.push(enemy); s.spawned++; return enemy;
  }
  private spawnWave() {
@@ -72,10 +72,25 @@ export class GameSimulation {
    for (const x of [112, 216, 320]) this.spawnEnemy('slime', x, 280);
    return;
   }
-  const t = this.state.elapsed, kind = chooseEnemyKind(t, this.random), side = this.random();
-  let x = 32 + this.random() * (W.width - 64), y = -24 - this.random() * 50;
-  if (t > 30 && side < .28) { x = side < .14 ? -20 : W.width + 20; y = 125 + this.random() * 330; }
-  this.spawnEnemy(kind, x, y);
+  const { elapsed, player } = this.state;
+  const edge = Math.floor(this.random() * 4);
+  const count = elapsed < 20 ? 1 : this.random() < (elapsed < 200 ? .46 : .10) ? 2 : 1;
+  for (let i = 0; i < count; i++) {
+   const lane = (edge + i) % 4;
+   const along = (this.random() - .5) * 360;
+   const entry = [
+    { x: clamp(player.x + along, 28, W.width - 28), y: -18 },
+    { x: W.width + 18, y: clamp(player.y + along, 40, W.height - 40) },
+    { x: clamp(player.x + along, 28, W.width - 28), y: W.height + 18 },
+    { x: -18, y: clamp(player.y + along, 40, W.height - 40) },
+   ][lane];
+   // An edge still needs a safe lead-in when the player is already hugging it.
+   if (distance(entry, player) < 110) {
+    if (lane % 2) entry.y = clamp(player.y + (player.y > W.height / 2 ? -155 : 155), 40, W.height - 40);
+    else entry.x = clamp(player.x + (player.x > W.width / 2 ? -155 : 155), 28, W.width - 28);
+   }
+   this.spawnEnemy(chooseEnemyKind(elapsed, this.random), entry.x, entry.y);
+  }
  }
  private moveEnemies(dt: number) {
   const s = this.state, p = s.player;
@@ -85,7 +100,7 @@ export class GameSimulation {
    if (s.skills.frost && distance(e, p) < SKILLS.frost.radius + (s.skills.frost - 1) * B.skillRadiusStep + e.radius) speed *= .82 - .06 * Math.min(3, s.skills.frost);
    if (e.kind === 'warden') {
     speed *= .8; if (e.timer <= 0) {
-     this.addHazard({ ...p }, 68, 1.15, e.damage * 1.15, 'enemy', 'slam');
+     this.addHazard({ ...p }, 57, 1.65, e.damage * 1.15, 'enemy', 'slam');
      for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 + e.seed + s.elapsed * .08; this.shoot(e, { x: e.x + Math.cos(a), y: e.y + Math.sin(a) }, 'enemy', e.damage * .65, 115, 1); }
      e.timer = e.hp < e.maxHp * .5 ? 1.9 : 2.8;
     }
@@ -96,12 +111,12 @@ export class GameSimulation {
     else if (e.phase === 'recover') { speed = 0; if (e.timer <= 0) { e.phase = 'chase'; e.timer = BOSS_PATTERN.chase; } }
    } else if (e.kind === 'shaman') {
     if (distance(e, p) < 200) speed = 0;
-    if (e.timer <= 0 && e.y > 80) { this.addHazard({ ...p }, 52, 1.15, e.damage, 'enemy', 'slam'); e.timer = 4.2; }
+    if (e.timer <= 0 && e.y > 80) { this.addHazard({ ...p }, 43, 1.55, e.damage, 'enemy', 'slam'); e.timer = 4.2; }
    } else if (e.kind === 'skeleton') {
     if (distance(e, p) < 220 && distance(e, p) > 140) { dir = { x: Math.sin(s.elapsed + e.seed) * .5, y: 0 }; }
     if (e.timer <= 0 && e.y > 70) { this.shoot(e, p, 'enemy', e.damage, 155, 1); e.timer = 2.65; }
    } else if (e.kind === 'bat') { dir.x += Math.sin(s.elapsed * 5 + e.seed) * .65; dir = normalize(dir.x, dir.y); }
-   e.x += dir.x * speed * dt; e.y += (dir.y * speed + (isBoss(e.kind) ? 0 : W.scrollSpeed * .3)) * dt;
+   e.x += dir.x * speed * dt; e.y += (dir.y * speed + (isBoss(e.kind) ? 0 : W.scrollSpeed * .10)) * dt;
    if (e.kind === 'boss') { e.x = clamp(e.x, 30, W.width - 30); e.y = clamp(e.y, 137, W.height - 60); }
    if (distance(e, p) < e.radius + W.playerRadius) this.damagePlayer(e.damage);
   }
@@ -124,9 +139,8 @@ export class GameSimulation {
     const d = unit(p, point);
     return s.weaponLevel >= 5 || Math.hypot(d.x, d.y) === 0 || d.x * Math.cos(angle) + d.y * Math.sin(angle) >= Math.cos(1.7);
    };
-   this.effect(s.weaponLevel >= 5 ? 'ring' : 'slash', p, 0xf7e8b6, this.range, .23, angle);
-   const blocked = threats.find(inSweep);
-   if (blocked) {
+   this.effect(s.weaponLevel >= 5 ? 'cleave' : 'slash', p, 0xffd067, this.range, .23, angle);
+   for (const blocked of threats.filter(inSweep).slice(0, s.weaponLevel >= 5 ? 2 : 1)) {
     blocked.life = 0;
     this.effect('ring', blocked, 0xffeabc, 18, .24);
    }
@@ -134,34 +148,48 @@ export class GameSimulation {
   } else {
    if (!target) return false;
    const angle = p.facing = Math.atan2(target.y - p.y, target.x - p.x);
-   const count = (s.evolved ? s.hero === 'archer' ? 3 : 2 : 1) + (s.weaponLevel >= 3 ? 1 : 0) + (s.weaponLevel >= 5 ? 1 : 0);
-   for (let i = 0; i < count; i++) {
-    const offset = (i - (count - 1) / 2) * B.weaponShotSpacing;
-    const origin = { x: p.x - Math.sin(angle) * offset, y: p.y + Math.cos(angle) * offset };
-    this.shoot(origin, target, s.hero === 'archer' ? 'arrow' : 'magic', this.damage, HEROES[s.hero].projectileSpeed, s.evolved ? 4 : s.weaponLevel >= 4 ? 2 : 1, 0, s.hero === 'mage' ? target.id : undefined, s.hero === 'mage' && s.weaponLevel >= 5 ? s.evolved ? 61 : 36 : 0);
+   const config = HEROES[s.hero];
+   if (s.hero === 'mage') {
+    this.shoot(p, target, 'magic', this.damage, config.projectileSpeed, 1, 0, target.id);
+   } else {
+    const count = 1 + Number(s.weaponLevel >= 3) + Number(s.weaponLevel >= 5) + Number(s.evolved);
+    const direction = unit(p, target);
+    for (let i = 0; i < count; i++) {
+     const origin = { x: p.x - direction.x * i * 13, y: p.y - direction.y * i * 13 };
+     this.shoot(origin, target, 'arrow', this.damage, config.projectileSpeed, s.evolved ? 5 : 2 + Number(s.weaponLevel >= 4));
+    }
    }
   }
   return true;
  }
- private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number, splash = 0) {
+ private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number) {
   const s = this.state; if (s.projectiles.length >= W.maxProjectiles) return;
   const a = Math.atan2(to.y - from.y, to.x - from.x) + spread;
-  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius: kind === 'magic' ? 7 : kind === 'blade' ? 11 : 4, damage, kind, life: 3.5, pierce, hit: new Set(), target, splash });
+  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius: kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' ? 6 : 4, damage, kind, life: 3.5, pierce, hit: new Set(), target });
  }
  private castSkill(id: string, level: number): boolean {
   const s = this.state, p = s.player, cfg = SKILLS[id], target = this.nearest(p, 500), damage = this.power * cfg.damage * (1 + (level - 1) * B.skillDamageStep), radius = cfg.radius + (level - 1) * B.skillRadiusStep;
   if (id === 'shield') { p.shield = 1; this.effect('ring', p, 0xf4d998, 36, .5); return true; }
-  if (id === 'frost') { this.aoe(p, radius, damage, 'ring', 0xa3e3e5); return true; }
+  if (id === 'frost') {
+   const chilled = this.nearest(p, radius, new Set<number>(), true);
+   if (!chilled) return false;
+   this.effect('crystal', chilled, 0x4be0f2, 24, .32);
+   this.damageEnemy(chilled, damage);
+   return true;
+  }
   if (!target) return false;
-  if (id === 'whirl') this.aoe(p, radius, damage, 'ring', 0xffdf9f);
+  if (id === 'whirl') this.aoe(p, radius, damage, 'cleave', 0xffb73e);
   else if (id === 'blade' || id === 'multishot' || id === 'pierce') {
    const count = id === 'multishot' ? cfg.count + (level - 1) * 2 : id === 'blade' ? level : 1;
    for (let i = 0; i < count; i++) this.shoot(p, target, id === 'blade' ? 'blade' : 'arrow', damage, id === 'pierce' ? 490 : 350, id === 'multishot' ? 1 : 5 + level, (i - (count - 1) / 2) * .2);
-  } else if (id === 'fire' || id === 'rain') {
-   const center = this.densest(target); if (id === 'fire') this.aoe(center, radius, damage, 'fire', 0xffb16e); else this.addHazard(center, radius, .65, damage, 'player', 'rain');
+  } else if (id === 'rain') {
+   this.addHazard(this.densest(target), radius, .65, damage, 'player', 'rain');
+  } else if (id === 'fire') {
+   this.effect('fire', target, 0xff6b36, 25, .44);
+   this.damageEnemy(target, damage);
   } else if (id === 'chain') {
-   const hit = new Set<number>(); let from: Vec = p; let next: Enemy | undefined = target;
-   for (let i = 0; i < cfg.count + (level - 1) * 2 && next; i++) { this.effect('lightning', from, 0xb6dfff, 0, .3, 0, undefined, next); hit.add(next.id); this.damageEnemy(next, damage); from = { x: next.x, y: next.y }; next = this.nearest(from, cfg.radius, hit); }
+   this.effect('lightning', { x: target.x + 25, y: target.y - 115 }, 0x807aff, 0, .34, 0, undefined, target);
+   this.damageEnemy(target, damage);
   }
   return true;
  }
@@ -189,24 +217,26 @@ export class GameSimulation {
    if (shot.kind === 'enemy') { if (distance(shot, s.player) < shot.radius + W.playerRadius) { this.damagePlayer(shot.damage); shot.life = 0; } }
    else for (const e of s.enemies) {
     if (shot.life <= 0 || e.hp <= 0 || shot.hit.has(e.id)) continue;
-    if (distance(shot, e) < shot.radius + e.radius) { shot.hit.add(e.id); this.damageEnemy(e, shot.damage); if (shot.splash) this.aoe(shot, shot.splash, shot.damage * .38, 'fire', 0xc2afff); shot.pierce--; if (shot.pierce <= 0) shot.life = 0; }
+    if (distance(shot, e) < shot.radius + e.radius) { shot.hit.add(e.id); this.damageEnemy(e, shot.damage); if (shot.kind === 'magic') this.effect('crystal', shot, 0xad8dff, 20, .24); shot.pierce--; if (shot.pierce <= 0) shot.life = 0; }
    }
   }
   s.projectiles = s.projectiles.filter(p => p.life > 0 && p.x > -50 && p.x < W.width + 50 && p.y > -60 && p.y < W.height + 60);
  }
  private addHazard(center: Vec, radius: number, delay: number, damage: number, owner: 'player' | 'enemy', kind: 'rain' | 'slam') {
-  if (this.state.hazards.length < W.maxHazards) this.state.hazards.push({ id: ++this.serial, x: center.x, y: center.y, radius, delay, life: delay + .45, damage, owner, kind, fired: false });
+  if (this.state.hazards.length < W.maxHazards) this.state.hazards.push({ id: ++this.serial, x: center.x, y: center.y, radius, delay, life: delay + .45, damage, owner, kind, fired: false, windup: delay });
  }
  private updateHazards(dt: number) {
   for (const h of this.state.hazards) {
    if (this.state.player.hp <= 0) break;
    h.delay -= dt; h.life -= dt;
-   if (h.delay <= 0 && !h.fired) { h.fired = true; if (h.owner === 'player') this.aoe(h, h.radius, h.damage, 'ring', 0xdcecc3); else { this.effect('ring', h, 0xee936d, h.radius, .4); if (distance(h, this.state.player) < h.radius + W.playerRadius) this.damagePlayer(h.damage); } }
+   if (h.delay <= 0 && !h.fired) { h.fired = true; if (h.owner === 'player') this.aoe(h, h.radius, h.damage, 'ring', 0xdcecc3); else { this.effect('ring', h, 0xee936d, h.radius, .4); if (distance(h, this.state.player) < h.radius) this.damagePlayer(h.damage); } }
   }
   this.state.hazards = this.state.hazards.filter(h => h.life > 0);
  }
  damageEnemy(enemy: Enemy, amount: number) {
-  if (enemy.hp <= 0 || this.state.status === 'victory' || this.state.status === 'gameover') return; enemy.hp -= amount; enemy.hitFlash = .12;
+  if (enemy.hp <= 0 || this.state.status === 'victory' || this.state.status === 'gameover') return;
+  if (enemy.kind === 'warden' && this.state.hero !== 'warrior') amount *= CAMPAIGN.wardenRangedDamage[this.state.hero];
+  enemy.hp -= amount; enemy.hitFlash = .12;
   this.effect('hit', enemy, 0xffedc2, 13, .14); this.effect('text', { x: enemy.x + this.random() * 12 - 6, y: enemy.y - 15 }, 0xffecc9, 0, .65, 0, `${Math.round(amount)}`);
   if (!isBoss(enemy.kind)) { const away = unit(this.state.player, enemy); enemy.x += away.x * 4; enemy.y += away.y * 4; }
   if (enemy.hp > 0) return;

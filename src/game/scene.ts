@@ -26,8 +26,8 @@ export class ForestScene extends Phaser.Scene {
  create() {
   createArt(this); this.ground = this.add.tileSprite(216, 384, 432, 768, 'terrain').setDepth(-10);
   this.shadows = this.add.graphics().setDepth(5); this.fx = this.add.graphics().setDepth(2000); this.joystick = this.add.graphics().setDepth(3000);
-  for (let i = 0; i < 38; i++) { const row = Math.floor(i / 2), left = i % 2 === 0; const x = left ? 8 + Math.sin(i * 41) * 28 : 417 + Math.sin(i * 17) * 25; const y = row * 62 - 120; const image = this.add.image(x, y, i % 4 === 0 ? 'pine' : 'tree').setOrigin(.5, 1).setScale(i % 4 === 0 ? 2 : 1.8); this.scenery.push({ image, x, y }); }
-  for (let i = 0; i < 30; i++) { const x = i % 2 ? 323 + (i * 17 % 59) : 48 + (i * 17 % 58), y = i * 39; const key = ['bush', 'rock', 'bush', 'mushroom', 'stump'][i % 5]; const image = this.add.image(x, y, key).setOrigin(.5, 1).setScale(1.7); this.scenery.push({ image, x, y }); }
+  for (let i = 0; i < 24; i++) { const row = Math.floor(i / 2), left = i % 2 === 0; const x = left ? 8 + Math.sin(i * 41) * 28 : 417 + Math.sin(i * 17) * 25; const y = row * 102 - 120; const image = this.add.image(x, y, i % 4 === 0 ? 'pine' : 'tree').setOrigin(.5, 1).setScale(i % 4 === 0 ? 1.25 : 1.35); this.scenery.push({ image, x, y }); }
+  for (let i = 0; i < 22; i++) { const x = i % 2 ? 323 + (i * 17 % 59) : 48 + (i * 17 % 58), y = i * 56; const key = ['bush', 'rock', 'bush', 'mushroom', 'stump'][i % 5]; const image = this.add.image(x, y, key).setOrigin(.5, 1).setScale(1.7); this.scenery.push({ image, x, y }); }
   for (const [x, y] of [[133, 480], [299, 1010]]) { const image = this.add.image(x, y, 'lantern').setOrigin(.5, 1).setScale(1.8); this.scenery.push({ image, x, y }); }
   this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.add.image(216, 515, 'warrior').setScale(2.4).setOrigin(.5, .8);
   this.companions = [this.add.image(174, 559, 'archer'), this.add.image(263, 548, 'mage')]; this.companions.forEach(image => image.setScale(2.25).setOrigin(.5, .8));
@@ -54,7 +54,7 @@ export class ForestScene extends Phaser.Scene {
   if (s?.status === 'running') { for (const e of s.enemies) if (isBoss(e.kind) && !this.announcedBosses.has(e.id)) { this.announcedBosses.add(e.id); this.audio.boss(); } const shot = s.projectiles.find(p => p.kind !== 'enemy' && p.id > this.lastShotSound); if (shot) { this.lastShotSound = Math.max(...s.projectiles.map(p => p.id)); this.audio.attack(s.hero); } }
   this.renderJoystick(s); this.audio.tick(dt, s?.status === 'running'); this.onFrame?.(s, this.victoryFxTime);
  }
- private shadow(x: number, y: number, w: number, h: number) { this.shadows.fillStyle(0x142a21, .38); this.shadows.fillEllipse(x, y, w * 2, h * 2); }
+ private shadow(x: number, y: number, w: number, h: number) { this.shadows.fillStyle(0x34475d, .26); this.shadows.fillEllipse(x, y, w * 2, h * 2); }
  private renderEnemies(s: RunState) {
   const living = s.enemies.filter(enemy => enemy.hp > 0);
   living.forEach((e, i) => { const image = this.actors.at(i, e.kind); image.setPosition(e.x, e.y + Math.sin(this.clock * (e.kind === 'bat' ? 15 : 7) + e.seed) * (e.kind === 'bat' ? 4 : 1)).setOrigin(.5, .8).setDepth(100 + e.y).setScale(isBoss(e.kind) ? 2.9 : e.elite ? 2.6 : 2.2).setFlipX(e.x > s.player.x); image.setTint(e.hitFlash > 0 ? 0xffffff : e.elite ? 0xffdc98 : 0xffffff);
@@ -71,9 +71,38 @@ export class ForestScene extends Phaser.Scene {
    }
   }); this.actors.trim(living.length);
  }
- private renderShots(s: RunState) { s.projectiles.forEach((p, i) => { const image = this.shots.at(i, p.kind); image.setPosition(p.x, p.y).setDepth(1600).setRotation(Math.atan2(p.vy, p.vx)).setScale(p.kind === 'magic' ? 1.25 : p.kind === 'blade' ? 1.8 : 1.4); }); this.shots.trim(s.projectiles.length); }
+ private renderShots(s: RunState) {
+  s.projectiles.forEach((shot, i) => {
+   const image = this.shots.at(i, shot.kind);
+   const angle = Math.atan2(shot.vy, shot.vx);
+   image.setPosition(shot.x, shot.y).setDepth(1600).setRotation(angle).setScale(shot.kind === 'blade' ? 1.8 : 1.45);
+   if (shot.kind === 'enemy') return;
+   const length = shot.kind === 'arrow' ? 29 : 19;
+   const color = shot.kind === 'magic' ? 0x795dff : shot.kind === 'blade' ? 0x1badb7 : 0xe85e33;
+   this.fx.lineStyle(shot.kind === 'arrow' ? 2 : 4, color, .72)
+    .lineBetween(shot.x - Math.cos(angle) * length, shot.y - Math.sin(angle) * length, shot.x, shot.y);
+  });
+  this.shots.trim(s.projectiles.length);
+ }
  private renderHazards(s: RunState) {
-  for (const h of s.hazards) { const color = h.owner === 'enemy' ? 0xe39070 : 0xd5e8b0; this.fx.fillStyle(color, h.fired ? .18 : .08).fillCircle(h.x, h.y, h.radius); this.fx.lineStyle(2, color, .65).strokeCircle(h.x, h.y, h.radius); if (!h.fired) { const progress = 1 - h.delay / (h.kind === 'rain' ? .65 : .9); this.fx.lineStyle(1, color, .45).strokeCircle(h.x, h.y, h.radius * clamp(progress, 0, 1)); } else if (h.kind === 'rain') for (let i = 0; i < 14; i++) { const a = i * 2.399, r = Math.sqrt(i / 14) * h.radius, x = h.x + Math.cos(a) * r, y = h.y + Math.sin(a) * r; this.fx.lineStyle(2, 0xefedc6, .7).lineBetween(x + 12, y - 24, x, y); } }
+  const g = this.fx;
+  for (const h of s.hazards) {
+   const hostile = h.owner === 'enemy', color = hostile ? 0xd92e61 : 0x1b8cba;
+   const progress = h.fired ? 1 : clamp(1 - h.delay / (h.windup ?? .65), 0, 1);
+   g.fillStyle(color, h.fired ? .31 : .10 + progress * .10).fillCircle(h.x, h.y, h.radius);
+   g.lineStyle(5, hostile ? 0x652b57 : 0x235477, .77).strokeCircle(h.x, h.y, h.radius);
+   g.lineStyle(2, hostile ? 0xffe2cf : 0xccfdff, .95).strokeCircle(h.x, h.y, h.radius);
+   if (!h.fired) {
+    g.lineStyle(4, color, 1).beginPath().arc(h.x, h.y, h.radius + 4, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2).strokePath();
+    if (hostile) g.lineStyle(3, 0x82274e, .92).lineBetween(h.x, h.y - 11, h.x, h.y + 2).fillStyle(0x82274e, 1).fillCircle(h.x, h.y + 8, 2);
+   } else if (!hostile) {
+    for (let i = 0; i < 15; i++) {
+     const a = i * 2.399, radius = Math.sqrt(i / 15) * h.radius;
+     const x = h.x + Math.cos(a) * radius, y = h.y + Math.sin(a) * radius;
+     g.lineStyle(3, i % 2 ? 0x247fa4 : 0xf3feff, .8).lineBetween(x + 13, y - 27, x, y);
+    }
+   }
+  }
  }
  private renderEffects(s: RunState) {
   let labelIndex = 0;
@@ -96,12 +125,25 @@ export class ForestScene extends Phaser.Scene {
    }
    if (e.kind === 'text') { if (labelIndex >= 32) continue; let label = this.labels[labelIndex++]; if (!label) { label = this.add.text(0, 0, '', { fontFamily: 'monospace', fontSize: '17px', color: '#fff0cd', stroke: '#27372c', strokeThickness: 3, fontStyle: 'bold' }).setOrigin(.5).setDepth(2100); this.labels.push(label); } label.setText(e.text ?? '').setPosition(e.x, e.y - progress * 27).setAlpha(Math.min(1, f * 2)).setVisible(true); continue; }
    if (e.id > this.lastEffect && e.kind === 'hit') { if (e.color === 0xf2937e) this.audio.hurt(); else this.audio.hit(); }
-   if (e.id > this.lastEffect && e.kind === 'slash' && s.status === 'running') this.audio.attack(s.hero);
+   if (e.id > this.lastEffect && (e.kind === 'slash' || e.kind === 'cleave') && s.status === 'running') this.audio.attack(s.hero);
    g.lineStyle(2, e.color, f);
-   if (e.kind === 'slash') { g.lineStyle(6 * f, e.color, f * .85); g.beginPath(); g.arc(e.x, e.y, e.radius * (.7 + progress * .3), e.angle - 1.1, e.angle + .95); g.strokePath(); g.lineStyle(1, 0xffffff, f * .7); g.beginPath(); g.arc(e.x, e.y, e.radius * .9, e.angle - .9, e.angle + .75); g.strokePath(); }
+   if (e.kind === 'slash' || e.kind === 'cleave') {
+    const span = e.kind === 'cleave' ? Math.PI : 1.7;
+    const radius = e.radius * (.75 + progress * .25);
+    for (const [width, color, offset] of [[13, 0x884132, 0], [8, e.color, 0], [3, 0xfff5d6, -5]]) {
+     g.lineStyle(width * (.45 + f * .55), color, f).beginPath()
+      .arc(e.x, e.y, radius + offset, e.angle - span, e.angle + span).strokePath();
+    }
+   }
+   else if (e.kind === 'crystal') {
+    for (let i = 0; i < 7; i++) {
+     const angle = i * 2.399, x = e.x + Math.cos(angle) * e.radius * progress, y = e.y + Math.sin(angle) * e.radius * progress;
+     g.fillStyle(i % 2 ? e.color : 0xfff1ff, f).fillTriangle(x, y - 8, x + 4, y, x - 3, y + 4);
+    }
+   }
    else if (e.kind === 'ring') { g.strokeCircle(e.x, e.y, e.radius * (.7 + progress * .3)); g.lineStyle(1, e.color, f * .3).strokeCircle(e.x, e.y, e.radius * (.5 + progress * .3)); }
    else if (e.kind === 'fire') { g.fillStyle(e.color, f * .22).fillCircle(e.x, e.y, e.radius * (.5 + progress * .5)); for (let i = 0; i < 15; i++) { const a = i * 2.4, r = e.radius * progress; g.fillStyle(i % 2 ? e.color : 0xffe1aa, f).fillRect(e.x + Math.cos(a) * r, e.y + Math.sin(a) * r, 4, 6); } }
-   else if (e.kind === 'lightning') { const x2 = e.x2 ?? e.x, y2 = e.y2 ?? e.y; g.beginPath().moveTo(e.x, e.y); for (let i = 1; i < 7; i++) g.lineTo(e.x + (x2 - e.x) * i / 7 + Math.sin(i * 27) * 10, e.y + (y2 - e.y) * i / 7 + Math.cos(i * 14) * 10); g.lineTo(x2, y2).strokePath(); }
+   else if (e.kind === 'lightning') { const x2 = e.x2 ?? e.x, y2 = e.y2 ?? e.y; g.lineStyle(5, e.color, f); g.beginPath().moveTo(e.x, e.y); for (let i = 1; i < 7; i++) g.lineTo(e.x + (x2 - e.x) * i / 7 + Math.sin(i * 27) * 10, e.y + (y2 - e.y) * i / 7 + Math.cos(i * 14) * 10); g.lineTo(x2, y2).strokePath(); g.fillStyle(0xf0ecff, f).fillCircle(x2, y2, 12 * f); }
    else { for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3; g.fillStyle(e.color, f).fillRect(e.x + Math.cos(a) * e.radius * progress, e.y + Math.sin(a) * e.radius * progress, 3, 3); } }
   }
   this.lastEffect = s.effects.reduce((max, e) => Math.max(max, e.id), this.lastEffect); for (let i = labelIndex; i < this.labels.length; i++) this.labels[i].setVisible(false);

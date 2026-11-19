@@ -69,3 +69,43 @@
  .game-frame{width:100%;box-shadow:none}
  .frame-corner{display:none}
 }
+
+/* Daylight palette and bold, flat arcade panels. */
+:root{color:#203057;background:#e5eef1;--ink:#203057;--paper:#fff9ea;--blue:#315bea;--line:#a9b7ca;--cream:#203057;--gold:#a14c1e;--muted:#546380}
+body{background:#e5eef1}
+.site-header{border-color:#afc3d4;height:65px}.brand{color:var(--ink);font:950 24px/1 system-ui;letter-spacing:-1px}
+.journal{color:#44526c;padding-top:22px}.journal .section-label{color:var(--ink);font-size:15px;letter-spacing:0}
+.record-row,.journal p{font-size:13px;border-color:#c2cbd6}.record-row strong,.record-row strong small,.site-footer{color:#44526c}
+.game-frame{border-color:#26395c;box-shadow:0 7px 0 #a9bfd3}
+.overlay,.overlay p,.overlay small{color:var(--ink)}
+.overlay .menu-panel,.screen-select,.screen-shop,.screen-settings,.screen-result,.screen-history,.screen-diagnostics{background:var(--paper);backdrop-filter:none}
+.title-screen{background:none;padding:0 0 24px}
+.title-logo{margin:0;width:100%;padding:11% 0 8%;background:#315bea;color:white;clip-path:polygon(0 0,100% 0,100% 90%,0 100%);text-align:left}
+.title-logo h1{font:950 clamp(40px,14cqw,75px)/.95 system-ui;color:#fff9ea;text-shadow:3px 4px #203057;margin:0 0 0 7%;letter-spacing:-.08em}
+.title-subtitle{justify-content:flex-start;font:750 15px/1.2 system-ui;letter-spacing:0;margin:10px 7% 0;color:#eef5ff}
+.title-actions{width:86%;background:var(--paper);border:2px solid var(--ink);border-radius:9px;padding:12px;box-shadow:4px 5px 0 var(--ink)}
+.title-footnote{color:#35466b!important;margin:11px 0 0!important}
+.button,.button.primary,.button.secondary,.icon-button,.buy-button{border-radius:6px;font-weight:750;box-shadow:none}
+.button.primary,.button.primary:hover{color:white;background:#315bea;border:2px solid #203057;box-shadow:0 3px #203057}
+.button.secondary,.button.secondary:hover,.icon-button,.modal-topbar>.icon-button,.buy-button{background:#f8fcff;color:#203057;border:1px solid #7a93b6}
+.secondary-actions>.settings-button{flex-basis:47px}
+.mini-coin,.purse,.gold-wallet strong,.settings-sliders b{color:#8a421b;border-color:#c6bb9f}
+.menu-heading h2,.overlay h2{font-weight:850;letter-spacing:-.045em}
+.hero-card,.hero-card.selected{background:#e7eef9;border:2px solid #b6c4d9;border-radius:8px}
+.hero-card[data-hero=warrior]{background:#ffe4a5}.hero-card[data-hero=archer]{background:#ffcec3}.hero-card[data-hero=mage]{background:#dfddff}
+.hero-card.selected{border-color:#283c76;box-shadow:0 3px #283c76}
+.hero-card strong,.hero-card .hero-role,.hero-base-stats b,.hero-detail>p,.hero-detail-title h3 small,.menu-heading p,.quiet-note,.save-info,.settings-controls small,.settings-controls p span{color:#304267!important}
+.hero-detail,.hero-base-stats,.settings-controls,.refund-section,.shop-item,.combat-summary{border-color:#c4cfe0}
+.hero-portrait-scene:after{background:#25375b30}
+.skill-icon,.gold-wallet,.challenge-selector button,.upgrade-card,.history-record,.diagnostics-metrics>div{background:#e8effb;border-color:#90a7c3;color:#22345c}
+.challenge-selector button[aria-pressed=true]{background:#dce6ff;color:#22345c;border-color:#315bea}
+.shop-item-copy b,.shop-item-copy small,.shop-item-copy>div>span,.shrine-tip,.combat-summary span,.combat-summary strong,.combat-explanation,.history-record summary,.history-record summary small,.history-record>p,.text-button,.settings-sliders label>span,.upgrade-description,.upgrade-copy strong,.diagnostics-counts,.diagnostics-note,.diagnostics-help,#diagnostics-message{color:#33496d!important}
+.level-dots>i,.stat-pips i{background:#c2cee5}.level-dots>.lit,.stat-pips>.lit{background:#315bea}
+.hud,.diagnostics-hud{background:#263e70;color:#fff8e8;border-bottom-color:#1c3260}
+.hud-hero,.hud-time,.hud-time .icon,.hud-hero>small,.hud-counters,#campaign-goal,.hp-row>span,.xp-row>span,.boss-hud>span{color:#fff6df}
+.hud .pause-button{background:#3f5a9c;color:#fff6df;border-color:#8aa1d4}
+.hud .loadout-slot{background:#334e83;border-color:#829ad1;color:#eef4ff}
+.hp-track,.xp-track{background:#17294c}.hp-track #hp-fill{background:#ff6d76}.xp-track #xp-fill{background:#71edf4}
+.pause-panel,.upgrade-panel{color:#203057;background:#fff9ea;border:2px solid #203057;border-radius:10px;box-shadow:5px 5px #203057;padding:18px}
+.pause-stats{border-color:#b4c4e0}.pause-stats span,.pause-stats small,.modal-emblem,.quiet-note,.upgrade-levels{color:#344b77}
+@media(max-width:800px) and (orientation:portrait){.game-frame{box-shadow:none}}

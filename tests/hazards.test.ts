@@ -10,3 +10,12 @@ it('stops delayed attacks after a fatal slam instead of awarding post-death XP a
  );
  sim.update(.05); expect(sim.state.status).toBe('gameover'); expect(p.hp).toBe(0); expect(sim.state.kills).toBe(0);
 });
+
+it('lets the player escape just beyond the drawn hazard edge', () => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ const p = sim.state.player;
+ sim.state.hazards.push({ id: 1000, x: p.x - 58, y: p.y, radius: 57, delay: 0, life: .5, damage: 99, owner: 'enemy', kind: 'slam', fired: false });
+ sim.update(.05);
+ expect(sim.state.hazards[0].fired).toBe(true);
+ expect(p.hp).toBe(p.maxHp);
+});

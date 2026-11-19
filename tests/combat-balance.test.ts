@@ -5,30 +5,30 @@ const frames = (sim: GameSimulation, seconds: number) => { for (let i = 0; i < s
 describe('weapon and skill balance regressions', () => {
  it('keeps an aimed arrow at weapon level three instead of missing both sides of a small target', () => {
   const sim = new GameSimulation('archer', parseSave(null), () => .5); sim.state.weaponLevel = 3;
-  const target = sim.spawnEnemy('slime', 216, 215)!; target.hp = target.maxHp = 1000; target.speed = 0;
+  const target = sim.spawnEnemy('slime', 216, 274)!; target.hp = target.maxHp = 1000; target.speed = 0;
   frames(sim, 1); expect(target.hp).toBeLessThan(1000);
  });
- it('retargets piercing magic past a still-living enemy it has already hit', () => {
+ it('keeps trained magic single-target even with a second enemy in the line of fire', () => {
   const sim = new GameSimulation('mage', parseSave(null), () => .5); sim.state.weaponLevel = 4;
   const front = sim.spawnEnemy('slime', 216, 430)!, back = sim.spawnEnemy('slime', 216, 295)!;
   for (const e of [front, back]) { e.hp = e.maxHp = 10000; e.speed = 0; }
-  frames(sim, 1.5); expect(front.hp).toBeLessThan(10000); expect(back.hp).toBeLessThan(10000);
+  frames(sim, 1.5); expect(front.hp).toBeLessThan(10000); expect(back.hp).toBe(10000);
  });
  it('upgrading the basic weapon does not secretly multiply the damage or recharge of learned skills', () => {
   const cast = (weapon: number) => { const sim = new GameSimulation('mage', parseSave(null), () => .5); sim.state.weaponLevel = weapon; sim.state.skills.fire = 1; const e = sim.spawnEnemy('slime', 216, 450)!; e.hp = 10000; sim.update(.05); return 10000 - e.hp; };
   expect(cast(5)).toBeCloseTo(cast(1));
  });
  it('slows enemies whose collision radius overlaps the visible upgraded frost aura', () => {
-  const run = (frost: number) => { const sim = new GameSimulation('mage', parseSave(null), () => .5); sim.state.skills.frost = frost; sim.update(.05); const e = sim.spawnEnemy('slime', 216, 405)!; const before = e.y; sim.update(.05); return e.y - before; };
-  // Level two is a 100px circle; this 13px-radius slime at 110px overlaps it.
+  const run = (frost: number) => { const sim = new GameSimulation('mage', parseSave(null), () => .5); sim.state.skills.frost = frost; sim.update(.05); const e = sim.spawnEnemy('slime', 216, 389)!; const before = e.y; sim.update(.05); return e.y - before; };
+  // Level two is a 118px circle; this 13px-radius slime at 126px overlaps it.
   expect(run(2)).toBeLessThan(run(0));
  });
 });
 
 it('makes both level-three bow arrows contribute against a narrow distant target', () => {
  const sim = new GameSimulation('archer', parseSave(null), () => .5); sim.state.weaponLevel = 3;
- const target = sim.spawnEnemy('slime', 216, 215)!; target.hp = target.maxHp = 1000; target.speed = 0;
- frames(sim, 1); expect(1000 - target.hp).toBeGreaterThanOrEqual(47);
+ const target = sim.spawnEnemy('slime', 216, 274)!; target.hp = target.maxHp = 1000; target.speed = 0;
+ frames(sim, 1); expect(1000 - target.hp).toBeGreaterThanOrEqual(sim.damage * 2 - .001);
 });
 
 it('higher shield ranks improve recharge without stockpiling three fully blocked hits', () => {
@@ -51,7 +51,7 @@ it('the warrior sweeps away an approaching enemy projectile without a melee targ
  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
  const { player, projectiles } = sim.state;
  projectiles.push({ id: 900, x: player.x, y: player.y - 40, kind:'enemy',
-  vx:0, vy:50, pierce:1, damage:25, radius:4, life:1, splash:0, hit:new Set() });
+  vx:0, vy:50, pierce:1, damage:25, radius:4, life:1, hit:new Set() });
  frames(sim, .2);
  expect(sim.state.projectiles.some(shot => shot.id === 900)).toBe(false);
  expect(player.hp).toBe(player.maxHp);
@@ -62,4 +62,35 @@ it('puts three enemies on the field on the first frame of a normal expedition', 
  sim.update(.016);
  expect(sim.state.spawned).toBe(3);
  expect(sim.state.enemies.every(enemy => enemy.y > 0)).toBe(true);
+});
+
+it('lets a basic arrow hit two lined-up targets without hitting a third', () => {
+ const sim = new GameSimulation('archer', parseSave(null), () => .5);
+ const targets = [445, 397, 349].map(y => sim.spawnEnemy('brute', 216, y)!);
+ for (const enemy of targets) enemy.speed = 0;
+ frames(sim, .4);
+ expect(targets[0].hp).toBeLessThan(targets[0].maxHp);
+ expect(targets[1].hp).toBeLessThan(targets[1].maxHp);
+ expect(targets[2].hp).toBe(targets[2].maxHp);
+});
+
+it('brings waves in from all four edges while the player waits near the top', () => {
+ let state = 2026;
+ const sim = new GameSimulation('warrior', parseSave(null), () => {
+  state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+  return state / 4294967296;
+ });
+ sim.state.player.y = 40;
+ const sides = new Set<string>();
+ for (let i = 0; i < 1200; i++) {
+  sim.update(.033);
+  for (const { x, y } of sim.state.enemies) {
+   if (x < 0) sides.add('left');
+   if (x > 432) sides.add('right');
+   if (y < 0) sides.add('top');
+   if (y > 768) sides.add('bottom');
+  }
+  if (sim.state.choices[0]) sim.chooseUpgrade(sim.state.choices[0].id);
+ }
+ expect(sides.size).toBe(4);
 });

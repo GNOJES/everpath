@@ -22,7 +22,7 @@ describe('movement and scroll', () => {
 describe('combat and run lifecycle', () => {
  for (const hero of ['warrior', 'archer', 'mage'] as const) {
   it(`${hero} automatically attacks and earns XP/gold`, () => {
-   const sim = new GameSimulation(hero, parseSave(null), () => .5); sim.spawnEnemy('slime', 216, 470); tick(sim, 4); expect(sim.state.kills).toBeGreaterThan(0); expect(sim.state.gold).toBeGreaterThan(0); expect(sim.state.xp).toBeGreaterThan(0);
+   const sim = new GameSimulation(hero, parseSave(null), () => .5); sim.spawnEnemy('slime', 216, 470); sim.spawnEnemy('slime', 229, 465); tick(sim, 4); expect(sim.state.kills).toBeGreaterThan(0); expect(sim.state.gold).toBeGreaterThan(0); expect(sim.state.xp).toBeGreaterThan(0);
   });
  }
  it('pauses for a level choice, rejects forged choices, and resumes after applying it', () => {

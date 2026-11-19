@@ -21,7 +21,7 @@ test('final boss defeat plays on the field before showing and saving the result'
  await page.goto('/boss-effect-test');
  await page.getByRole('button', { name: '모험 시작' }).click();
  await page.getByRole('button', { name: '숲으로 떠나기' }).click();
- await page.clock.pauseAt(await page.evaluate(() => Date.now()));
+ await page.clock.pauseAt(await page.evaluate(() => Date.now() + 250));
  await page.evaluate(() => {
   const { sim } = (window as unknown as { bossTest: { sim: import('../src/game/simulation').GameSimulation } }).bossTest;
   sim.state.elapsed = 599.99;
