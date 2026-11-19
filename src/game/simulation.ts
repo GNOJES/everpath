@@ -1,4 +1,4 @@
-import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, CAMPAIGN, isBoss } from './config';
+import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, CAMPAIGN, EVOLUTIONS, WARRIOR_WEAPON_STEPS, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind } from './encounters';
@@ -16,7 +16,13 @@ export class GameSimulation {
  constructor(hero: HeroId, private save: SaveData, private random: () => number = Math.random, rank = 0) { this.save = structuredClone(save); this.state = createRun(hero, this.save, Math.floor(clamp(rank, 0, save.challengeUnlocked))); }
  private hasWon() { return this.state.status === 'victory'; }
  get power() { return HEROES[this.state.hero].damage * (1 + this.save.upgrades.attack * PERMANENT.attack.step) * (1 + this.state.passives.power * B.powerStep); }
- get damage() { return this.power * (1 + (this.state.weaponLevel - 1) * B.weaponDamageStep) * (this.state.evolved ? 1.65 : 1); }
+ get damage() {
+  const { hero, weaponLevel, evolved } = this.state;
+  const weaponScale = hero === 'warrior'
+   ? WARRIOR_WEAPON_STEPS[weaponLevel - 1]
+   : 1 + (weaponLevel - 1) * B.weaponDamageStep;
+  return this.power * weaponScale * (evolved ? EVOLUTIONS[hero].damageMultiplier : 1);
+ }
  get haste() { return 1 + this.state.passives.haste * B.hasteStep; }
  get weaponHaste() { return this.haste + (this.state.weaponLevel - 1) * B.weaponHasteStep + (this.state.evolved ? .25 : 0); }
  get range() { return HEROES[this.state.hero].range * (1 + (this.state.weaponLevel - 1) * B.weaponRangeStep) * (this.state.evolved ? 1.25 : 1); }
@@ -30,7 +36,9 @@ export class GameSimulation {
   if (s.elapsed >= (s.supplies + 1) * 120 && s.supplies < 4) { s.supplies++; p.hp = Math.min(p.maxHp, p.hp + p.maxHp * CAMPAIGN.supplyHeal); this.goldRaw += 15; s.gold = Math.floor(this.goldRaw); this.effect('text', p, 0xcce8ad, 0, 2, 0, '보급 · 체력 +30% · 15G'); }
   if (s.elapsed >= CAMPAIGN.finalAt && !s.finalSpawned) {
    s.finalSpawned = true; s.withdrawn += s.enemies.filter(e => e.hp > 0).length; s.enemies = []; s.projectiles = []; s.hazards = []; this.spawnEnemy('warden', W.width / 2, 170); s.nextBoss = Infinity;
-   this.effect('text', { x: W.width / 2, y: 260 }, 0xffd38a, 0, 3, 0, '모르바 등장');
+   const heal = Math.min(p.maxHp - p.hp, p.maxHp * CAMPAIGN.arenaHeal * this.save.upgrades.hp / B.permanentMax);
+   p.hp += heal;
+   this.effect('text', { x: W.width / 2, y: 260 }, 0xffd38a, 0, 3, 0, heal >= 1 ? `모르바 등장 · 체력 +${Math.floor(heal)}` : '모르바 등장');
   }
   if (s.finalSpawned && s.elapsed >= CAMPAIGN.finalAt + CAMPAIGN.arenaLimit) { p.shield = 0; p.invincible = 0; this.damagePlayer(p.hp); return; }
   this.spawnTimer -= dt; if (!s.finalSpawned && this.spawnTimer <= 0) { this.spawnWave(); this.spawnTimer = spawnInterval(s.elapsed); }
@@ -77,7 +85,7 @@ export class GameSimulation {
    if (s.skills.frost && distance(e, p) < SKILLS.frost.radius + (s.skills.frost - 1) * B.skillRadiusStep + e.radius) speed *= .82 - .06 * Math.min(3, s.skills.frost);
    if (e.kind === 'warden') {
     speed *= .8; if (e.timer <= 0) {
-     this.addHazard({ ...p }, 68, 1.15, e.damage * 1.5, 'enemy', 'slam');
+     this.addHazard({ ...p }, 68, 1.15, e.damage * 1.15, 'enemy', 'slam');
      for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 + e.seed + s.elapsed * .08; this.shoot(e, { x: e.x + Math.cos(a), y: e.y + Math.sin(a) }, 'enemy', e.damage * .65, 115, 1); }
      e.timer = e.hp < e.maxHp * .5 ? 1.9 : 2.8;
     }
@@ -94,13 +102,7 @@ export class GameSimulation {
     if (e.timer <= 0 && e.y > 70) { this.shoot(e, p, 'enemy', e.damage, 155, 1); e.timer = 2.65; }
    } else if (e.kind === 'bat') { dir.x += Math.sin(s.elapsed * 5 + e.seed) * .65; dir = normalize(dir.x, dir.y); }
    e.x += dir.x * speed * dt; e.y += (dir.y * speed + (isBoss(e.kind) ? 0 : W.scrollSpeed * .3)) * dt;
-   if (e.kind === 'warden') {
-    speed *= .8; if (e.timer <= 0) {
-     this.addHazard({ ...p }, 68, 1.15, e.damage * 1.5, 'enemy', 'slam');
-     for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 + e.seed + s.elapsed * .08; this.shoot(e, { x: e.x + Math.cos(a), y: e.y + Math.sin(a) }, 'enemy', e.damage * .65, 115, 1); }
-     e.timer = e.hp < e.maxHp * .5 ? 1.9 : 2.8;
-    }
-   } else if (isBoss(e.kind)) { e.x = clamp(e.x, 30, W.width - 30); e.y = clamp(e.y, 137, W.height - 60); }
+   if (e.kind === 'boss') { e.x = clamp(e.x, 30, W.width - 30); e.y = clamp(e.y, 137, W.height - 60); }
    if (distance(e, p) < e.radius + W.playerRadius) this.damagePlayer(e.damage);
   }
  }
