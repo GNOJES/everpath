@@ -1,18 +1,19 @@
-import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, WARRIOR_CONTACT_DAMAGE, MAGE_ARROW_DAMAGE, CAMPAIGN, WARDEN_MAGIC_ARMOR, EVOLUTIONS, WARRIOR_WEAPON_STEPS, warriorSweepAngle, isBoss } from './config';
+import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, WARRIOR_CONTACT_DAMAGE, MAGE_ARROW_DAMAGE, CAMPAIGN, PICKUPS, TIME_STOP, WARDEN_MAGIC_ARMOR, EVOLUTIONS, WARRIOR_WEAPON_STEPS, warriorSweepAngle, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind } from './encounters';
-import type { HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Effect, PassiveId, RunResult } from './types';
+import type { HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Pickup, Effect, PassiveId, RunResult } from './types';
 let runCounter = 0;
 export function createRun(hero: HeroId, save: SaveData, rank = 0): RunState {
  const config = HEROES[hero], maxHp = Math.round(config.hp * (1 + save.upgrades.hp * PERMANENT.hp.step));
- return { runId: `${Date.now()}-${++runCounter}-${Math.random().toString(36).slice(2)}`, hero, status: 'running', elapsed: 0, rank, evolved: false, finalSpawned: false, supplies: 0, scroll: 0,
+ return { runId: `${Date.now()}-${++runCounter}-${Math.random().toString(36).slice(2)}`, hero, status: 'running', elapsed: 0, rank, evolved: false, finalSpawned: false, timeStopCharges: clamp(save.upgrades.timeStop, 0, TIME_STOP.maxCharges), timeStopRemaining: 0, pickups: [], scroll: 0,
   player: { x: W.width / 2, y: 515, hp: maxHp, maxHp, speed: config.speed * (1 + save.upgrades.speed * PERMANENT.speed.step), invincible: 0, shield: 0, facing: -Math.PI / 2 },
   enemies: [], projectiles: [], effects: [], hazards: [], level: 1, xp: 0, xpNext: B.initialXp, kills: 0, spawned: 0, escaped: 0, withdrawn: 0, bosses: 0, gold: 0, weaponLevel: 1, skills: {}, passives: { power: 0, haste: 0, vitality: 0, speed: 0 }, choices: [], nextBoss: B.bossAt };
 }
 export class GameSimulation {
  readonly state: RunState;
  private regularSpawns = 0; private sideSpawns = 0;
+ private healDrops = 0;
  private serial = 0; private spawnTimer = B.firstSpawn; private attackTimer = .1; private skillTimers: Record<string, number> = {}; private pendingChoices = 0; private goldRaw = 0;
  constructor(hero: HeroId, private save: SaveData, private random: () => number = Math.random, rank = 0) { this.save = structuredClone(save); this.state = createRun(hero, this.save, Math.floor(clamp(rank, 0, save.challengeUnlocked))); }
  private hasWon() { return this.state.status === 'victory'; }
@@ -33,30 +34,48 @@ export class GameSimulation {
  }
  pause() { if (this.state.status === 'running') this.state.status = 'paused'; }
  resume() { if (this.state.status === 'paused') this.state.status = 'running'; }
+ activateTimeStop(): boolean {
+  const s = this.state;
+  if (s.status !== 'running' || s.timeStopRemaining > 0 || s.timeStopCharges <= 0) return false;
+  s.timeStopCharges--;
+  s.timeStopRemaining = TIME_STOP.duration;
+  return true;
+ }
  update(seconds: number, direction: Vec = { x: 0, y: 0 }) {
-  const s = this.state; if (s.status !== 'running') return; const dt = clamp(seconds, 0, .05), p = s.player;
-  s.elapsed += dt; s.scroll += W.scrollSpeed * dt; p.invincible = Math.max(0, p.invincible - dt);
+  const s = this.state;
+  if (s.status !== 'running') return;
+  const dt = clamp(seconds, 0, .05);
+  const frozen = s.timeStopRemaining > 0;
+  this.advance(dt, direction, frozen);
+  if (frozen) s.timeStopRemaining = s.timeStopRemaining - dt > 1e-9 ? s.timeStopRemaining - dt : 0;
+ }
+ private advance(dt: number, direction: Vec, frozen: boolean) {
+  const s = this.state, p = s.player;
+  p.invincible = Math.max(0, p.invincible - dt);
   const input = normalize(direction.x, direction.y); p.x = clamp(p.x + input.x * p.speed * dt, W.margin, W.width - W.margin); p.y = clamp(p.y + input.y * p.speed * dt, W.minY, W.height - W.margin);
   if (input.x || input.y) p.facing = Math.atan2(input.y, input.x);
-  if (s.elapsed >= (s.supplies + 1) * 120 && s.supplies < 4) { s.supplies++; p.hp = Math.min(p.maxHp, p.hp + p.maxHp * CAMPAIGN.supplyHeal); this.goldRaw += 15; s.gold = Math.floor(this.goldRaw); this.effect('text', p, 0xcce8ad, 0, 2, 0, '보급 · 체력 +30% · 15G'); }
-  if (s.elapsed >= CAMPAIGN.finalAt && !s.finalSpawned) {
-   s.finalSpawned = true; s.withdrawn += s.enemies.filter(e => e.hp > 0).length; s.enemies = []; s.projectiles = []; s.hazards = []; this.spawnBossFromTop('warden', W.width / 2); s.nextBoss = Infinity;
-   const heal = Math.min(p.maxHp - p.hp, p.maxHp * CAMPAIGN.arenaHeal * this.save.upgrades.hp / B.permanentMax);
-   p.hp += heal;
-   this.effect('text', { x: W.width / 2, y: 260 }, 0xffd38a, 0, 3, 0, heal >= 1 ? `모르바 등장 · 체력 +${Math.floor(heal)}` : '모르바 등장');
+  if (!frozen) {
+   s.elapsed += dt; s.scroll += W.scrollSpeed * dt;
+   if (s.elapsed >= CAMPAIGN.finalAt && !s.finalSpawned) {
+    s.finalSpawned = true; s.withdrawn += s.enemies.filter(e => e.hp > 0).length; s.enemies = []; s.projectiles = []; s.hazards = []; this.spawnBossFromTop('warden', W.width / 2); s.nextBoss = Infinity;
+    const heal = Math.min(p.maxHp - p.hp, p.maxHp * CAMPAIGN.arenaHeal * this.save.upgrades.hp / B.permanentMax);
+    p.hp += heal;
+    this.effect('text', { x: W.width / 2, y: 260 }, 0xffd38a, 0, 3, 0, heal >= 1 ? `모르바 등장 · 체력 +${Math.floor(heal)}` : '모르바 등장');
+   }
+   if (s.finalSpawned && s.elapsed >= CAMPAIGN.finalAt + CAMPAIGN.arenaLimit) { p.shield = 0; p.invincible = 0; this.damagePlayer(p.hp); return; }
+   this.spawnTimer -= dt; if (!s.finalSpawned && this.spawnTimer <= 0) { this.spawnWave(); this.spawnTimer = spawnInterval(s.elapsed); }
+   if (!s.finalSpawned && s.elapsed >= s.nextBoss && s.nextBoss <= B.bossAt + B.bossEvery) {
+    const paired = s.nextBoss > B.bossAt;
+    if (paired) {
+     this.spawnBossFromTop('boss', W.width * .25, { healthScale: PAIRED_GRORM.healthScale, rewardScale: .5, paired: true });
+     this.spawnBossFromTop('boss', W.width * .75, { healthScale: PAIRED_GRORM.healthScale, rewardScale: .5, paired: true, attackOffset: 1.55 });
+    } else this.spawnBossFromTop('boss', W.width / 2);
+    s.nextBoss += B.bossEvery;
+    this.effect('text', { x: W.width / 2, y: 215 }, 0xffd38a, 0, 2, 0, paired ? '그롬 두 마리 등장' : '그롬 등장');
+   }
+   this.moveEnemies(dt); if (p.hp <= 0) return;
   }
-  if (s.finalSpawned && s.elapsed >= CAMPAIGN.finalAt + CAMPAIGN.arenaLimit) { p.shield = 0; p.invincible = 0; this.damagePlayer(p.hp); return; }
-  this.spawnTimer -= dt; if (!s.finalSpawned && this.spawnTimer <= 0) { this.spawnWave(); this.spawnTimer = spawnInterval(s.elapsed); }
-  if (!s.finalSpawned && s.elapsed >= s.nextBoss && s.nextBoss <= B.bossAt + B.bossEvery) {
-   const paired = s.nextBoss > B.bossAt;
-   if (paired) {
-    this.spawnBossFromTop('boss', W.width * .25, { healthScale: PAIRED_GRORM.healthScale, rewardScale: .5, paired: true });
-    this.spawnBossFromTop('boss', W.width * .75, { healthScale: PAIRED_GRORM.healthScale, rewardScale: .5, paired: true, attackOffset: 1.55 });
-   } else this.spawnBossFromTop('boss', W.width / 2);
-   s.nextBoss += B.bossEvery;
-   this.effect('text', { x: W.width / 2, y: 215 }, 0xffd38a, 0, 2, 0, paired ? '그롬 두 마리 등장' : '그롬 등장');
-  }
-  this.moveEnemies(dt); if (p.hp <= 0) return;
+  this.collectPickups(dt);
   this.attackTimer -= dt; if (this.attackTimer <= 0) { if (this.basicAttack()) this.attackTimer = HEROES[s.hero].cooldown / this.weaponHaste; }
   if (this.hasWon()) return;
   for (const id of HEROES[s.hero].skills) {
@@ -64,7 +83,7 @@ export class GameSimulation {
    if (this.skillTimers[id] <= 0 && this.castSkill(id, s.skills[id])) this.skillTimers[id] = SKILLS[id].cooldown / this.haste / (1 + (s.skills[id] - 1) * (SKILLS[id].hastePerLevel ?? B.skillHasteStep));
   }
   if (this.hasWon()) return;
-  this.moveProjectiles(dt); if (this.hasWon()) return; if (p.hp <= 0) return; this.updateHazards(dt);
+  this.moveProjectiles(dt, frozen); if (this.hasWon()) return; if (p.hp <= 0) return; this.updateHazards(dt, frozen);
   for (const effect of s.effects) effect.life -= dt;
   s.effects = s.effects.filter(e => e.life > 0); s.enemies = s.enemies.filter(e => { if (e.hp <= 0) return false; const inside = e.y < W.height + 70 && e.y > -160 && e.x > -130 && e.x < W.width + 130; if (!inside) s.escaped++; return inside; });
  }
@@ -271,10 +290,11 @@ export class GameSimulation {
   return { x: best.x, y: best.y };
  }
  private aoe(center: Vec, radius: number, damage: number, effect: Effect['kind'], color: number) { this.effect(effect, center, color, radius, .45); for (const e of [...this.state.enemies]) if (e.hp > 0 && distance(center, e) < radius + e.radius) this.damageEnemy(e, damage); }
- private moveProjectiles(dt: number) {
+ private moveProjectiles(dt: number, frozen: boolean) {
   const s = this.state;
   for (const shot of s.projectiles) {
    if (s.player.hp <= 0 || s.status === 'victory') break;
+   if (frozen && shot.kind === 'enemy') continue;
    shot.life -= dt;
    if (shot.life <= 0) continue;
    if (shot.target) {
@@ -297,9 +317,10 @@ export class GameSimulation {
  private addHazard(center: Vec, radius: number, delay: number, damage: number, owner: 'player' | 'enemy', kind: 'rain' | 'slam') {
   if (this.state.hazards.length < W.maxHazards) this.state.hazards.push({ id: ++this.serial, x: center.x, y: center.y, radius, delay, life: delay + .45, damage, owner, kind, fired: false, windup: delay });
  }
- private updateHazards(dt: number) {
+ private updateHazards(dt: number, frozen: boolean) {
   for (const h of this.state.hazards) {
    if (this.state.player.hp <= 0) break;
+   if (frozen && h.owner === 'enemy') continue;
    h.delay -= dt; h.life -= dt;
    if (h.delay <= 0 && !h.fired) { h.fired = true; if (h.owner === 'player') this.aoe(h, h.radius, h.damage, 'ring', 0xdcecc3); else { this.effect('ring', h, 0xee936d, h.radius, .4); if (distance(h, this.state.player) < h.radius) this.damagePlayer(h.damage); } }
   }
@@ -316,16 +337,60 @@ export class GameSimulation {
   if (enemy.paired && this.state.hero === 'archer') amount *= PAIRED_GRORM.archerDamage;
   enemy.hp -= amount; enemy.hitFlash = .12;
   this.effect('hit', enemy, 0xffedc2, 13, .14); this.effect('text', { x: enemy.x + this.random() * 12 - 6, y: enemy.y - 15 }, 0xffecc9, 0, .65, 0, `${Math.round(amount)}`);
-  if (!isBoss(enemy.kind)) { const away = unit(this.state.player, enemy); enemy.x += away.x * 4; enemy.y += away.y * 4; }
+  if (!isBoss(enemy.kind) && this.state.timeStopRemaining <= 0) { const away = unit(this.state.player, enemy); enemy.x += away.x * 4; enemy.y += away.y * 4; }
   if (enemy.hp > 0) return;
   const s = this.state; s.kills++; if (isBoss(enemy.kind)) s.bosses++;
-  this.goldRaw += (isBoss(enemy.kind) ? B.bossGold * (enemy.rewardScale ?? 1) : B.goldPerKill * (enemy.elite ? 3 : 1)) * (1 + this.save.upgrades.gold * PERMANENT.gold.step); s.gold = Math.floor(this.goldRaw);
+  const killGold = enemy.kind === 'warden' ? B.bossGold : enemy.kind === 'boss' ? 0 : B.goldPerKill * (enemy.elite ? 3 : 1);
+  this.goldRaw += killGold * (1 + this.save.upgrades.gold * PERMANENT.gold.step);
+  s.gold = Math.floor(this.goldRaw);
   if (isBoss(enemy.kind)) this.effect('boss-death', enemy, 0xffd68a, enemy.kind === 'warden' ? 220 : 150, 1.1);
   else this.effect('death', enemy, 0xadd48a, enemy.radius, .4);
   if (enemy.kind === 'warden') {
-   this.goldRaw += CAMPAIGN.clearGold * (1 + s.rank * .5); s.gold = Math.floor(this.goldRaw); s.status = 'victory'; s.choices = []; s.projectiles = []; s.hazards = []; this.pendingChoices = 0; return;
+   this.goldRaw += CAMPAIGN.clearGold * (1 + s.rank * .5); s.gold = Math.floor(this.goldRaw); s.status = 'victory'; s.timeStopRemaining = 0; s.choices = []; s.projectiles = []; s.hazards = []; this.pendingChoices = 0; return;
   }
+  this.dropPickup(enemy);
   this.gainXp(ENEMIES[enemy.kind].xp * (enemy.rewardScale ?? 1) * (enemy.elite ? 2 : 1));
+ }
+ private dropPickup(enemy: Enemy) {
+  const s = this.state;
+  let kind: Pickup['kind'], gold = 0;
+  if (enemy.kind === 'boss') {
+   kind = 'chest';
+   gold = PICKUPS.chestGold * (enemy.rewardScale ?? 1);
+  } else {
+   if (s.elapsed < PICKUPS.from || s.finalSpawned) return;
+   const roll = enemy.seed / (Math.PI * 2);
+   if (roll < PICKUPS.healChance && this.healDrops < PICKUPS.maxHeals) {
+    kind = 'heal';
+    this.healDrops++;
+   } else if (roll >= PICKUPS.healChance && roll < PICKUPS.healChance + PICKUPS.coinChance) {
+    kind = 'coin';
+    gold = PICKUPS.coinGold;
+   } else return;
+  }
+  s.pickups.push({ kind, gold, life: kind === 'chest' ? PICKUPS.chestLife : PICKUPS.life,
+   x: clamp(enemy.x, W.margin, W.width - W.margin), y: clamp(enemy.y, W.minY, W.height - W.margin) });
+ }
+ private collectPickups(dt: number) {
+  const s = this.state, p = s.player;
+  s.pickups = s.pickups.filter(pickup => {
+   pickup.life -= dt;
+   if (pickup.life <= 0) return false;
+   if (distance(p, pickup) > PICKUPS.radius) return true;
+   if (pickup.kind === 'heal') {
+    const heal = Math.min(p.maxHp - p.hp, p.maxHp * PICKUPS.healFraction);
+    if (heal <= 0) return true;
+    p.hp += heal;
+    this.effect('text', p, 0xcce8ad, 0, 1.3, 0, `체력 +${Math.ceil(heal)}`);
+   } else {
+    const before = s.gold;
+    this.goldRaw += pickup.gold * (1 + this.save.upgrades.gold * PERMANENT.gold.step);
+    s.gold = Math.floor(this.goldRaw);
+    const label = pickup.kind === 'chest' ? '그롬의 보물 · ' : '';
+    this.effect('text', p, 0xffd38a, 0, 1.4, 0, `${label}+${s.gold - before}G`);
+   }
+   return false;
+  });
  }
  damagePlayer(amount: number) {
   const s = this.state, p = s.player; if (p.invincible > 0 || s.status !== 'running') return;

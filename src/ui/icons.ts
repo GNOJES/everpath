@@ -3,6 +3,7 @@ const paths: Record<string, string> = {
  sword: '<path d="m15 3 6 0 0 6-11 11-6-6L15 3ZM3 13l8 8M3 21l4-4M12 12l5-5"/>',
  bow: '<path d="M7 3c16 3 16 15 0 18L14 12 7 3Zm0 0v18m-4-9h18m-4-4 4 4-4 4"/>',
  staff: '<path d="m5 21 9-12m-1-7 6 1 2 5-5 5-5-5 2-6Zm1 4 3 2"/>',
+ watch: '<circle cx="12" cy="14" r="8"/><path d="M12 10v4l3 2M9 3h6m-3 0v3m5 1 2-2"/>',
  coin: '<circle cx="12" cy="12" r="8"/><path d="M12 6v12m3-10h-5l-1 4h5l1 4h-6"/>',
  heart: '<path d="M12 20 4 12C-2 4 8-1 12 6c4-7 14-2 8 6l-8 8Z"/>',
  skull: '<path d="M6 16C-1 6 5 2 12 2s13 4 6 14v5H6v-5Zm3 0v5m6-5v5M6 10h3v3H6m9-3h3v3h-3m-3 1-1 3h2l-1-3Z"/>',

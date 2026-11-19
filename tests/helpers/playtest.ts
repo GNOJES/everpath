@@ -55,7 +55,7 @@ export class Pilot {
 }
 export interface Checkpoint { seconds: number; hp: number; maxHp: number; kills: number; level: number; bosses: number; enemies: number; skills: Record<string, number> }
 export function playTrial(hero: HeroId, seed: number, policy: Policy, build: Build, duration = 600, meta = 0, saved?: SaveData) {
- const save = saved ? structuredClone(saved) : parseSave(null); for (const key of Object.keys(save.upgrades) as (keyof typeof save.upgrades)[]) if (!saved) save.upgrades[key] = meta;
+ const save = saved ? structuredClone(saved) : parseSave(null); if (!saved) for (const key of ['attack', 'hp', 'speed', 'gold'] as const) save.upgrades[key] = meta;
  const sim = new GameSimulation(hero, save, seededRandom(seed)), pilot = new Pilot(policy);
  let direction = { x: 0, y: 0 }, firstKill = 0, firstLevel = 0, hpLost = 0, hits = 0, maxEnemies = 0, maxShots = 0; const checkpoints: Checkpoint[] = [], upgrades: { time: number; id: string }[] = [];
  const pair = new Set<Enemy>();

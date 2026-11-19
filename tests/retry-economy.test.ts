@@ -6,14 +6,14 @@ import type { HeroId,PermanentId } from '../src/game/types';
 
 it.each([[13, 57, 310], [6841, 8089, 16381]])('requires more than three mage attempts on seeds %i, %i, %i', (...seeds) => {
  const store = new SaveStore({ getItem: () => null, setItem: () => {} });
- const priority: PermanentId[] = ['attack', 'hp', 'speed', 'gold'];
+ const priority = ['attack', 'hp', 'speed', 'gold'] as const;
  const deferred = { attack: 0, hp: 0, speed: 5, gold: 7 };
  for (const [index, seed] of seeds.entries()) {
   const trial = playTrial('mage', seed, 'reactive', 'weapon', 710, 0, store.data);
   expect(trial.status, `attempt ${index + 1}`).not.toBe('victory');
   if (index === seeds.length - 1) break;
   store.settle({ runId: `mage-regression-${index}`, hero: 'mage', time: trial.survived, level: trial.level, kills: trial.kills, bosses: trial.bosses, gold: trial.gold, cleared: false, rank: 0 });
-  const costPriority = (id: PermanentId) => store.data.upgrades[id] + deferred[id];
+  const costPriority = (id: typeof priority[number]) => store.data.upgrades[id] + deferred[id];
   for (let purchase = 0; purchase < 80; purchase++) {
    const candidates = [...priority].sort((a, b) => costPriority(a) - costPriority(b));
    if (!candidates.some(id => store.purchase(id))) break;

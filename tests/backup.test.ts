@@ -10,3 +10,12 @@ it.each(['{}', '{bad', JSON.stringify({ format: 'everpath-backup', version: 2, s
  encodeBackup(save).replace('"gold": 286','"gold": -1'), encodeBackup(save).replace('"hero": "mage"','"hero": "other"')])('rejects incomplete, damaged or unsupported data %#', input => {
  expect(() => decodeBackup(input)).toThrow();
 });
+
+it('restores a backup from before watch purchases without changing its old payments', () => {
+ const old = parseSave(JSON.stringify({version:1, progressionEconomy:2, gold:800, invested:24,
+  upgrades:{attack:1}, upgradePayments:{attack:[24],hp:[],speed:[],gold:[]}}));
+ const legacy = JSON.parse(encodeBackup(old));
+ delete legacy.save.upgrades.timeStop;
+ delete legacy.save.upgradePayments.timeStop;
+ expect(decodeBackup(JSON.stringify(legacy))).toEqual(old);
+});

@@ -39,7 +39,7 @@ describe('combat and run lifecycle', () => {
   tick(sim, 181); expect(sim.state.enemies.some(e => e.kind === 'boss')).toBe(true); const scroll = sim.state.scroll; tick(sim, 20); expect(sim.state.scroll).toBeGreaterThan(scroll); expect(sim.state.enemies.length).toBeLessThanOrEqual(100); expect(sim.state.projectiles.length).toBeLessThanOrEqual(180); expect(sim.state.effects.length).toBeLessThanOrEqual(60);
  });
  it('applies permanent stats to all heroes and damage invulnerability', () => {
-  const save = parseSave(null); save.upgrades = { attack: 2, hp: 2, speed: 2, gold: 2 };
+  const save = parseSave(null); save.upgrades = { attack: 2, hp: 2, speed: 2, gold: 2, timeStop: 0 };
   const sim = new GameSimulation('warrior', save); expect(sim.state.player.maxHp).toBe(179); const hp = sim.state.player.hp; sim.damagePlayer(10); sim.damagePlayer(10); expect(sim.state.player.hp).toBe(hp - 10);
  });
  it('ends on zero HP and retry creates clean state', () => {
@@ -66,7 +66,7 @@ describe('skills, bosses and bounded encounters', () => {
   const sim = new GameSimulation('warrior', parseSave(null)); const boss = sim.spawnEnemy('boss', 216, 160)!;
   tick(sim, 3.1); expect(boss.phase).toBe('warn'); tick(sim, 1.2); expect(boss.phase).toBe('dash');
   tick(sim, 1); expect(boss.y).toBeLessThan(768); expect(sim.state.scroll).toBeGreaterThan(0);
-  sim.damageEnemy(boss, 1e6); expect(sim.state.bosses).toBe(1); expect(sim.state.gold).toBeGreaterThanOrEqual(40); expect(sim.state.status).not.toBe('gameover');
+  sim.damageEnemy(boss, 1e6); expect(sim.state.bosses).toBe(1); expect(sim.state.pickups).toContainEqual(expect.objectContaining({kind:'chest',gold:60})); expect(sim.state.status).not.toBe('gameover');
  });
  it('reserves room for a scheduled boss even when normal enemies fill the cap', () => {
   const sim = new GameSimulation('warrior', parseSave(null));

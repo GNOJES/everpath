@@ -29,6 +29,7 @@ export const ENEMIES: Record<EnemyKind, { hp: number; speed: number; damage: num
 };
 export const PERMANENT: Record<PermanentId, { name: string; subtitle: string; icon: string; step: number; description: string }> = {
  attack: { name: '힘의 맹세', subtitle: 'MIGHT', icon: 'sword', step: .06, description: '공격력' }, hp: { name: '참나무 심장', subtitle: 'VITALITY', icon: 'heart', step: .06, description: '최대 체력' }, speed: { name: '바람의 걸음', subtitle: 'SWIFTNESS', icon: 'wind', step: .01, description: '이동속도' }, gold: { name: '황금의 축복', subtitle: 'FORTUNE', icon: 'coin', step: .025, description: '골드 획득량' },
+ timeStop: { name: '시간의 회중시계', subtitle: 'TIME STOP', icon: 'watch', step: 0, description: '시간의 회중시계' },
 };
 export const PASSIVES: Record<PassiveId, { name: string; subtitle: string; icon: string; description: string }> = {
  power: { name: '강인한 일격', subtitle: 'MIGHT', icon: 'sword', description: '모든 공격 피해 +15%' }, haste: { name: '신속한 손놀림', subtitle: 'HASTE', icon: 'wind', description: '모든 공격 주기 단축 +10%' }, vitality: { name: '생명의 뿌리', subtitle: 'VITALITY', icon: 'heart', description: '기본 최대 체력 +18%, 체력 회복' }, speed: { name: '가벼운 발걸음', subtitle: 'SWIFTNESS', icon: 'leaf', description: '기본 이동속도 +8%' },
@@ -39,7 +40,10 @@ export const PAIRED_GRORM = { healthScale: .44, recover: 2.35, slamRadius: 60, a
 export const WARRIOR_CONTACT_DAMAGE = .50;
 export const MAGE_ARROW_DAMAGE = .25;
 
-export const CAMPAIGN = { finalAt: 600, arenaLimit: 100, clearGold: 300, supplyHeal: .3, arenaHeal: .2, wardenRangedDamage: { archer: .57, mage: .62 }, rankMax: 3 };
+export const CAMPAIGN = { finalAt: 600, arenaLimit: 100, clearGold: 300, arenaHeal: .2, wardenRangedDamage: { archer: .57, mage: .62 }, rankMax: 3 };
+export const TIME_STOP = { maxCharges: 3, duration: 2, prices: [180, 320, 500] };
+export const PICKUPS = { from: 60, healChance: .00125, maxHeals: 2, healFraction: .50, coinChance: .0075, coinGold: 9, chestGold: 60, radius: 30, life: 22, chestLife: 45 };
+export const permanentLimit = (id: PermanentId) => id === 'timeStop' ? TIME_STOP.maxCharges : BALANCE.permanentMax;
 export const WARDEN_MAGIC_ARMOR = { lowRankDamage: .44, lowAttackRank: 9, fullAttackRank: 13 };
 export const EVOLUTIONS = {
  warrior: { name: '여명의 성검', passive: 'power' as const, damageMultiplier: 1.15, description: '검격 거리 +25%, 검격 각도 +12°, 피해 +15%.' },

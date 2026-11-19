@@ -74,7 +74,8 @@ describe('boss entry waves', () => {
   const goldBefore = sim.state.gold;
   const killsBefore = sim.state.bosses;
   for (const boss of pair) sim.damageEnemy(boss, 1e9);
-  expect(sim.state.gold - goldBefore).toBe(40);
+  expect(sim.state.gold).toBe(goldBefore);
+  expect(sim.state.pickups.filter(item => item.kind === 'chest').map(item => item.gold)).toEqual([60, 30, 30]);
   expect(sim.state.bosses - killsBefore).toBe(2);
  });
 

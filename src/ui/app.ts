@@ -5,7 +5,7 @@ import Phaser from 'phaser';
 import { ForestScene } from '../game/scene';
 import { SaveStore, upgradeCost } from '../game/save';
 import { GameSimulation } from '../game/simulation';
-import { HEROES, SKILLS, PERMANENT, WORLD, BALANCE, EVOLUTIONS, CAMPAIGN } from '../game/config';
+import { HEROES, SKILLS, PERMANENT, WORLD, permanentLimit, EVOLUTIONS, CAMPAIGN } from '../game/config';
 import { portrait } from '../game/art';
 import { formatTime } from '../game/math';
 import { icon } from './icons';
@@ -31,7 +31,7 @@ export class App {
   this.root = element;
   element.innerHTML = `<div class="shell"><header class="site-header"><a class="brand" href="/" aria-label="EVERPATH 타이틀">EVERPATH</a><button class="icon-button" data-action="sound" aria-label="효과음 켜기 / 끄기">${icon('sound')}</button></header>
   <main class="expedition-layout"><aside class="journal left-journal"><section class="records"><div class="section-label">${icon('trophy')} 원정 기록</div><div class="record-row"><span>최고 생존</span><strong id="best-time">00:00</strong></div><div class="record-row"><span>최고 처치</span><strong id="best-kills">0 <small>마리</small></strong></div><div class="record-row"><span>완료한 원정</span><strong id="total-runs">0 <small>회</small></strong></div></section></aside>
-  <section class="game-column" aria-label="EVERPATH 게임"><div id="hud" class="hud hidden"></div><div id="diagnostics-hud" class="diagnostics-hud hidden"></div><div class="game-frame"><div id="game-canvas"></div><div id="overlay" class="overlay"></div><p id="save-warning" role="alert" hidden>저장하지 못했습니다. <button type="button" data-action="save-retry">다시 저장</button></p></div></section>
+  <section class="game-column" aria-label="EVERPATH 게임"><div id="hud" class="hud hidden"></div><div id="diagnostics-hud" class="diagnostics-hud hidden"></div><div class="game-frame"><div id="game-canvas"></div><div id="time-stop-fx" class="time-stop-fx" hidden><span>시간 정지</span></div><button type="button" class="time-stop-button" data-action="time-stop" aria-label="시간의 회중시계 · 0회 남음" hidden>${icon('watch')}<b>0</b></button><div id="overlay" class="overlay"></div><p id="save-warning" role="alert" hidden>저장하지 못했습니다. <button type="button" data-action="save-retry">다시 저장</button></p></div></section>
   <aside class="journal right-journal"><div class="section-label">${icon('compass')} 조작</div><p>이동 · WASD / 방향키 / 드래그</p><p>일시정지 · ESC</p><p>공격은 자동으로 진행됩니다.</p></aside></main>
   <footer class="site-footer"><span id="save-status">이 기기에 자동 저장</span></footer></div>`;
   store.onPersistenceChange = () => this.syncSaveStatus();
@@ -66,6 +66,7 @@ export class App {
    this.render();
   }
   else if (action === 'title') { if (this.sim && this.sim.state.status !== 'gameover') this.store.settle(this.sim.result()); this.sim = undefined; this.scene.setRun(); this.screen = 'title'; this.render(); }
+  else if (action === 'time-stop' && this.sim?.activateTimeStop()) this.updateTimeStop(this.sim.state);
   else if (action === 'pause' || action === 'resume') this.togglePause();
   else if (action === 'upgrade') { if (this.sim?.chooseUpgrade(button.dataset.id!)) { this.scene.controls.reset(); this.previousStatus = ''; this.render(); } }
   else if (action === 'history') { this.historyReturn = this.screen; this.historyPage = 0; this.screen = 'history'; this.render(); }
@@ -167,6 +168,7 @@ export class App {
   this.syncDiagnosticContext();
   this.hud.classList.toggle('hidden', this.screen !== 'run'); this.overlay.className = `overlay screen-${this.screen}`;
   if (this.screen === 'title') this.renderTitle(); else if (this.screen === 'select') this.renderSelect(); else if (this.screen === 'shop') this.renderShop(); else if (this.screen === 'settings') this.renderSettings(); else if (this.screen === 'diagnostics') this.renderDiagnostics(); else if (this.screen === 'history') this.renderHistory(); else if (this.screen === 'result') this.renderResult(); else this.renderRun();
+  this.updateTimeStop(this.sim?.state);
   this.updateDiagnostics();
  }
  private renderTitle() {
@@ -181,11 +183,11 @@ export class App {
   this.overlay.innerHTML = `<div class="menu-panel shop-panel">${this.topbar('영구 강화', 'shop-back')}
    <div class="gold-wallet"><h2>성장의 제단</h2><strong aria-label="보유 골드">${icon('coin')} ${gold.toLocaleString()}</strong></div>
    <div class="shop-list">${(Object.keys(PERMANENT) as PermanentId[]).map(id => {
-    const item = PERMANENT[id], level = upgrades[id], maxed = level >= BALANCE.permanentMax, cost = upgradeCost(level);
+    const item = PERMANENT[id], level = upgrades[id], max = permanentLimit(id), maxed = level >= max, cost = upgradeCost(level, id);
     const refund = this.store.upgradeRefund(id), bonus = Number((level * item.step * 100).toFixed(1));
     return `<div class="shop-item">
      <button class="buy-button step-button" aria-label="${item.description} 한 단계 낮추기 · ${refund.toLocaleString()} 골드 환불" data-action="downgrade" data-id="${id}" ${level ? '' : 'disabled'}><b>−</b><small>${level ? refund.toLocaleString() : '—'}</small></button>
-     <div class="shop-item-copy"><h3>${item.description}</h3><p>레벨 ${level}/${BALANCE.permanentMax} <b>+${bonus}%</b></p></div>
+     <div class="shop-item-copy"><h3>${item.description}</h3><p>${id === 'timeStop' ? `원정당 ${level}/${max}회 · 한 번에 2초` : `레벨 ${level}/${max} <b>+${bonus}%</b>`}</p></div>
      <button class="buy-button step-button" aria-label="${item.description} 한 단계 올리기 · ${maxed ? '최대 레벨' : cost.toLocaleString() + ' 골드'}" data-action="buy" data-id="${id}" ${maxed || gold < cost ? 'disabled' : ''}><b>+</b><small>${maxed ? '최대' : cost.toLocaleString()}</small></button>
     </div>`;
    }).join('')}</div>
@@ -278,7 +280,23 @@ export class App {
   else if (s.status === 'paused') this.overlay.innerHTML = `<div class="pause-panel"><div class="modal-emblem">${icon('leaf')}</div><h2>일시정지</h2><div class="pause-stats"><span>${formatTime(s.elapsed)}<small>생존 시간</small></span><span>${s.kills}<small>처치한 적</small></span><span>${s.gold}<small>획득 골드</small></span></div><button class="button primary" data-action="resume">${icon('play')} 모험 계속하기</button><button class="button secondary" data-action="settings">${icon('settings')} 설정</button><button class="button secondary" data-action="diagnostics">실기기 진단 · 로그</button><button class="text-button" data-action="title">원정 마치고 타이틀로</button></div>`;
   else if (s.status === 'upgrade') this.overlay.innerHTML = `<div class="upgrade-panel"><div class="level-emblem">✦</div><h2>강화 선택</h2><p>레벨 ${s.level} · 하나를 고르세요</p><div class="upgrade-choices">${s.choices.map(c => `<button class="upgrade-card" data-action="upgrade" data-id="${c.id}" style="--choice-color:${c.color}"><span class="skill-icon">${icon(c.icon)}</span><span class="upgrade-copy"><strong>${c.name}<small>${c.level} → ${c.level + 1}</small></strong><span class="upgrade-description">${c.description}</span><span class="upgrade-levels">${Array.from({ length: c.max }, (_, i) => `<i class="${i < c.level ? 'lit' : i === c.level ? 'next' : ''}"></i>`).join('')}</span></span>${icon('right', 'upgrade-arrow')}</button>`).join('')}</div><div class="quiet-note">선택하는 동안 숲의 시간은 멈춥니다.</div></div>`;
  }
+ private updateTimeStop(state?: RunState) {
+  const button = this.root.querySelector<HTMLButtonElement>('.time-stop-button')!;
+  const active = this.screen === 'run' && state?.status === 'running';
+  const remaining = state?.timeStopCharges ?? 0;
+  const frozen = active && (state?.timeStopRemaining ?? 0) > 0;
+  button.hidden = !active;
+  button.disabled = !remaining || frozen;
+  const counter = button.querySelector('b')!;
+  const count = String(remaining);
+  if (counter.textContent !== count) {
+   counter.textContent = count;
+   button.setAttribute('aria-label', `시간의 회중시계 · ${count}회 남음`);
+  }
+  this.root.querySelector<HTMLElement>('#time-stop-fx')!.hidden = !frozen;
+ }
  private updateHud(s: RunState) {
+  this.updateTimeStop(s);
   const text = (id: string, value: string) => { const el = this.hud.querySelector(`#${id}`); if (el && el.textContent !== value) el.textContent = value; };
   text('campaign-goal', s.finalSpawned
    ? `남은 시간 ${Math.max(0, Math.ceil(CAMPAIGN.finalAt + CAMPAIGN.arenaLimit - s.elapsed))}초`

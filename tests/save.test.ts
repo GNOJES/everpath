@@ -39,7 +39,7 @@ it('reallocates one rank at a time without creating gold across saves', () => {
  expect(refund).toBeGreaterThan(0);
  expect(store.downgrade('attack')).toBe(true);
  expect(store.data.gold).toBe(100 + refund);
- expect(store.data.upgrades).toEqual({ attack: 3, hp: 2, speed: 0, gold: 0 });
+ expect(store.data.upgrades).toEqual({ attack: 3, hp: 2, speed: 0, gold: 0, timeStop: 0 });
  expect(store.purchase('speed')).toBe(true);
  store = new SaveStore(disk);
  expect(store.upgradeRefund('speed')).toBe(24);
