@@ -53,3 +53,45 @@ describe('campaign boundary cases',()=>{
   expect(sim.state.choices.some(c=>c.id==='evolve')).toBe(true);expect(new Set(sim.state.choices.map(c=>c.id)).size).toBe(sim.state.choices.length);
  });
 });
+
+describe('boss entry waves', () => {
+ it('sends one centered boss at three minutes and two staggered bosses at six', () => {
+  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+  sim.state.elapsed = 179.99;
+  sim.update(.025);
+  const first = sim.state.enemies.filter(e => e.kind === 'boss');
+  expect(first).toHaveLength(1);
+  expect(first[0]).toMatchObject({ x: 216, entryTarget: { x: 216, y: 162 } });
+  expect(first[0].y).toBeLessThan(0);
+  sim.damageEnemy(first[0], 1e9);
+  while (sim.state.choices[0]) sim.chooseUpgrade(sim.state.choices[0].id);
+  sim.state.elapsed = 359.99;
+  sim.update(.025);
+  const pair = sim.state.enemies.filter(e => e.kind === 'boss');
+  expect(pair.map(e => e.x)).toEqual([108, 324]);
+  expect(pair.every(e => e.y < 0)).toBe(true);
+  expect(pair[1].timer - pair[0].timer).toBeCloseTo(1.55);
+  const goldBefore = sim.state.gold;
+  const killsBefore = sim.state.bosses;
+  for (const boss of pair) sim.damageEnemy(boss, 1e9);
+  expect(sim.state.gold - goldBefore).toBe(40);
+  expect(sim.state.bosses - killsBefore).toBe(2);
+ });
+
+ it('starts the final boss offscreen and skips contact damage during its visible entrance', () => {
+  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+  const { player } = sim.state;
+  player.y = 105;
+  sim.state.elapsed = 599.99;
+  sim.update(.025);
+  const boss = sim.state.enemies.find(e => e.kind === 'warden')!;
+  expect(boss.y).toBeLessThan(0);
+  expect(boss.entryTarget).toEqual({ x: player.x, y: 170 });
+  const hp = player.hp;
+  for (let i = 0; i < 80 && boss.entryTarget; i++) sim.update(.025);
+  expect(boss.entryTarget).toBeUndefined();
+  expect(boss.y).toBe(170);
+  expect(player.hp).toBe(hp);
+  expect(boss.timer).toBe(3);
+ });
+});

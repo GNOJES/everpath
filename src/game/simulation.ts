@@ -36,7 +36,7 @@ export class GameSimulation {
   if (input.x || input.y) p.facing = Math.atan2(input.y, input.x);
   if (s.elapsed >= (s.supplies + 1) * 120 && s.supplies < 4) { s.supplies++; p.hp = Math.min(p.maxHp, p.hp + p.maxHp * CAMPAIGN.supplyHeal); this.goldRaw += 15; s.gold = Math.floor(this.goldRaw); this.effect('text', p, 0xcce8ad, 0, 2, 0, '보급 · 체력 +30% · 15G'); }
   if (s.elapsed >= CAMPAIGN.finalAt && !s.finalSpawned) {
-   s.finalSpawned = true; s.withdrawn += s.enemies.filter(e => e.hp > 0).length; s.enemies = []; s.sideEntries = []; s.projectiles = []; s.hazards = []; this.spawnEnemy('warden', W.width / 2, 170); s.nextBoss = Infinity;
+   s.finalSpawned = true; s.withdrawn += s.enemies.filter(e => e.hp > 0).length; s.enemies = []; s.sideEntries = []; s.projectiles = []; s.hazards = []; this.spawnBossFromTop('warden', W.width / 2); s.nextBoss = Infinity;
    const heal = Math.min(p.maxHp - p.hp, p.maxHp * CAMPAIGN.arenaHeal * this.save.upgrades.hp / B.permanentMax);
    p.hp += heal;
    this.effect('text', { x: W.width / 2, y: 260 }, 0xffd38a, 0, 3, 0, heal >= 1 ? `모르바 등장 · 체력 +${Math.floor(heal)}` : '모르바 등장');
@@ -44,7 +44,15 @@ export class GameSimulation {
   if (s.finalSpawned && s.elapsed >= CAMPAIGN.finalAt + CAMPAIGN.arenaLimit) { p.shield = 0; p.invincible = 0; this.damagePlayer(p.hp); return; }
   this.advanceSideEntries(dt);
   this.spawnTimer -= dt; if (!s.finalSpawned && this.spawnTimer <= 0) { this.spawnWave(); this.spawnTimer = spawnInterval(s.elapsed); }
-  if (!s.finalSpawned && s.elapsed >= s.nextBoss && s.nextBoss < 540) { this.spawnEnemy('boss', W.width / 2, 162); s.nextBoss += B.bossEvery; this.effect('text', { x: W.width / 2, y: 215 }, 0xffd38a, 0, 2, 0, '그롬 등장'); }
+  if (!s.finalSpawned && s.elapsed >= s.nextBoss && s.nextBoss <= B.bossAt + B.bossEvery) {
+   const paired = s.nextBoss > B.bossAt;
+   if (paired) {
+    this.spawnBossFromTop('boss', W.width * .25, .65, .5);
+    this.spawnBossFromTop('boss', W.width * .75, .65, .5, 1.55);
+   } else this.spawnBossFromTop('boss', W.width / 2);
+   s.nextBoss += B.bossEvery;
+   this.effect('text', { x: W.width / 2, y: 215 }, 0xffd38a, 0, 2, 0, paired ? '그롬 두 마리 등장' : '그롬 등장');
+  }
   this.moveEnemies(dt); if (p.hp <= 0) return;
   this.attackTimer -= dt; if (this.attackTimer <= 0) { if (this.basicAttack()) this.attackTimer = HEROES[s.hero].cooldown / this.weaponHaste; }
   if (this.hasWon()) return;
@@ -68,6 +76,15 @@ export class GameSimulation {
   const hp = cfg.hp * (kind === 'warden' ? 1 + s.rank * .35 : scale) * (elite ? 2.3 : 1) * (kind === 'boss' ? 1 + s.bosses * .35 : 1);
   const enemy: Enemy = { id: ++this.serial, kind, x, y, hp, maxHp: hp, speed: cfg.speed * Math.min(B.maxEnemySpeedScale, 1 + s.elapsed * B.enemySpeedGrowth), damage: cfg.damage * (isBoss(kind) ? 1 : .83) * (1 + s.elapsed / 600) * (elite ? 1.3 : 1), radius: cfg.radius * (elite ? 1.2 : 1), elite, timer: isBoss(kind) ? 3 : 1.8 + this.random(), phase: 'chase', aim: { x: 0, y: 1 }, hitFlash: 0, seed: this.random() * Math.PI * 2 };
   s.enemies.push(enemy); s.spawned++; return enemy;
+ }
+ private spawnBossFromTop(kind: 'boss' | 'warden', x: number, healthScale = 1, rewardScale = 1, attackOffset = 0) {
+  const boss = this.spawnEnemy(kind, x, -ENEMIES[kind].radius - 16);
+  if (!boss) return;
+  boss.entryTarget = { x, y: kind === 'warden' ? 170 : 162 };
+  boss.maxHp *= healthScale;
+  boss.hp = boss.maxHp;
+  boss.rewardScale = rewardScale;
+  boss.timer += attackOffset;
  }
  private spawnWave() {
   const { elapsed, player, sideEntries, enemies } = this.state;
@@ -114,11 +131,13 @@ export class GameSimulation {
  private moveEnemies(dt: number) {
   const s = this.state, p = s.player;
   for (const e of s.enemies) {
-   if (e.hp <= 0) continue; e.hitFlash = Math.max(0, e.hitFlash - dt); e.timer -= dt;
+   if (e.hp <= 0) continue; e.hitFlash = Math.max(0, e.hitFlash - dt);
+   const bossEntering = e.entryTarget !== undefined && isBoss(e.kind);
+   if (!bossEntering) e.timer -= dt;
    let dir = unit(e, p), speed = e.speed;
    if (s.skills.frost && distance(e, p) < SKILLS.frost.radius + (s.skills.frost - 1) * B.skillRadiusStep + e.radius) speed *= .82 - .06 * Math.min(3, s.skills.frost);
    if (e.entryTarget) {
-    const step = speed * 1.75 * dt;
+    const step = (bossEntering ? 140 : speed * 1.75) * dt;
     const remaining = distance(e, e.entryTarget);
     dir = unit(e, e.entryTarget);
     if (remaining <= step) {
@@ -129,7 +148,7 @@ export class GameSimulation {
      e.x += dir.x * step;
      e.y += dir.y * step;
     }
-    if (distance(e, p) < e.radius + W.playerRadius) this.damagePlayer(e.damage);
+    if (!bossEntering && distance(e, p) < e.radius + W.playerRadius) this.damagePlayer(e.damage);
     continue;
    }
    if (e.kind === 'warden') {
@@ -275,13 +294,13 @@ export class GameSimulation {
   if (!isBoss(enemy.kind)) { const away = unit(this.state.player, enemy); enemy.x += away.x * 4; enemy.y += away.y * 4; }
   if (enemy.hp > 0) return;
   const s = this.state; s.kills++; if (isBoss(enemy.kind)) s.bosses++;
-  this.goldRaw += (isBoss(enemy.kind) ? B.bossGold : B.goldPerKill * (enemy.elite ? 3 : 1)) * (1 + this.save.upgrades.gold * PERMANENT.gold.step); s.gold = Math.floor(this.goldRaw);
+  this.goldRaw += (isBoss(enemy.kind) ? B.bossGold * (enemy.rewardScale ?? 1) : B.goldPerKill * (enemy.elite ? 3 : 1)) * (1 + this.save.upgrades.gold * PERMANENT.gold.step); s.gold = Math.floor(this.goldRaw);
   if (isBoss(enemy.kind)) this.effect('boss-death', enemy, 0xffd68a, enemy.kind === 'warden' ? 220 : 150, 1.1);
   else this.effect('death', enemy, 0xadd48a, enemy.radius, .4);
   if (enemy.kind === 'warden') {
    this.goldRaw += CAMPAIGN.clearGold * (1 + s.rank * .5); s.gold = Math.floor(this.goldRaw); s.status = 'victory'; s.choices = []; s.projectiles = []; s.hazards = []; this.pendingChoices = 0; return;
   }
-  this.gainXp(ENEMIES[enemy.kind].xp * (enemy.elite ? 2 : 1));
+  this.gainXp(ENEMIES[enemy.kind].xp * (enemy.rewardScale ?? 1) * (enemy.elite ? 2 : 1));
  }
  damagePlayer(amount: number) {
   const s = this.state, p = s.player; if (p.invincible > 0 || s.status !== 'running') return;

@@ -60,7 +60,11 @@ export class ForestScene extends Phaser.Scene {
   const living = s.enemies.filter(enemy => enemy.hp > 0);
   living.forEach((e, i) => { const image = this.actors.at(i, e.kind); image.setPosition(e.x, e.y + Math.sin(this.clock * (e.kind === 'bat' ? 15 : 7) + e.seed) * (e.kind === 'bat' ? 4 : 1)).setOrigin(.5, .8).setDepth(100 + e.y).setScale(isBoss(e.kind) ? 2.9 : e.elite ? 2.6 : 2.2).setFlipX(e.x > s.player.x); image.setTint(e.hitFlash > 0 ? 0xffffff : e.elite ? 0xffdc98 : 0xffffff);
    image.setAlpha(e.hitFlash > 0 ? .6 : 1); this.shadow(e.x, e.y + 5, e.radius * 1.2, 5);
-   if (!isBoss(e.kind) && e.hp < e.maxHp) { this.fx.fillStyle(0x172824, .8).fillRect(e.x - 13, e.y - 35, 26, 3); this.fx.fillStyle(e.elite ? 0xe1b46b : 0xaec17d).fillRect(e.x - 13, e.y - 35, 26 * Math.max(0, e.hp / e.maxHp), 3); }
+   if (isBoss(e.kind)) this.renderBossHealth(e);
+   else if (e.hp < e.maxHp) {
+    this.fx.fillStyle(0x172824, .8).fillRect(e.x - 13, e.y - 35, 26, 3);
+    this.fx.fillStyle(e.elite ? 0xe1b46b : 0xaec17d).fillRect(e.x - 13, e.y - 35, 26 * Math.max(0, e.hp / e.maxHp), 3);
+   }
    if (e.kind === 'warden') this.fx.lineStyle(2, 0xd0a3e9, .6).strokeCircle(e.x, e.y - 12, e.radius + 12 + Math.sin(this.clock * 3) * 4);
    if (isBoss(e.kind) && e.phase === 'warn') {
     const travel = BOSS_PATTERN.dashSpeed * BOSS_PATTERN.dashDuration, side = { x: -e.aim.y * e.radius, y: e.aim.x * e.radius };
@@ -71,6 +75,19 @@ export class ForestScene extends Phaser.Scene {
     this.fx.lineStyle(1, 0xffd6a6, .7).lineBetween(e.x, e.y, end.x, end.y);
    }
   }); this.actors.trim(living.length);
+ }
+ private renderBossHealth(boss: RunState['enemies'][number]) {
+  // Same origin and scale as the sprite; the bar enters the field with its boss.
+  const height = this.textures.getFrame(boss.kind).height;
+  const head = boss.y - height * 2.9 * .8 - 12;
+  if (boss.entryTarget && head < 0) return;
+  const y = Math.max(3, head);
+  const final = boss.kind === 'warden', width = final ? 92 : 68;
+  const x = clamp(boss.x - width / 2, 3, W.width - width - 3);
+  const fill = width * clamp(boss.hp / boss.maxHp, 0, 1);
+  this.fx.fillStyle(0x222337, 1).fillRect(x - 2, y - 2, width + 4, 11);
+  this.fx.fillStyle(final ? 0xcaa1ff : 0xffab4f, 1).fillRect(x, y, fill, 7);
+  this.fx.fillStyle(0xffffff, .48).fillRect(x, y, fill, 2);
  }
  private renderShots(s: RunState) {
   s.projectiles.forEach((shot, i) => {

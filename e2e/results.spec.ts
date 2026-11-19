@@ -10,9 +10,9 @@ test('a naturally ended run shows accurate totals and rates, then persists in sm
  await page.reload();await page.getByRole('button',{name:'설정',exact:true}).click();await page.getByRole('button',{name:'최근 원정 기록',exact:true}).click();await expect(page.locator('details')).toHaveCount(1);await expect(page.locator('details summary')).toContainText(`처치 ${c.killed}`);expect(errors).toEqual([]);await context.close();
 });
 
-test('final boss defeat plays on the field before showing and saving the result', async ({ page }) => {
+test('bosses descend into the field with their own bars before the final result', async ({ page }) => {
  await page.clock.install();
- // Use the real App entry points with a final-boss fixture in the test page.
+ // Use the real App entry points with seeded encounter times in the test page.
  await page.route('**/boss-effect-test', route => route.fulfill({
   contentType: 'text/html',
   body: '<meta name="viewport" content="width=device-width"><div id="app"></div><script type="module">import "/src/style.css"; import {App} from "/src/ui/app.ts"; window.bossTest = new App(document.querySelector("#app"));</script>',
@@ -22,11 +22,25 @@ test('final boss defeat plays on the field before showing and saving the result'
  await page.getByRole('button', { name: '모험 시작' }).click();
  await page.getByRole('button', { name: '숲으로 떠나기' }).click();
  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 250));
+ const advanceTo = (elapsed: number) => page.evaluate(elapsed => {
+  const { sim } = (window as unknown as { bossTest: { sim: import('../src/game/simulation').GameSimulation } }).bossTest;
+  sim.state.elapsed = elapsed;
+  if (elapsed < 600) sim.state.nextBoss = 360;
+  sim.update(.033);
+ }, elapsed);
+ await advanceTo(359.99);
+ await page.clock.runFor(1680);
+ await expect(page.locator('#hud #boss-fill, #hud #boss-hud')).toHaveCount(0);
+ await page.screenshot({ path: 'test-results/grom-pair-health.png' });
+ await advanceTo(599.99);
+ await page.clock.runFor(1680);
+ await expect(page.locator('#hud #boss-fill, #hud #boss-hud')).toHaveCount(0);
+ await page.screenshot({ path: 'test-results/warden-health.png' });
  await page.evaluate(() => {
   const { sim } = (window as unknown as { bossTest: { sim: import('../src/game/simulation').GameSimulation } }).bossTest;
-  sim.state.elapsed = 599.99;
-  sim.update(.033);
-  sim.damageEnemy(sim.state.enemies.find(enemy => enemy.kind === 'warden')!, 1e9);
+  const boss = sim.state.enemies.find(enemy => enemy.kind === 'warden')!;
+  if (boss.entryTarget) throw new Error('Warden entrance still active');
+  sim.damageEnemy(boss, 1e9);
  });
  await page.clock.runFor(300);
  await expect(page.locator('.result-panel')).toHaveCount(0);
