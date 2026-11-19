@@ -62,3 +62,32 @@ test('bosses descend into the field with their own bars before the final result'
  await expect(page.locator('.result-panel')).toContainText('뿌리의 군주를 쓰러뜨렸습니다');
  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('everpath.save.v1')!).history.length)).toBe(1);
 });
+
+test('shows the fallen hero before opening results and saves defeat once', async ({ page }) => {
+ await page.clock.install();
+ await page.route('**/defeat-effect-test', route => route.fulfill({
+  contentType: 'text/html',
+  body: '<meta name="viewport" content="width=device-width"><div id="app"></div><script type="module">import "/src/style.css"; import {App} from "/src/ui/app.ts"; window.defeatTest = new App(document.querySelector("#app"));</script>',
+ }));
+ await page.setViewportSize({ width: 390, height: 844 });
+ await page.goto('/defeat-effect-test');
+ await page.getByRole('button', { name: '모험 시작' }).click();
+ await page.getByRole('button', { name: '숲으로 떠나기' }).click();
+ await page.clock.pauseAt(await page.evaluate(() => Date.now() + 250));
+ await page.evaluate(() => {
+  const { sim } = (window as unknown as { defeatTest: { sim: import('../src/game/simulation').GameSimulation } }).defeatTest;
+  sim.damagePlayer(sim.state.player.hp);
+ });
+ await page.clock.runFor(780);
+ await expect(page.locator('.defeat-banner')).toContainText('쓰러졌습니다');
+ await expect(page.locator('.result-panel')).toHaveCount(0);
+ await expect(page.locator('#hp-text')).toContainText(/^0 /);
+ await expect(page.locator('canvas')).toBeVisible();
+ const readHistory = () => page.evaluate(() => JSON.parse(localStorage.getItem('everpath.save.v1')!).history);
+ expect(await readHistory()).toHaveLength(1);
+ await page.screenshot({ path: 'test-results/fallen-hero.png' });
+ await page.clock.runFor(350);
+ await expect(page.locator('.result-panel')).toBeVisible();
+ await page.clock.runFor(3000);
+ expect(await readHistory()).toHaveLength(1);
+});

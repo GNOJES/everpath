@@ -16,12 +16,12 @@ class ImagePool {
 }
 export class ForestScene extends Phaser.Scene {
  simulation?: GameSimulation; controls!: PlayerInput; audio = new GameAudio();
- onReady?: () => void; onFrame?: (state?: RunState, victoryFxTime?: number) => void; onPause?: () => void; onInputObservation?: (event: InputObservation) => void; onInputFrame?: (at: number) => void;
+ onReady?: () => void; onFrame?: (state?: RunState, endFxTime?: number) => void; onPause?: () => void; onInputObservation?: (event: InputObservation) => void; onInputFrame?: (at: number) => void;
  private announcedBosses = new Set<number>(); private lastShotSound = 0;
  private ground!: Phaser.GameObjects.TileSprite; private actors!: ImagePool; private shots!: ImagePool;
  private shadows!: Phaser.GameObjects.Graphics; private fx!: Phaser.GameObjects.Graphics; private joystick!: Phaser.GameObjects.Graphics;
  private hero!: Phaser.GameObjects.Image; private companions: Phaser.GameObjects.Image[] = []; private scenery: { image: Phaser.GameObjects.Image; y: number; x: number }[] = [];
- private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private victoryFxTime = 0;
+ private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private endFxTime = 0;
  constructor() { super('forest'); }
  create() {
   createArt(this); this.ground = this.add.tileSprite(216, 384, 432, 768, 'terrain').setDepth(-10);
@@ -34,25 +34,31 @@ export class ForestScene extends Phaser.Scene {
   this.controls = new PlayerInput(this.game.canvas, () => this.onPause?.(), event => this.onInputObservation?.(event));
   this.events.once('shutdown', () => this.controls.destroy()); this.onReady?.();
  }
- setRun(sim?: GameSimulation) { this.simulation = sim; this.controls?.reset(); this.lastEffect = 0; this.victoryFxTime = 0; this.announcedBosses.clear(); this.lastShotSound = 0; }
+ setRun(sim?: GameSimulation) { this.simulation = sim; this.controls?.reset(); this.lastEffect = 0; this.endFxTime = 0; this.announcedBosses.clear(); this.lastShotSound = 0; }
  update(_time: number, delta: number) {
   const dt = Math.min(delta / 1000, .05); const sim = this.simulation; if (!sim || sim.state.status === 'running') this.clock += dt;
   if (sim) { const direction = this.controls.direction(); if (sim.state.status === 'running') this.onInputFrame?.(performance.now()); sim.update(dt, direction); } else this.titleScroll += dt * 9;
-  if (sim?.state.status === 'victory') this.victoryFxTime += dt;
+  if (sim?.state.status === 'victory' || sim?.state.status === 'gameover') this.endFxTime += dt;
   const s = sim?.state, scroll = s?.scroll ?? this.titleScroll; this.ground.tilePositionY = -scroll;
   for (const prop of this.scenery) { const y = ((prop.y + scroll) % 1240 + 1240) % 1240 - 175; prop.image.setPosition(prop.x, y).setDepth(50 + y); }
   this.shadows.clear(); this.fx.clear();
-  this.hero.setTint(s?.evolved ? 0xffe9a8 : 0xffffff); this.hero.setTexture(s?.hero ?? 'warrior'); const p = s?.player ?? { x: 216, y: 480, invincible: 0, facing: 0, shield: 0 };
-  const moving = s && s.status === 'running' && Math.hypot(this.controls.direction().x, this.controls.direction().y) > .01;
-  this.hero.setPosition(p.x, p.y + (moving ? Math.sin(this.clock * 18) * 1.5 : Math.sin(this.clock * 2) * .7)).setDepth(100 + p.y).setFlipX(Math.cos(p.facing) < -.2).setAlpha(p.invincible > 0 && Math.sin(this.clock * 40) > 0 ? .4 : 1);
-  this.shadow(p.x, p.y + 7, 18, 7);
+  const defeated = s?.status === 'gameover';
+  const p = s?.player ?? { x: 216, y: 480, invincible: 0, facing: 0, shield: 0 };
+  const facingLeft = Math.cos(p.facing) < -.2;
+  const moving = s?.status === 'running' && Math.hypot(this.controls.direction().x, this.controls.direction().y) > .01;
+  const fall = defeated ? 1 - Math.pow(1 - clamp(this.endFxTime / .36, 0, 1), 3) : 0;
+  const bob = defeated ? 0 : moving ? Math.sin(this.clock * 18) * 1.5 : Math.sin(this.clock * 2) * .7;
+  this.hero.setTexture(s?.hero ?? 'warrior').setTint(defeated ? 0xd7b3a5 : s?.evolved ? 0xffe9a8 : 0xffffff);
+  this.hero.setPosition(p.x, p.y + bob + fall * 5).setDepth(100 + p.y).setFlipX(facingLeft)
+   .setAngle((facingLeft ? -1 : 1) * 82 * fall).setAlpha(!defeated && p.invincible > 0 && Math.sin(this.clock * 40) > 0 ? .4 : 1);
+  this.shadow(p.x + (facingLeft ? -1 : 1) * fall * 12, p.y + 7, 18 + fall * 8, 7);
   this.companions.forEach((image, i) => { image.setVisible(!s); if (!s) { image.y = 530 + i * 12 + Math.sin(this.clock * 2 + i) * .8; image.setDepth(100 + image.y); this.shadow(image.x, image.y + 7, 15, 6); } });
   if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderPickups(s); this.renderEffects(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (s.skills.frost - 1) * BALANCE.skillRadiusStep); } }
   else { this.actors.trim(0); this.shots.trim(0); for (const label of this.labels) label.setVisible(false); }
   // Small drifting spores are bounded and deterministic, rather than particle emitters.
   for (let i = 0; i < 17; i++) { const x = ((i * 107 + Math.sin(this.clock * .6 + i) * 18) % 430 + 430) % 430, y = (i * 61 + this.clock * (6 + i % 4)) % 768; this.fx.fillStyle(0xf5dca0, .15 + (Math.sin(this.clock * 1.3 + i) + 1) * .15); this.fx.fillRect(x, y, 2, 2); }
   if (s?.status === 'running') { for (const e of s.enemies) if (isBoss(e.kind) && !this.announcedBosses.has(e.id)) { this.announcedBosses.add(e.id); this.audio.boss(); } const shot = s.projectiles.find(p => p.kind !== 'enemy' && p.id > this.lastShotSound); if (shot) { this.lastShotSound = Math.max(...s.projectiles.map(p => p.id)); this.audio.attack(s.hero); } }
-  this.renderJoystick(s); this.audio.tick(dt, s?.status === 'running'); this.onFrame?.(s, this.victoryFxTime);
+  this.renderJoystick(s); this.audio.tick(dt, s?.status === 'running'); this.onFrame?.(s, this.endFxTime);
  }
  private shadow(x: number, y: number, w: number, h: number) { this.shadows.fillStyle(0x34475d, .26); this.shadows.fillEllipse(x, y, w * 2, h * 2); }
  private renderEnemies(s: RunState) {
@@ -154,7 +160,7 @@ export class ForestScene extends Phaser.Scene {
  private renderEffects(s: RunState) {
   let labelIndex = 0;
   for (const e of s.effects) {
-   const remaining = e.life - this.victoryFxTime;
+   const remaining = e.life - this.endFxTime;
    if (remaining <= 0) continue;
    const f = remaining / e.duration, progress = 1 - f, g = this.fx;
    if (e.kind === 'boss-death') {

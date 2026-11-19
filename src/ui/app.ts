@@ -44,7 +44,7 @@ export class App {
   element.addEventListener('input', event => this.onSlider(event));
   window.addEventListener('blur', () => this.autoPause()); window.addEventListener('resize', () => this.autoPause()); document.addEventListener('visibilitychange', () => { if (document.hidden) this.autoPause(); });
   this.scene.onReady = () => { this.render(); this.syncRecords(); };
-  this.scene.onPause = () => this.togglePause(); this.scene.onFrame = (state, victoryFxTime) => this.onFrame(state, victoryFxTime);
+  this.scene.onPause = () => this.togglePause(); this.scene.onFrame = (state, endFxTime) => this.onFrame(state, endFxTime);
   this.scene.onInputObservation = event => this.diagnostics.observeInput(event); this.scene.onInputFrame = at => this.diagnostics.consumeInput(at); this.diagnostics.onChange = () => this.updateDiagnostics();
   this.game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game-canvas', width: WORLD.width, height: WORLD.height, backgroundColor: '#233d2e', pixelArt: true, roundPixels: true, antialias: false, scene: this.scene, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }, render: { pixelArt: true, antialias: false, roundPixels: true }, audio: { noAudio: true }, banner: false });
   this.scene.audio.music = this.store.data.settings.music; this.scene.audio.sfx = this.store.data.settings.sfx;
@@ -133,13 +133,13 @@ export class App {
  private syncDiagnosticContext(state = this.sim?.state) {
   if (this.diagnostics.enabled) this.diagnostics.setContext({ screen: this.screen, running: this.screen === 'run' && state?.status === 'running', hero: state?.hero, runId: state?.runId, elapsed: state?.elapsed, level: state?.level, hp: state?.player.hp, enemies: state?.enemies.length ?? 0, projectiles: state?.projectiles.length ?? 0, effects: state?.effects.length ?? 0, input: this.scene.controls?.snapshot() });
  }
- private onFrame(state?: RunState, victoryFxTime = 0) {
+ private onFrame(state?: RunState, endFxTime = 0) {
   this.syncDiagnosticContext(state);
   if (!state || this.screen !== 'run') return;
   if (state.status !== this.previousStatus) {
    this.previousStatus = state.status; this.scene.controls.reset();
    if (state.status === 'gameover' || state.status === 'victory') {
-    if (state.status === 'gameover') { this.scene.audio.defeat(); this.screen = 'result'; }
+    if (state.status === 'gameover') this.scene.audio.defeat();
     this.lastResult = this.sim!.result();
     this.newRecord = state.elapsed > this.store.data.bestTime;
     this.store.settle(this.lastResult);
@@ -148,7 +148,7 @@ export class App {
    if (state.status === 'upgrade') this.scene.audio.levelUp();
    if (state.status !== 'victory') this.render();
   }
-  if (state.status === 'victory' && victoryFxTime >= 1.05) { this.screen = 'result'; this.render(); return; }
+  if ((state.status === 'gameover' || state.status === 'victory') && endFxTime >= 1.05) { this.screen = 'result'; this.render(); return; }
   if (performance.now() - this.lastHud > 70) { this.lastHud = performance.now(); this.updateHud(state); }
  }
  private syncSound() { const button = this.root.querySelector('[data-action="sound"]'); if (button) button.innerHTML = icon(this.store.data.settings.sfx ? 'sound' : 'mute'); }
@@ -185,9 +185,16 @@ export class App {
    <div class="shop-list">${(Object.keys(PERMANENT) as PermanentId[]).map(id => {
     const item = PERMANENT[id], level = upgrades[id], max = permanentLimit(id), maxed = level >= max, cost = upgradeCost(level, id);
     const refund = this.store.upgradeRefund(id), bonus = Number((level * item.step * 100).toFixed(1));
-    return `<div class="shop-item">
+    return `<div class="shop-item" data-permanent="${id}">
      <button class="buy-button step-button" aria-label="${item.description} 한 단계 낮추기 · ${refund.toLocaleString()} 골드 환불" data-action="downgrade" data-id="${id}" ${level ? '' : 'disabled'}><b>−</b><small>${level ? refund.toLocaleString() : '—'}</small></button>
-     <div class="shop-item-copy"><h3>${item.description}</h3><p>${id === 'timeStop' ? `원정당 ${level}/${max}회 · 한 번에 2초` : `레벨 ${level}/${max} <b>+${bonus}%</b>`}</p></div>
+     <div class="shop-item-copy">
+      <h3>${icon(item.icon)}<span>${item.description}</span></h3>
+      <div class="shop-values">
+       <span class="shop-rank">${id === 'timeStop' ? '충전' : '단계'} <strong>${level}</strong><span>/${max}${id === 'timeStop' ? '회' : ''}</span></span>
+       <strong class="shop-bonus">${id === 'timeStop' ? '2초 정지' : `+${bonus}%`}</strong>
+      </div>
+      <div class="shop-meter" role="meter" aria-label="${item.description} 강화" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${level}"><i style="width:${level / max * 100}%"></i></div>
+     </div>
      <button class="buy-button step-button" aria-label="${item.description} 한 단계 올리기 · ${maxed ? '최대 레벨' : cost.toLocaleString() + ' 골드'}" data-action="buy" data-id="${id}" ${maxed || gold < cost ? 'disabled' : ''}><b>+</b><small>${maxed ? '최대' : cost.toLocaleString()}</small></button>
     </div>`;
    }).join('')}</div>
@@ -274,9 +281,13 @@ export class App {
  }
  private renderRun() {
   const s = this.sim!.state;
-  this.hud.innerHTML = `<div class="hud-top"><div class="hud-first-row"><span class="hud-hero">${portrait(s.hero)}<b>${HEROES[s.hero].name}</b><small id="hud-level">Lv.${s.level}</small></span><span class="hud-time">${icon('clock')}<strong id="hud-time">00:00</strong></span><button class="pause-button" data-action="pause" aria-label="일시정지">${icon('pause')}</button></div><div class="hp-row">${icon('heart')}<div class="hp-track"><div id="hp-fill"></div></div><span id="hp-text"></span></div><div class="xp-row"><div class="xp-track"><div id="xp-fill"></div></div><span id="xp-text"></span></div><div class="hud-meta"><div class="loadout">${[{ icon: HEROES[s.hero].icon, level: s.weaponLevel, name: s.evolved ? EVOLUTIONS[s.hero].name : HEROES[s.hero].weapon }, ...HEROES[s.hero].skills.map(id => ({ icon: SKILLS[id].icon, level: s.skills[id] ?? 0, name: SKILLS[id].name }))].map(item => `<div class="loadout-slot ${item.level ? 'learned' : ''}" title="${item.name} Lv.${item.level}">${item.level ? icon(item.icon) : icon('plus')}<small>${item.level || '·'}</small></div>`).join('')}</div><div class="hud-counters"><span>${icon('skull')} <b id="hud-kills">0</b></span><span>${icon('coin')} <b id="hud-gold">0</b></span></div></div></div><div class="hud-objective"><span id="campaign-goal"></span></div>${new URLSearchParams(location.search).has('debug') ? '<output id="debug-stats" class="debug-stats"></output>' : ''}`;
+  this.hud.innerHTML = `<div class="hud-top"><div class="hud-first-row"><span class="hud-hero">${portrait(s.hero)}<b>${HEROES[s.hero].name}</b><small id="hud-level">Lv.${s.level}</small></span><span class="hud-time">${icon('clock')}<strong id="hud-time">00:00</strong></span><button class="pause-button" data-action="pause" aria-label="일시정지" ${s.status === 'gameover' ? 'disabled' : ''}>${icon('pause')}</button></div><div class="hp-row">${icon('heart')}<div class="hp-track"><div id="hp-fill"></div></div><span id="hp-text"></span></div><div class="xp-row"><div class="xp-track"><div id="xp-fill"></div></div><span id="xp-text"></span></div><div class="hud-meta"><div class="loadout">${[{ icon: HEROES[s.hero].icon, level: s.weaponLevel, name: s.evolved ? EVOLUTIONS[s.hero].name : HEROES[s.hero].weapon }, ...HEROES[s.hero].skills.map(id => ({ icon: SKILLS[id].icon, level: s.skills[id] ?? 0, name: SKILLS[id].name }))].map(item => `<div class="loadout-slot ${item.level ? 'learned' : ''}" title="${item.name} Lv.${item.level}">${item.level ? icon(item.icon) : icon('plus')}<small>${item.level || '·'}</small></div>`).join('')}</div><div class="hud-counters"><span>${icon('skull')} <b id="hud-kills">0</b></span><span>${icon('coin')} <b id="hud-gold">0</b></span></div></div></div><div class="hud-objective"><span id="campaign-goal"></span></div>${new URLSearchParams(location.search).has('debug') ? '<output id="debug-stats" class="debug-stats"></output>' : ''}`;
   this.updateHud(s);
   if (s.status === 'running') { this.overlay.innerHTML = ''; this.overlay.classList.add('inactive'); }
+  else if (s.status === 'gameover') {
+   this.overlay.classList.add('inactive', 'defeat-scene');
+   this.overlay.innerHTML = `<div class="defeat-banner" role="status">${icon('skull')}<strong>영웅이 쓰러졌습니다</strong></div>`;
+  }
   else if (s.status === 'paused') this.overlay.innerHTML = `<div class="pause-panel"><div class="modal-emblem">${icon('leaf')}</div><h2>일시정지</h2><div class="pause-stats"><span>${formatTime(s.elapsed)}<small>생존 시간</small></span><span>${s.kills}<small>처치한 적</small></span><span>${s.gold}<small>획득 골드</small></span></div><button class="button primary" data-action="resume">${icon('play')} 모험 계속하기</button><button class="button secondary" data-action="settings">${icon('settings')} 설정</button><button class="button secondary" data-action="diagnostics">실기기 진단 · 로그</button><button class="text-button" data-action="title">원정 마치고 타이틀로</button></div>`;
   else if (s.status === 'upgrade') this.overlay.innerHTML = `<div class="upgrade-panel"><div class="level-emblem">✦</div><h2>강화 선택</h2><p>레벨 ${s.level} · 하나를 고르세요</p><div class="upgrade-choices">${s.choices.map(c => `<button class="upgrade-card" data-action="upgrade" data-id="${c.id}" style="--choice-color:${c.color}"><span class="skill-icon">${icon(c.icon)}</span><span class="upgrade-copy"><strong>${c.name}<small>${c.level} → ${c.level + 1}</small></strong><span class="upgrade-description">${c.description}</span><span class="upgrade-levels">${Array.from({ length: c.max }, (_, i) => `<i class="${i < c.level ? 'lit' : i === c.level ? 'next' : ''}"></i>`).join('')}</span></span>${icon('right', 'upgrade-arrow')}</button>`).join('')}</div><div class="quiet-note">선택하는 동안 숲의 시간은 멈춥니다.</div></div>`;
  }

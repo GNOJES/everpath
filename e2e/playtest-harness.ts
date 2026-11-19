@@ -15,7 +15,7 @@ const pilot = new Pilot('reactive');
 let decisionAt = -1; let direction = { x: 0, y: 0 };
 const checkpoints: unknown[] = []; let maxEnemies = 0, maxShots = 0, maxObjects = 0, firstLevel = 0, hpLost = 0, lastHp: number | undefined, lastRun = '';
 const originalFrame = runtime.scene.onFrame;
-runtime.scene.onFrame = (state, victoryFxTime) => {
+runtime.scene.onFrame = (state, endFxTime) => {
  if (state) {
   if (lastRun !== state.runId) { lastHp = undefined; lastRun = state.runId; }
   if (lastHp !== undefined && state.player.hp < lastHp) hpLost += lastHp - state.player.hp; lastHp = state.player.hp;
@@ -23,7 +23,7 @@ runtime.scene.onFrame = (state, victoryFxTime) => {
   maxEnemies = Math.max(maxEnemies, state.enemies.length); maxShots = Math.max(maxShots, state.projectiles.length); maxObjects = Math.max(maxObjects, runtime.scene.children.length);
   if (Math.floor(state.elapsed / 60) > checkpoints.length) checkpoints.push({ seconds: Math.round(state.elapsed), hp: Math.round(state.player.hp), level: state.level, kills: state.kills, bosses: state.bosses, enemies: state.enemies.length });
  }
- originalFrame?.(state, victoryFxTime);
+ originalFrame?.(state, endFxTime);
 };
 function view() {
  const s = runtime.sim?.state; if (!s) return null;

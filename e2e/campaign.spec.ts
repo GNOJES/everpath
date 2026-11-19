@@ -39,6 +39,12 @@ test('common menus fit one small screen and refund buttons work without a reset'
   await noScroll();
   await page.locator('[data-action="buy"][data-id="attack"]').tap();
   await expect(page.locator('.gold-wallet strong')).toHaveText('76');
+  const attack = page.locator('.shop-item').filter({has:page.locator('[data-action=buy][data-id=attack]')});
+  await expect(attack.locator('.shop-rank strong')).toHaveText('1');
+  await expect(attack.locator('.shop-bonus')).toHaveText('+6%');
+  await expect(attack.getByRole('meter')).toHaveAttribute('aria-valuenow', '1');
+  await noScroll();
+  await page.screenshot({path:'test-results/shop-ranks-mobile.png'});
   await page.getByRole('button', {name:'공격력 한 단계 낮추기 · 24 골드 환불'}).tap();
   await expect(page.locator('.gold-wallet strong')).toHaveText('100');
   await expect(page.locator('[data-action="downgrade"][data-id="attack"]')).toBeDisabled();
