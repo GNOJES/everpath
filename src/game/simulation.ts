@@ -1,4 +1,4 @@
-import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, CAMPAIGN, EVOLUTIONS, WARRIOR_WEAPON_STEPS, warriorSweepAngle, isBoss } from './config';
+import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, WARRIOR_CONTACT_DAMAGE, MAGE_ARROW_DAMAGE, CAMPAIGN, EVOLUTIONS, WARRIOR_WEAPON_STEPS, warriorSweepAngle, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind } from './encounters';
@@ -50,8 +50,8 @@ export class GameSimulation {
   if (!s.finalSpawned && s.elapsed >= s.nextBoss && s.nextBoss <= B.bossAt + B.bossEvery) {
    const paired = s.nextBoss > B.bossAt;
    if (paired) {
-    this.spawnBossFromTop('boss', W.width * .25, .60, .5);
-    this.spawnBossFromTop('boss', W.width * .75, .60, .5, 1.55);
+    this.spawnBossFromTop('boss', W.width * .25, { healthScale: PAIRED_GRORM.healthScale, rewardScale: .5, paired: true });
+    this.spawnBossFromTop('boss', W.width * .75, { healthScale: PAIRED_GRORM.healthScale, rewardScale: .5, paired: true, attackOffset: 1.55 });
    } else this.spawnBossFromTop('boss', W.width / 2);
    s.nextBoss += B.bossEvery;
    this.effect('text', { x: W.width / 2, y: 215 }, 0xffd38a, 0, 2, 0, paired ? '그롬 두 마리 등장' : '그롬 등장');
@@ -80,13 +80,14 @@ export class GameSimulation {
   const enemy: Enemy = { id: ++this.serial, kind, x, y, hp, maxHp: hp, speed: cfg.speed * Math.min(B.maxEnemySpeedScale, 1 + s.elapsed * B.enemySpeedGrowth), damage: cfg.damage * (isBoss(kind) ? 1 : .83) * (1 + s.elapsed / 600) * (elite ? 1.3 : 1), radius: cfg.radius * (elite ? 1.2 : 1), elite, timer: isBoss(kind) ? 3 : 1.8 + this.random(), phase: 'chase', aim: { x: 0, y: 1 }, hitFlash: 0, seed: this.random() * Math.PI * 2 };
   s.enemies.push(enemy); s.spawned++; return enemy;
  }
- private spawnBossFromTop(kind: 'boss' | 'warden', x: number, healthScale = 1, rewardScale = 1, attackOffset = 0) {
+ private spawnBossFromTop(kind: 'boss' | 'warden', x: number, { healthScale = 1, rewardScale = 1, attackOffset = 0, paired = false } = {}) {
   const boss = this.spawnEnemy(kind, x, -ENEMIES[kind].radius - 16);
   if (!boss) return;
   boss.entryTarget = { x, y: kind === 'warden' ? 170 : 162 };
   boss.maxHp *= healthScale;
   boss.hp = boss.maxHp;
   boss.rewardScale = rewardScale;
+  boss.paired = paired;
   boss.timer += attackOffset;
  }
  private spawnWave() {
@@ -138,7 +139,7 @@ export class GameSimulation {
      e.x += dir.x * step;
      e.y += dir.y * step;
     }
-    if (!bossEntering && distance(e, p) < e.radius + W.playerRadius) this.damagePlayer(e.damage);
+    if (!bossEntering && distance(e, p) < e.radius + W.playerRadius) this.damageEnemyContact(e);
     continue;
    }
    if (e.kind === 'warden') {
@@ -150,19 +151,34 @@ export class GameSimulation {
    } else if (isBoss(e.kind)) {
     if (e.phase === 'chase' && e.timer <= 0) { e.phase = 'warn'; e.timer = BOSS_PATTERN.windup; e.aim = dir; }
     else if (e.phase === 'warn') { speed = 0; if (e.timer <= 0) { e.phase = 'dash'; e.timer = BOSS_PATTERN.dashDuration; } }
-    else if (e.phase === 'dash') { dir = e.aim; speed = BOSS_PATTERN.dashSpeed; if (e.timer <= 0) { e.phase = 'recover'; e.timer = BOSS_PATTERN.recover; this.addHazard(e, BOSS_PATTERN.slamRadius, BOSS_PATTERN.slamDelay, e.damage * BOSS_PATTERN.slamDamage, 'enemy', 'slam'); } }
+    else if (e.phase === 'dash') {
+     dir = e.aim; speed = BOSS_PATTERN.dashSpeed;
+     if (e.timer <= 0) {
+      const pattern = e.paired ? PAIRED_GRORM : BOSS_PATTERN;
+      e.phase = 'recover'; e.timer = pattern.recover;
+      this.addHazard(e, pattern.slamRadius, BOSS_PATTERN.slamDelay, e.damage * BOSS_PATTERN.slamDamage, 'enemy', 'slam');
+     }
+    }
     else if (e.phase === 'recover') { speed = 0; if (e.timer <= 0) { e.phase = 'chase'; e.timer = BOSS_PATTERN.chase; } }
    } else if (e.kind === 'shaman') {
     if (distance(e, p) < 200) speed = 0;
     if (e.timer <= 0 && e.y > 80) { this.addHazard({ ...p }, 43, 1.55, e.damage, 'enemy', 'slam'); e.timer = 4.2; }
    } else if (e.kind === 'skeleton') {
     if (distance(e, p) < 220 && distance(e, p) > 140) { dir = { x: Math.sin(s.elapsed + e.seed) * .5, y: 0 }; }
-    if (e.timer <= 0 && e.y > 70) { this.shoot(e, p, 'enemy', e.damage, 155, 1); e.timer = 2.65; }
+    if (e.timer <= 0 && e.y > 70) {
+     const damage = s.hero === 'mage' ? e.damage * MAGE_ARROW_DAMAGE : e.damage;
+     this.shoot(e, p, 'enemy', damage, 155, 1); e.timer = 2.65;
+    }
    } else if (e.kind === 'bat') { dir.x += Math.sin(s.elapsed * 5 + e.seed) * .65; dir = normalize(dir.x, dir.y); }
    e.x += dir.x * speed * dt; e.y += (dir.y * speed + (isBoss(e.kind) ? 0 : W.scrollSpeed * .10)) * dt;
    if (e.kind === 'boss') { e.x = clamp(e.x, 30, W.width - 30); e.y = clamp(e.y, 137, W.height - 60); }
-   if (distance(e, p) < e.radius + W.playerRadius) this.damagePlayer(e.damage);
+   if (distance(e, p) < e.radius + W.playerRadius) this.damageEnemyContact(e);
   }
+ }
+ private damageEnemyContact(enemy: Enemy) {
+  const damage = this.state.hero === 'warrior' && enemy.kind !== 'warden'
+   ? enemy.damage * WARRIOR_CONTACT_DAMAGE : enemy.damage;
+  this.damagePlayer(damage);
  }
  private nearest(origin: Vec, range = Infinity, excluded = new Set<number>(), includeRadius = false): Enemy | undefined {
   let best: Enemy | undefined, min = range;
@@ -292,6 +308,7 @@ export class GameSimulation {
  damageEnemy(enemy: Enemy, amount: number) {
   if (enemy.hp <= 0 || this.state.status === 'victory' || this.state.status === 'gameover') return;
   if (enemy.kind === 'warden' && this.state.hero !== 'warrior') amount *= CAMPAIGN.wardenRangedDamage[this.state.hero];
+  if (enemy.paired && this.state.hero === 'archer') amount *= PAIRED_GRORM.archerDamage;
   enemy.hp -= amount; enemy.hitFlash = .12;
   this.effect('hit', enemy, 0xffedc2, 13, .14); this.effect('text', { x: enemy.x + this.random() * 12 - 6, y: enemy.y - 15 }, 0xffecc9, 0, .65, 0, `${Math.round(amount)}`);
   if (!isBoss(enemy.kind)) { const away = unit(this.state.player, enemy); enemy.x += away.x * 4; enemy.y += away.y * 4; }

@@ -67,7 +67,7 @@ export function playTrial(hero: HeroId, seed: number, policy: Policy, build: Bui
   const before = s.player.hp; sim.update(step, direction); if (s.player.hp < before) { hpLost += before - s.player.hp; hits++; }
   if (s.kills && !firstKill) firstKill = s.elapsed;
   if (s.elapsed >= 360 && !s.finalSpawned) for (const enemy of s.enemies) {
-   if (enemy.kind === 'boss' && enemy.rewardScale === .5) pair.add(enemy);
+   if (enemy.paired) pair.add(enemy);
   }
   maxEnemies = Math.max(maxEnemies, s.enemies.length); maxShots = Math.max(maxShots, s.projectiles.length);
   if (Math.floor(s.elapsed / 60) > checkpoints.length) checkpoints.push({ seconds: Math.round(s.elapsed), hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), kills: s.kills, level: s.level, bosses: s.bosses, enemies: s.enemies.length, skills: { ...s.skills } });
