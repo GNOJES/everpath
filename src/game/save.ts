@@ -1,7 +1,9 @@
-import { BALANCE, HEROES } from './config';
+import { BALANCE, HEROES, PERMANENT } from './config';
 import { clamp } from './math';
 import type { SaveData, PermanentId, RunResult } from './types';
 export const SAVE_KEY = 'everpath.save.v1';
+const permanentKeys = Object.keys(PERMANENT) as PermanentId[];
+type UpgradePayments = NonNullable<SaveData['upgradePayments']>;
 type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 const number = (value: unknown, max = 1e9, decimal = false) => typeof value === 'number' && Number.isFinite(value) ? (decimal ? clamp(value, 0, max) : Math.floor(clamp(value, 0, max))) : 0;
 function cleanResult(value: unknown): RunResult | undefined {
@@ -27,6 +29,13 @@ export function parseSave(raw: string | null): SaveData {
   for (const key of Object.keys(defaults.upgrades) as PermanentId[]) defaults.upgrades[key] = number(data.upgrades?.[key], data.progressionEconomy === 2 ? BALANCE.permanentMax : 10);
   defaults.invested = typeof data.invested === 'number' ? number(data.invested) : Object.values(defaults.upgrades).reduce((sum, level) => sum + Array.from({ length: level }, (_, i) => Math.floor(12 * 1.65 ** i)).reduce((a, b) => a + b, 0), 0);
   if (data.progressionEconomy !== 2) for (const key of Object.keys(defaults.upgrades) as PermanentId[]) defaults.upgrades[key] *= 2;
+  const payments = data.upgradePayments;
+  if (data.progressionEconomy === 2 && payments && permanentKeys.every(key =>
+   Array.isArray(payments[key]) && payments[key].length === defaults.upgrades[key] &&
+   payments[key].every((price: unknown) => typeof price === 'number' && Number.isSafeInteger(price) && price >= 0 && price <= defaults.invested)
+  ) && permanentKeys.reduce((total, key) => total + payments[key].reduce((a: number, b: number) => a + b, 0), 0) <= defaults.invested) {
+   defaults.upgradePayments = Object.fromEntries(permanentKeys.map(key => [key, payments[key]])) as UpgradePayments;
+  }
   for (const hero of ['warrior', 'archer', 'mage'] as const) defaults.clears[hero] = number(data.clears?.[hero]);
   defaults.challengeUnlocked = number(data.challengeUnlocked, 3);
   if (typeof data.lastHero === 'string' && Object.hasOwn(HEROES, data.lastHero)) defaults.lastHero = data.lastHero;
@@ -36,6 +45,21 @@ export function parseSave(raw: string | null): SaveData {
  return defaults;
 }
 export const upgradeCost = (level: number) => Math.floor(BALANCE.baseCost + 12 * level + 3 * level * level);
+function assignLegacyPayments(data: SaveData): UpgradePayments {
+ // Older saves retain a total investment, but lack prices per rank. Allocate
+ // that exact total by the current rank prices without creating any extra gold.
+ const weights = permanentKeys.map(key => Array.from({ length: data.upgrades[key] }, (_, level) => upgradeCost(level)));
+ const basis = weights.flat().reduce((sum, price) => sum + price, 0);
+ let running = 0, assigned = 0;
+ return Object.fromEntries(permanentKeys.map((key, index) => [key, weights[index].map(price => {
+  running += price;
+  const next = Math.floor(data.invested * running / basis);
+  const paid = next - assigned;
+  assigned = next;
+  return paid;
+ })])) as UpgradePayments;
+}
+
 export class SaveStore {
  data: SaveData; persistent = true;
  onPersistenceChange?: () => void;
@@ -56,12 +80,37 @@ export class SaveStore {
   this.data = data;
   this.setPersistent(true);
  }
+ private payments() { return this.data.upgradePayments ?? assignLegacyPayments(this.data); }
+ upgradeRefund(key: PermanentId): number {
+  return this.payments()[key].at(-1) ?? 0;
+ }
  purchase(key: PermanentId): boolean {
-  const level = this.data.upgrades[key], cost = upgradeCost(level); if (level >= BALANCE.permanentMax || this.data.gold < cost) return false;
-  this.data.gold -= cost; this.data.invested += cost; this.data.upgrades[key]++; this.write(); return true;
+  if (!Object.hasOwn(PERMANENT, key)) return false;
+  const level = this.data.upgrades[key], cost = upgradeCost(level);
+  if (level >= BALANCE.permanentMax || this.data.gold < cost) return false;
+  const payments = this.payments();
+  payments[key].push(cost);
+  this.data.upgradePayments = payments;
+  this.data.gold -= cost;
+  this.data.invested += cost;
+  this.data.upgrades[key]++;
+  this.write();
+  return true;
+ }
+ downgrade(key: PermanentId): boolean {
+  if (!Object.hasOwn(PERMANENT, key) || this.data.upgrades[key] === 0) return false;
+  const payments = this.payments();
+  const refund = payments[key].pop()!;
+  this.data.upgradePayments = payments;
+  this.data.gold = Math.min(1e9, this.data.gold + refund);
+  this.data.invested -= refund;
+  this.data.upgrades[key]--;
+  this.write();
+  return true;
  }
  refundUpgrades(): number {
   const refund = this.data.invested; this.data.gold = Math.min(1e9, this.data.gold + refund); this.data.invested = 0;
+  delete this.data.upgradePayments;
   this.data.upgrades = { attack: 0, hp: 0, speed: 0, gold: 0 }; this.write(); return refund;
  }
  settle(result: RunResult): boolean {

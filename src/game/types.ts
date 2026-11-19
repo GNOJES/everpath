@@ -3,7 +3,7 @@ export type EnemyKind = 'slime' | 'goblin' | 'bat' | 'skeleton' | 'brute' | 'sha
 export type PermanentId = 'attack' | 'hp' | 'speed' | 'gold';
 export type PassiveId = 'power' | 'haste' | 'vitality' | 'speed';
 export interface Vec { x: number; y: number }
-export interface SaveData { version: 1; progressionEconomy: 2; gold: number; history: RunResult[]; invested: number; clears: Record<HeroId, number>; challengeUnlocked: number; upgrades: Record<PermanentId, number>; bestTime: number; bestKills: number; totalRuns: number; lastHero: HeroId; settings: { music: number; sfx: number }; settledRuns: string[] }
+export interface SaveData { version: 1; progressionEconomy: 2; gold: number; history: RunResult[]; invested: number; upgradePayments?: Record<PermanentId, number[]>; clears: Record<HeroId, number>; challengeUnlocked: number; upgrades: Record<PermanentId, number>; bestTime: number; bestKills: number; totalRuns: number; lastHero: HeroId; settings: { music: number; sfx: number }; settledRuns: string[] }
 export interface CombatRecord { spawned: number; killed: number; missed: number; escaped: number; withdrawn: number; remaining: number; killRate: number; missRate: number }
 export interface RunResult { runId: string; hero: HeroId; time: number; level: number; kills: number; bosses: number; gold: number; cleared?: boolean; outcome?: 'victory' | 'defeat' | 'abandoned'; rank?: number; combat?: CombatRecord }
 export interface Upgrade { id: string; name: string; subtitle: string; description: string; icon: string; level: number; max: number; color: string }

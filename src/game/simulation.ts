@@ -26,7 +26,11 @@ export class GameSimulation {
  }
  get haste() { return 1 + this.state.passives.haste * B.hasteStep; }
  get weaponHaste() { return this.haste + (this.state.weaponLevel - 1) * B.weaponHasteStep + (this.state.evolved ? .25 : 0); }
- get range() { return HEROES[this.state.hero].range * (1 + (this.state.weaponLevel - 1) * B.weaponRangeStep) * (this.state.evolved ? 1.25 : 1); }
+ get range() {
+  const { hero, weaponLevel, evolved } = this.state;
+  const rangeStep = hero === 'warrior' ? .045 : B.weaponRangeStep;
+  return HEROES[hero].range * (1 + (weaponLevel - 1) * rangeStep) * (evolved ? 1.25 : 1);
+ }
  pause() { if (this.state.status === 'running') this.state.status = 'paused'; }
  resume() { if (this.state.status === 'paused') this.state.status = 'running'; }
  update(seconds: number, direction: Vec = { x: 0, y: 0 }) {
@@ -46,8 +50,8 @@ export class GameSimulation {
   if (!s.finalSpawned && s.elapsed >= s.nextBoss && s.nextBoss <= B.bossAt + B.bossEvery) {
    const paired = s.nextBoss > B.bossAt;
    if (paired) {
-    this.spawnBossFromTop('boss', W.width * .25, .65, .5);
-    this.spawnBossFromTop('boss', W.width * .75, .65, .5, 1.55);
+    this.spawnBossFromTop('boss', W.width * .25, .60, .5);
+    this.spawnBossFromTop('boss', W.width * .75, .60, .5, 1.55);
    } else this.spawnBossFromTop('boss', W.width / 2);
    s.nextBoss += B.bossEvery;
    this.effect('text', { x: W.width / 2, y: 215 }, 0xffd38a, 0, 2, 0, paired ? '그롬 두 마리 등장' : '그롬 등장');
@@ -88,8 +92,8 @@ export class GameSimulation {
  private spawnWave() {
   const { elapsed, player, enemies } = this.state;
   if (this.state.spawned === 0) {
-   for (const x of [112, 216, 320]) {
-    if (this.spawnEnemy('slime', x, 145)) this.regularSpawns++;
+   for (const x of [164, 216, 268]) {
+    if (this.spawnEnemy('slime', x, 171)) this.regularSpawns++;
    }
    return;
   }

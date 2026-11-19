@@ -2,7 +2,7 @@ import { GameSimulation } from '../../src/game/simulation';
 import { parseSave } from '../../src/game/save';
 import { HEROES, WORLD } from '../../src/game/config';
 import { distance, normalize } from '../../src/game/math';
-import type { HeroId, RunState, Vec, SaveData } from '../../src/game/types';
+import type { Enemy, HeroId, RunState, Vec, SaveData } from '../../src/game/types';
 export function seededRandom(seed: number) { return () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; }
 export type Policy = 'idle' | 'circuit' | 'reactive' | 'high-camp' | 'mid-camp';
 export type Build = 'balanced' | 'weapon' | 'skills';
@@ -57,16 +57,21 @@ export interface Checkpoint { seconds: number; hp: number; maxHp: number; kills:
 export function playTrial(hero: HeroId, seed: number, policy: Policy, build: Build, duration = 600, meta = 0, saved?: SaveData) {
  const save = saved ? structuredClone(saved) : parseSave(null); for (const key of Object.keys(save.upgrades) as (keyof typeof save.upgrades)[]) if (!saved) save.upgrades[key] = meta;
  const sim = new GameSimulation(hero, save, seededRandom(seed)), pilot = new Pilot(policy);
- let direction = { x: 0, y: 0 }, firstLevel = 0, hpLost = 0, hits = 0, maxEnemies = 0, maxShots = 0; const checkpoints: Checkpoint[] = [], upgrades: { time: number; id: string }[] = [];
+ let direction = { x: 0, y: 0 }, firstKill = 0, firstLevel = 0, hpLost = 0, hits = 0, maxEnemies = 0, maxShots = 0; const checkpoints: Checkpoint[] = [], upgrades: { time: number; id: string }[] = [];
+ const pair = new Set<Enemy>();
  const step = 1 / 30;
  for (let frame = 0; frame < duration * 30; frame++) {
   const s = sim.state; if (s.status === 'gameover' || s.status === 'victory') break;
   while (s.status === 'upgrade') { firstLevel ||= s.elapsed; const id = chooseAbility(s, build); upgrades.push({ time: Math.round(s.elapsed * 10) / 10, id }); sim.chooseUpgrade(id); }
   if (frame % 3 === 0) direction = pilot.direction(s);
   const before = s.player.hp; sim.update(step, direction); if (s.player.hp < before) { hpLost += before - s.player.hp; hits++; }
+  if (s.kills && !firstKill) firstKill = s.elapsed;
+  if (s.elapsed >= 360 && !s.finalSpawned) for (const enemy of s.enemies) {
+   if (enemy.kind === 'boss' && enemy.rewardScale === .5) pair.add(enemy);
+  }
   maxEnemies = Math.max(maxEnemies, s.enemies.length); maxShots = Math.max(maxShots, s.projectiles.length);
   if (Math.floor(s.elapsed / 60) > checkpoints.length) checkpoints.push({ seconds: Math.round(s.elapsed), hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), kills: s.kills, level: s.level, bosses: s.bosses, enemies: s.enemies.length, skills: { ...s.skills } });
  }
  const s = sim.state;
- return { hero, seed, policy, build, duration, meta, gold: s.gold, evolved: s.evolved, survived: Math.round(s.elapsed * 10) / 10, status: s.status, firstLevel: Math.round(firstLevel * 10) / 10, kills: s.kills, bosses: s.bosses, level: s.level, hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), hpLost: Math.round(hpLost), hits, maxEnemies, maxShots, upgrades, checkpoints };
+ return { hero, seed, policy, build, duration, meta, gold: s.gold, evolved: s.evolved, survived: Math.round(s.elapsed * 10) / 10, status: s.status, firstKill: Math.round(firstKill * 10) / 10, firstLevel: Math.round(firstLevel * 10) / 10, sixMinuteBossKills: [...pair].filter(enemy => enemy.hp <= 0).length, kills: s.kills, bosses: s.bosses, level: s.level, hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), hpLost: Math.round(hpLost), hits, maxEnemies, maxShots, upgrades, checkpoints };
 }

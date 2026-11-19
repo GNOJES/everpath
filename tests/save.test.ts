@@ -26,3 +26,29 @@ describe('persistent progression', () => {
   store.data.gold = 30; expect(store.purchase('hp')).toBe(true); expect(store.data.upgrades.hp).toBe(1); expect(store.persistent).toBe(false);
  });
 });
+
+it('reallocates one rank at a time without creating gold across saves', () => {
+ const disk = new MemoryStorage();
+ disk.setItem('everpath.save.v1', JSON.stringify({
+  version: 1, gold: 100, upgrades: { attack: 2, hp: 1 }, bestTime: 123, settledRuns: ['legacy-run'],
+ }));
+ let store = new SaveStore(disk);
+ const worth = store.data.gold + store.data.invested;
+ expect(store.data.upgradePayments).toBeUndefined();
+ const refund = store.upgradeRefund('attack');
+ expect(refund).toBeGreaterThan(0);
+ expect(store.downgrade('attack')).toBe(true);
+ expect(store.data.gold).toBe(100 + refund);
+ expect(store.data.upgrades).toEqual({ attack: 3, hp: 2, speed: 0, gold: 0 });
+ expect(store.purchase('speed')).toBe(true);
+ store = new SaveStore(disk);
+ expect(store.upgradeRefund('speed')).toBe(24);
+ expect(store.downgrade('speed')).toBe(true);
+ expect(store.downgrade('speed')).toBe(false);
+ while (store.downgrade('attack')) {}
+ while (store.downgrade('hp')) {}
+ expect(store.data.gold).toBe(worth);
+ expect(store.data.invested).toBe(0);
+ expect(store.data.bestTime).toBe(123);
+ expect(store.data.settledRuns).toEqual(['legacy-run']);
+});

@@ -6,6 +6,17 @@ test('a naturally ended run shows accurate totals and rates, then persists in sm
  await expect(page.locator('.result-panel')).toBeVisible();await expect(page.getByRole('heading',{name:'원정이 종료되었습니다.'})).toBeVisible();
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('everpath.save.v1')!));expect(saved.history).toHaveLength(1);const r=saved.history[0],c=r.combat;expect(c.spawned).toBe(c.killed+c.missed);expect(c.missed).toBe(c.escaped+c.withdrawn+c.remaining);expect(c.missRate).toBeCloseTo(100*c.missed/c.spawned);expect(c.missed).toBeGreaterThan(0);
  await expect(page.locator('[data-record-killed]')).toContainText(`${c.killed}마리`);await expect(page.locator('[data-record-missed]')).toContainText(`${c.missed}마리 · ${c.missRate.toFixed(1)}%`);
+ const overflow = await page.locator('.result-panel').evaluate(panel => panel.scrollHeight - panel.clientHeight);
+ expect(overflow).toBeLessThanOrEqual(1);
+ await page.getByRole('button', { name: '숲 다시 도전' }).click();
+ await expect(page.locator('.screen-select')).toBeVisible();
+ await expect(page.locator('[data-hero="mage"]')).toBeVisible();
+ await expect(page.locator('#hud')).toBeHidden();
+ await page.locator('[data-hero="mage"]').click();
+ await page.locator('[data-action="start"]').click();
+ await expect(page.locator('.hud-hero')).toContainText('엘라');
+ await page.reload();
+ await page.getByRole('button', { name: '설정', exact: true }).click();
  await page.locator('[data-action="history"]').click();await page.locator('details summary').click();await expect(page.locator('[data-record-spawned]')).toContainText(`${c.spawned}마리`);await page.screenshot({path:'test-results/run-history-small.png'});
  await page.reload();await page.getByRole('button',{name:'설정',exact:true}).click();await page.getByRole('button',{name:'최근 원정 기록',exact:true}).click();await expect(page.locator('details')).toHaveCount(1);await expect(page.locator('details summary')).toContainText(`처치 ${c.killed}`);expect(errors).toEqual([]);await context.close();
 });

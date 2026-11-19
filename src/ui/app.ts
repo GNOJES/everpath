@@ -18,6 +18,7 @@ export class App {
  private backupMessage = '';
  private backupBusy = false;
  private pendingBackup?: SaveData;
+ private historyPage = 0;
  private historyReturn: Screen = 'settings';
  private rank = 0; private refundConfirm = false;
  private diagnostics = new DiagnosticsMonitor(); private diagnosticReturn: Screen = 'settings'; private diagnosticExporting = false; private diagnosticMessage = '';
@@ -57,11 +58,18 @@ export class App {
   this.scene.audio.unlock(); this.scene.audio.click(); const action = button.dataset.action!;
   if (action === 'embark') { this.screen = 'select'; this.render(); }
   else if (action === 'hero') { const id = button.dataset.hero as HeroId; if (!Object.hasOwn(HEROES, id)) return; this.hero = id; this.store.data.lastHero = id; this.store.write(); this.render(); }
-  else if (action === 'start' || action === 'retry') this.startRun();
+  else if (action === 'start') this.startRun();
+  else if (action === 'retry') {
+   this.sim = undefined;
+   this.scene.setRun();
+   this.screen = 'select';
+   this.render();
+  }
   else if (action === 'title') { if (this.sim && this.sim.state.status !== 'gameover') this.store.settle(this.sim.result()); this.sim = undefined; this.scene.setRun(); this.screen = 'title'; this.render(); }
   else if (action === 'pause' || action === 'resume') this.togglePause();
   else if (action === 'upgrade') { if (this.sim?.chooseUpgrade(button.dataset.id!)) { this.scene.controls.reset(); this.previousStatus = ''; this.render(); } }
-  else if (action === 'history') { this.historyReturn = this.screen; this.screen = 'history'; this.render(); }
+  else if (action === 'history') { this.historyReturn = this.screen; this.historyPage = 0; this.screen = 'history'; this.render(); }
+  else if (action === 'history-page') { this.historyPage += Number(button.dataset.direction); this.render(); }
   else if (action === 'history-back') { this.screen = this.historyReturn; this.render(); }
   else if (action === 'shop') { this.shopReturn = this.screen === 'result' ? 'result' : 'title'; this.screen = 'shop'; this.render(); }
   else if (action === 'shop-back') { this.screen = this.shopReturn; this.render(); }
@@ -69,7 +77,17 @@ export class App {
   else if (action === 'refund-preview') { this.refundConfirm = true; this.render(); }
   else if (action === 'refund-cancel') { this.refundConfirm = false; this.render(); }
   else if (action === 'refund-confirm') { this.store.refundUpgrades(); this.refundConfirm = false; this.render(); }
-  else if (action === 'buy') { if (this.store.purchase(button.dataset.id as PermanentId)) this.render(); }
+  else if (action === 'buy' || action === 'downgrade') {
+   const id = button.dataset.id as PermanentId;
+   const changed = action === 'buy' ? this.store.purchase(id) : this.store.downgrade(id);
+   if (changed) {
+    this.render();
+    if (event.detail === 0) {
+     const control = this.overlay.querySelector<HTMLButtonElement>(`[data-action="${action}"][data-id="${id}"]`);
+     (control?.disabled ? this.overlay.querySelector<HTMLButtonElement>(`[data-action="${action === 'buy' ? 'downgrade' : 'buy'}"][data-id="${id}"]`) : control)?.focus();
+    }
+   }
+  }
   else if (action === 'settings') { this.settingsReturn = this.screen; this.pendingBackup = undefined; this.backupMessage = ''; this.screen = 'settings'; this.render(); }
   else if (action === 'backup-export') void this.backupAction(async () => exportBackupFile(encodeBackup(this.store.data)));
   else if (action === 'backup-select') this.overlay.querySelector<HTMLInputElement>('#backup-file')?.click();
@@ -156,10 +174,26 @@ export class App {
  }
  private renderSelect() {
   const selected = HEROES[this.hero];
-  this.overlay.innerHTML = `<div class="menu-panel">${this.topbar('영웅 선택', 'title')}<div class="menu-heading"><h2>누구와 떠날까요?</h2><p>10분에 등장하는 모르바를 처치하세요.</p></div><div class="hero-cards">${Object.values(HEROES).map(h => `<button class="hero-card ${this.hero === h.id ? 'selected' : ''}" data-action="hero" data-hero="${h.id}" aria-pressed="${this.hero === h.id}" style="--hero-color:${h.color}"><span class="hero-role">${h.role}</span><div class="hero-portrait-scene">${portrait(h.id)}</div><strong>${h.name}</strong><span class="selection-dot">${this.hero === h.id ? icon('check') : ''}</span></button>`).join('')}</div><div class="hero-detail" style="--hero-color:${selected.color}"><div class="hero-detail-title"><span class="skill-icon">${icon(selected.icon)}</span><div><h3>${selected.name} <small>· ${selected.role}</small></h3></div></div><p>${selected.description}</p><p class="hero-clear-record">클리어 ${this.store.data.clears[this.hero]}회 · 무기 진화: ${EVOLUTIONS[this.hero].name}<br>조건: 기본무기 5 + ${EVOLUTIONS[this.hero].passive === 'power' ? '강인한 일격' : '신속한 손놀림'} 2</p><div class="hero-stat-grid">${['생존력', '기동력', '공격력'].map((label, i) => `<div><span>${label}</span><span class="stat-pips">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= selected.bars[i] ? 'lit' : ''}"></i>`).join('')}</span></div>`).join('')}</div><div class="hero-base-stats"><span>HP <b>${selected.hp}</b></span><span>이동 <b>${selected.speed}</b></span><span>무기 <b>${selected.weapon}</b></span></div><div class="starting-skills">${selected.skills.map(id => `<span title="${SKILLS[id].description}">${icon(SKILLS[id].icon)} ${SKILLS[id].name}</span>`).join('')}</div></div><div class="menu-bottom"><div class="challenge-selector" aria-label="도전 단계">${[0, 1, 2, 3].map(rank => `<button data-action="rank" data-rank="${rank}" aria-pressed="${rank === this.rank}" ${rank > this.store.data.challengeUnlocked ? 'disabled' : ''}>${rank === 0 ? '첫 원정' : `도전 ${rank}${rank > this.store.data.challengeUnlocked ? ' · 잠김' : ''}`}</button>`).join('')}</div><div class="quiet-note">${icon('shield')} 도전마다 적 HP +35% · 클리어 시 다음 단계 해금</div><button class="button primary" data-action="start">${icon('play')} 숲으로 떠나기 ${icon('right')}</button></div></div>`;
+  this.overlay.innerHTML = `<div class="menu-panel">${this.topbar('영웅 선택', 'title')}<div class="menu-heading"><h2>누구와 떠날까요?</h2></div><div class="hero-cards">${Object.values(HEROES).map(h => `<button class="hero-card ${this.hero === h.id ? 'selected' : ''}" data-action="hero" data-hero="${h.id}" aria-pressed="${this.hero === h.id}" style="--hero-color:${h.color}"><span class="hero-role">${h.role}</span><div class="hero-portrait-scene">${portrait(h.id)}</div><strong>${h.name}</strong></button>`).join('')}</div><div class="hero-detail" style="--hero-color:${selected.color}"><div class="hero-detail-title"><span class="skill-icon">${icon(selected.icon)}</span><div><h3>${selected.name} <small>· ${selected.role}</small></h3></div></div><p>${selected.description}</p><p class="hero-clear-record">클리어 ${this.store.data.clears[this.hero]}회 · 무기 진화: ${EVOLUTIONS[this.hero].name}<br>조건: 기본무기 5 + ${EVOLUTIONS[this.hero].passive === 'power' ? '강인한 일격' : '신속한 손놀림'} 2</p><div class="hero-base-stats"><span>HP <b>${selected.hp}</b></span><span>이동 <b>${selected.speed}</b></span><span>무기 <b>${selected.weapon}</b></span></div><div class="starting-skills">${selected.skills.map(id => `<span title="${SKILLS[id].description}">${icon(SKILLS[id].icon)} ${SKILLS[id].name}</span>`).join('')}</div></div><div class="menu-bottom"><div class="challenge-selector" aria-label="도전 단계">${[0, 1, 2, 3].map(rank => `<button data-action="rank" data-rank="${rank}" aria-pressed="${rank === this.rank}" ${rank > this.store.data.challengeUnlocked ? 'disabled' : ''}>${rank === 0 ? '첫 원정' : `도전 ${rank}${rank > this.store.data.challengeUnlocked ? ' · 잠김' : ''}`}</button>`).join('')}</div><button class="button primary" data-action="start">${icon('play')} 숲으로 떠나기 ${icon('right')}</button></div></div>`;
  }
  private renderShop() {
-  this.overlay.innerHTML = `<div class="menu-panel shop-panel">${this.topbar('영구 강화', 'shop-back')}<div class="menu-heading"><div class="shrine-symbol">${icon('leaf')}</div><h2>성장의 제단</h2></div><div class="gold-wallet"><span>보유 골드</span><strong>${icon('coin')} ${this.store.data.gold.toLocaleString()}</strong></div><div class="shop-list">${(Object.keys(PERMANENT) as PermanentId[]).map(id => { const item = PERMANENT[id], level = this.store.data.upgrades[id], maxed = level >= BALANCE.permanentMax, cost = upgradeCost(level); return `<div class="shop-item"><div class="skill-icon">${icon(item.icon)}</div><div class="shop-item-copy"><div><h3>${item.name}</h3><span>${level}<small> / ${BALANCE.permanentMax}</small></span></div><p>${item.description} <b>+${Number((level * item.step * 100).toFixed(1))}%</b> <small>→ ${maxed ? '최대' : `+${Number(((level + 1) * item.step * 100).toFixed(1))}%`}</small></p><div class="level-dots">${Array.from({ length: BALANCE.permanentMax }, (_, i) => `<i class="${i < level ? 'lit' : ''}"></i>`).join('')}</div></div><button class="buy-button" data-action="buy" data-id="${id}" ${maxed || this.store.data.gold < cost ? 'disabled' : ''}>${maxed ? icon('check') + ' MAX' : icon('coin') + ' ' + cost}</button></div>`; }).join('')}</div><div class="shrine-tip">${icon('book')} 공격·체력은 레벨당 +6%. 세 영웅이 공유합니다.<br>구매·환불은 다음 원정부터 적용됩니다.</div><div class="refund-section">${this.refundConfirm ? `<p>영구 강화 4종을 모두 0으로 되돌리고 <b>${this.store.data.invested} 골드</b>를 전액 환불합니다. 기록·설정·클리어 해금은 보존합니다.</p><button class="button secondary" data-action="refund-confirm">강화 초기화 · ${this.store.data.invested} 골드 환불</button><button class="text-button" data-action="refund-cancel">취소 · 유지하기</button>` : `<button class="button secondary" data-action="refund-preview" ${this.store.data.invested === 0 ? 'disabled' : ''}>영구 강화 초기화 · 전액 환불</button>`}</div><div class="menu-bottom"><button class="button secondary" data-action="shop-back">${icon('back')} 원정 준비로 돌아가기</button></div></div>`;
+  const { gold, upgrades, invested } = this.store.data;
+  this.overlay.innerHTML = `<div class="menu-panel shop-panel">${this.topbar('영구 강화', 'shop-back')}
+   <div class="gold-wallet"><h2>성장의 제단</h2><strong aria-label="보유 골드">${icon('coin')} ${gold.toLocaleString()}</strong></div>
+   <div class="shop-list">${(Object.keys(PERMANENT) as PermanentId[]).map(id => {
+    const item = PERMANENT[id], level = upgrades[id], maxed = level >= BALANCE.permanentMax, cost = upgradeCost(level);
+    const refund = this.store.upgradeRefund(id), bonus = Number((level * item.step * 100).toFixed(1));
+    return `<div class="shop-item">
+     <button class="buy-button step-button" aria-label="${item.description} 한 단계 낮추기 · ${refund.toLocaleString()} 골드 환불" data-action="downgrade" data-id="${id}" ${level ? '' : 'disabled'}><b>−</b><small>${level ? refund.toLocaleString() : '—'}</small></button>
+     <div class="shop-item-copy"><h3>${item.description}</h3><p>레벨 ${level}/${BALANCE.permanentMax} <b>+${bonus}%</b></p></div>
+     <button class="buy-button step-button" aria-label="${item.description} 한 단계 올리기 · ${maxed ? '최대 레벨' : cost.toLocaleString() + ' 골드'}" data-action="buy" data-id="${id}" ${maxed || gold < cost ? 'disabled' : ''}><b>+</b><small>${maxed ? '최대' : cost.toLocaleString()}</small></button>
+    </div>`;
+   }).join('')}</div>
+   <p class="shrine-tip">− 환불 · + 구매 · 다음 원정부터 적용</p>
+   <div class="menu-bottom">${this.refundConfirm ? `<div class="refund-section"><button class="button secondary" data-action="refund-confirm">전체 초기화 · ${invested.toLocaleString()} 골드 환불</button><button class="text-button" data-action="refund-cancel">취소 · 유지하기</button></div>` :
+    `<button class="text-button" data-action="refund-preview" ${invested === 0 ? 'disabled' : ''}>영구 강화 초기화 · 전액 환불</button>`}
+    <button class="button primary" data-action="shop-back">${icon('back')} 원정 준비로 돌아가기</button>
+   </div></div>`;
  }
  private async backupAction(action: () => Promise<string>) {
   this.backupBusy = true;
@@ -195,15 +229,15 @@ export class App {
  }
  private backupControls() {
   const save = this.pendingBackup;
-  return `<section class="backup-controls"><h3>저장 데이터 백업·복원</h3><p>기기를 바꾸기 전에 파일을 새 기기로 옮기거나 클라우드에 보관하세요.</p>
+  return `<section class="backup-controls"><h3>저장 데이터 백업·복원</h3>
    <button class="button secondary" data-action="backup-export">JSON 백업 내보내기</button>
    ${this.settingsReturn === 'run' ? '<p>복원은 원정을 마친 뒤 타이틀 설정에서 할 수 있습니다.</p>' :
     `<input hidden id="backup-file" type="file" accept=".json,application/json"><button class="button secondary" data-action="backup-select">백업 파일 선택</button>`}
    ${save ? `<p>보유 골드 ${save.gold.toLocaleString()} · 영구 강화 합계 ${Object.values(save.upgrades).reduce((a,b) => a+b,0)}레벨 · 최근 원정 ${save.history.length}건</p><p>현재 진행 상황을 이 백업으로 교체합니다.</p><button class="button primary" data-action="backup-restore">이 백업으로 복원</button><button class="text-button" data-action="backup-cancel">취소</button>` : ''}
-   <p role="status">${this.backupMessage}</p></section>`;
+   <p class="backup-message" role="status">${this.backupMessage}</p></section>`;
  }
  private renderSettings() {
-  this.overlay.innerHTML = `<div class="menu-panel settings-panel">${this.topbar('설정', 'settings-back')}<div class="menu-heading"><div class="shrine-symbol">${icon('settings')}</div><h2>설정</h2></div><div class="settings-sliders">${(['music', 'sfx'] as const).map(key => `<label><span>${icon(key === 'music' ? 'leaf' : 'sound')} ${key === 'music' ? '배경음' : '효과음'}<b id="volume-${key}">${Math.round(this.store.data.settings[key] * 100)}%</b></span><input aria-label="${key === 'music' ? '배경음' : '효과음'} 음량" type="range" min="0" max="100" value="${Math.round(this.store.data.settings[key] * 100)}" data-volume="${key}"></label>`).join('')}</div><div class="settings-controls"><h3>이동 방법</h3><p>PC <span>WASD / 방향키 / 마우스 드래그</span></p><p>모바일 <span>화면 아무 곳이나 터치 후 드래그</span></p><p>일시정지 <span>ESC / 오른쪽 상단 버튼</span></p><small>손을 떼면 멈추고, 공격은 자동으로 이어집니다.</small></div><div class="save-info">${icon('shield')} ${this.store.persistent ? '진행 기록과 설정이 이 기기에 저장됩니다.' : '저장 공간에 접근할 수 없어 새로고침하면 초기화됩니다.'}</div>${this.backupControls()}<div class="menu-bottom"><button class="button secondary" data-action="diagnostics">실기기 진단 · 로그</button><button class="button secondary" data-action="history">최근 원정 기록</button><button class="button primary" data-action="settings-back">설정 완료 ${icon('check')}</button></div></div>`;
+  this.overlay.innerHTML = `<div class="menu-panel settings-panel">${this.topbar('설정', 'settings-back')}<div class="menu-heading"><h2>설정</h2></div><div class="settings-sliders">${(['music', 'sfx'] as const).map(key => `<label><span>${icon(key === 'music' ? 'leaf' : 'sound')} ${key === 'music' ? '배경음' : '효과음'}<b id="volume-${key}">${Math.round(this.store.data.settings[key] * 100)}%</b></span><input aria-label="${key === 'music' ? '배경음' : '효과음'} 음량" type="range" min="0" max="100" value="${Math.round(this.store.data.settings[key] * 100)}" data-volume="${key}"></label>`).join('')}</div><details class="settings-controls"><summary>이동 방법</summary><p>PC · WASD, 방향키, 마우스 드래그</p><p>모바일 · 드래그</p><p>일시정지 · ESC 또는 상단 버튼</p></details><div class="save-info">${icon('shield')} ${this.store.persistent ? '진행 기록과 설정이 이 기기에 저장됩니다.' : '저장 공간에 접근할 수 없어 새로고침하면 초기화됩니다.'}</div>${this.backupControls()}<div class="menu-bottom"><button class="button secondary" data-action="diagnostics">실기기 진단 · 로그</button><button class="button secondary" data-action="history">최근 원정 기록</button><button class="button primary" data-action="settings-back">설정 완료 ${icon('check')}</button></div></div>`;
  }
  private renderDiagnostics() {
   this.overlay.innerHTML = `<div class="menu-panel diagnostics-panel">${this.topbar('DEVICE DIAGNOSTICS', 'diagnostics-back')}<div class="menu-heading"><span class="eyebrow">ON-DEVICE TEST LOG</span><h2>실기기 진단</h2><p>FPS · 프레임 지연 · 게임 입력 상태</p></div>
@@ -259,10 +293,21 @@ export class App {
  }
  private renderHistory() {
   const records = [...this.store.data.history].reverse();
-  this.overlay.innerHTML = `<div class="menu-panel history-panel">${this.topbar('원정 기록', 'history-back')}<div class="menu-heading"><h2>최근 원정 기록</h2><p>최근 20회 · 전투 종료 시 저장됩니다.</p></div>${records.length ? records.map(r => `<details class="history-record"><summary>${HEROES[r.hero].name} · ${r.cleared ? '클리어' : r.outcome === 'abandoned' ? '중도 종료' : '미완료'} · ${formatTime(r.time)}<br><small>처치 ${r.kills} · ${r.combat ? `놓침 ${r.combat.missed} (${r.combat.missRate.toFixed(1)}%)` : '상세 집계 미기록'} · 골드 ${r.gold}</small></summary><p>레벨 ${r.level} · 보스 ${r.bosses} · 숲 재도전 ${r.rank ?? 0}</p>${this.combatSummary(r)}</details>`).join('') : '<p class="combat-explanation">저장된 원정이 없습니다. 이전 버전의 기록은 소급 생성하지 않습니다.</p>'}<div class="menu-bottom"><button class="button secondary" data-action="history-back">이전 화면으로</button></div></div>`;
+  const index = this.historyPage * 3;
+  const page = records.slice(index, index + 3);
+  this.overlay.innerHTML = `<div class="menu-panel history-panel">${this.topbar('원정 기록', 'history-back')}<div class="menu-heading"><h2>최근 원정 기록</h2></div>
+   <div class="history-list">${page.length ? page.map(r => `<details class="history-record"><summary>${HEROES[r.hero].name} · ${r.cleared ? '클리어' : r.outcome === 'abandoned' ? '중도 종료' : '미완료'} · ${formatTime(r.time)}<br><small>처치 ${r.kills} · ${r.combat ? `놓침 ${r.combat.missed} (${r.combat.missRate.toFixed(1)}%)` : '상세 집계 미기록'} · 골드 ${r.gold}</small></summary><p>레벨 ${r.level} · 보스 ${r.bosses} · 숲 재도전 ${r.rank ?? 0}</p>${this.combatSummary(r)}</details>`).join('') : '<p>저장된 원정이 없습니다.</p>'}</div>
+   <div class="menu-bottom">${records.length > 3 ? `<nav class="history-pages" aria-label="기록 페이지"><button class="icon-button" data-action="history-page" data-direction="-1" aria-label="최근 기록" ${index === 0 ? 'disabled' : ''}>${icon('back')}</button><span>${this.historyPage + 1} / ${Math.ceil(records.length / 3)}</span><button class="icon-button" data-action="history-page" data-direction="1" aria-label="이전 기록" ${index + 3 >= records.length ? 'disabled' : ''}>${icon('right')}</button></nav>` : ''}<button class="button secondary" data-action="history-back">이전 화면으로</button></div></div>`;
  }
  private renderResult() {
   const r = this.lastResult; if (!r) { this.screen = 'title'; this.render(); return; }
-  this.overlay.innerHTML = `<div class="menu-panel result-panel"><div class="result-hero">${portrait(r.hero)}</div><h2>${r.cleared ? '뿌리의 군주를 쓰러뜨렸습니다!' : '원정이 종료되었습니다.'}</h2><p>${r.cleared ? '이번 숲 원정이 종료되었습니다.' : r.time >= 700 ? '결계가 붕괴했습니다. 공격 성장과 무기 진화를 준비하세요.' : '모은 골드로 성장한 뒤, 10분의 군주에게 다시 도전하세요.'}</p><div class="result-time" aria-label="전투 플레이 시간">${formatTime(r.time)}<span>${this.newRecord ? '✦ NEW PERSONAL BEST' : 'SURVIVED IN THE WILDS'}</span></div><div class="result-grid"><div>${icon('leaf')}<strong>${r.level}</strong><span>도달 레벨</span></div><div>${icon('skull')}<strong>${r.kills}</strong><span>처치한 적</span></div><div>${icon('trophy')}<strong>${r.bosses}</strong><span>처치한 보스</span></div></div>${this.combatSummary(r)}<div class="result-reward"><span>이번 원정의 보상<small>보유 골드에 반영되었습니다.</small></span><strong>${icon('coin')} +${r.gold}</strong></div><div class="menu-bottom"><button class="button primary" data-action="retry">${icon('compass')} 숲 다시 도전 ${icon('right')}</button><button class="button secondary" data-action="shop">${icon('leaf')} 성장의 제단으로 <span class="mini-coin">${this.store.data.gold}</span></button><button class="button secondary" data-action="history">최근 원정 기록</button><button class="text-button" data-action="title">타이틀로 돌아가기</button></div></div>`;
+  this.overlay.innerHTML = `<div class="menu-panel result-panel">
+   <div class="result-heading">${portrait(r.hero)}<h2>${r.cleared ? '뿌리의 군주를 쓰러뜨렸습니다!' : '원정이 종료되었습니다.'}</h2></div>
+   <div class="result-time" aria-label="전투 플레이 시간">${formatTime(r.time)}${this.newRecord ? '<span>최고 생존 기록</span>' : ''}</div>
+   <div class="result-grid"><div><strong>${r.level}</strong><span>도달 레벨</span></div><div><strong>${r.kills}</strong><span>처치한 적</span></div><div><strong>${r.bosses}</strong><span>처치한 보스</span></div></div>
+   ${this.combatSummary(r)}<div class="result-reward"><span>이번 원정의 보상</span><strong>${icon('coin')} +${r.gold}</strong></div>
+   <div class="menu-bottom"><button class="button primary" data-action="retry">${icon('compass')} 숲 다시 도전 ${icon('right')}</button>
+    <div class="result-actions"><button class="button secondary" data-action="shop">성장의 제단으로</button><button class="button secondary" data-action="history">최근 원정 기록</button></div>
+    <button class="text-button" data-action="title">타이틀로 돌아가기</button></div></div>`;
  }
 }
