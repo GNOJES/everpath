@@ -40,6 +40,7 @@ export const WARRIOR_CONTACT_DAMAGE = .50;
 export const MAGE_ARROW_DAMAGE = .25;
 
 export const CAMPAIGN = { finalAt: 600, arenaLimit: 100, clearGold: 300, supplyHeal: .3, arenaHeal: .2, wardenRangedDamage: { archer: .57, mage: .62 }, rankMax: 3 };
+export const WARDEN_MAGIC_ARMOR = { lowRankDamage: .44, lowAttackRank: 9, fullAttackRank: 13 };
 export const EVOLUTIONS = {
  warrior: { name: '여명의 성검', passive: 'power' as const, damageMultiplier: 1.15, description: '검격 거리 +25%, 검격 각도 +12°, 피해 +15%.' },
  archer: { name: '폭풍의 활', passive: 'haste' as const, damageMultiplier: 1.65, description: '같은 직선에 화살 1발 추가, 관통 5회, 피해 +65%.' },

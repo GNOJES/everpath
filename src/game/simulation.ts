@@ -1,4 +1,4 @@
-import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, WARRIOR_CONTACT_DAMAGE, MAGE_ARROW_DAMAGE, CAMPAIGN, EVOLUTIONS, WARRIOR_WEAPON_STEPS, warriorSweepAngle, isBoss } from './config';
+import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, WARRIOR_CONTACT_DAMAGE, MAGE_ARROW_DAMAGE, CAMPAIGN, WARDEN_MAGIC_ARMOR, EVOLUTIONS, WARRIOR_WEAPON_STEPS, warriorSweepAngle, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind } from './encounters';
@@ -307,7 +307,12 @@ export class GameSimulation {
  }
  damageEnemy(enemy: Enemy, amount: number) {
   if (enemy.hp <= 0 || this.state.status === 'victory' || this.state.status === 'gameover') return;
-  if (enemy.kind === 'warden' && this.state.hero !== 'warrior') amount *= CAMPAIGN.wardenRangedDamage[this.state.hero];
+  if (enemy.kind === 'warden' && this.state.hero === 'archer') amount *= CAMPAIGN.wardenRangedDamage.archer;
+  if (enemy.kind === 'warden' && this.state.hero === 'mage') {
+   const { lowRankDamage, lowAttackRank, fullAttackRank } = WARDEN_MAGIC_ARMOR;
+   const progress = clamp((this.save.upgrades.attack - lowAttackRank) / (fullAttackRank - lowAttackRank), 0, 1);
+   amount *= lowRankDamage + (CAMPAIGN.wardenRangedDamage.mage - lowRankDamage) * progress;
+  }
   if (enemy.paired && this.state.hero === 'archer') amount *= PAIRED_GRORM.archerDamage;
   enemy.hp -= amount; enemy.hitFlash = .12;
   this.effect('hit', enemy, 0xffedc2, 13, .14); this.effect('text', { x: enemy.x + this.random() * 12 - 6, y: enemy.y - 15 }, 0xffecc9, 0, .65, 0, `${Math.round(amount)}`);
