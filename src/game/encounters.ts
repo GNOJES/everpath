@@ -4,8 +4,6 @@ import type { EnemyKind } from './types';
 export function spawnInterval(seconds: number): number {
  return Math.max(BALANCE.minSpawnInterval, 1 / (1 / BALANCE.spawnInterval + Math.max(0, seconds) * BALANCE.spawnRateRamp));
 }
-export const SIDE_ENTRY_WARNING = .8;
-
 export const FOREST_ENCOUNTERS: { from: number; mix: [EnemyKind, number][] }[] = [
  { from: 0, mix: [['slime', 1]] },
  { from: 25, mix: [['slime', .65], ['goblin', .35]] },

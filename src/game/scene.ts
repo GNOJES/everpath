@@ -1,4 +1,3 @@
-import { SIDE_ENTRY_WARNING } from './encounters';
 import Phaser from 'phaser';
 import { createArt } from './art';
 import { WORLD as W, BALANCE, BOSS_PATTERN, HEROES, ENEMIES, SKILLS, isBoss } from './config';
@@ -48,7 +47,7 @@ export class ForestScene extends Phaser.Scene {
   this.hero.setPosition(p.x, p.y + (moving ? Math.sin(this.clock * 18) * 1.5 : Math.sin(this.clock * 2) * .7)).setDepth(100 + p.y).setFlipX(Math.cos(p.facing) < -.2).setAlpha(p.invincible > 0 && Math.sin(this.clock * 40) > 0 ? .4 : 1);
   this.shadow(p.x, p.y + 7, 18, 7);
   this.companions.forEach((image, i) => { image.setVisible(!s); if (!s) { image.y = 530 + i * 12 + Math.sin(this.clock * 2 + i) * .8; image.setDepth(100 + image.y); this.shadow(image.x, image.y + 7, 15, 6); } });
-  if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderEffects(s); this.renderSideEntries(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (s.skills.frost - 1) * BALANCE.skillRadiusStep); } }
+  if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderEffects(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (s.skills.frost - 1) * BALANCE.skillRadiusStep); } }
   else { this.actors.trim(0); this.shots.trim(0); for (const label of this.labels) label.setVisible(false); }
   // Small drifting spores are bounded and deterministic, rather than particle emitters.
   for (let i = 0; i < 17; i++) { const x = ((i * 107 + Math.sin(this.clock * .6 + i) * 18) % 430 + 430) % 430, y = (i * 61 + this.clock * (6 + i % 4)) % 768; this.fx.fillStyle(0xf5dca0, .15 + (Math.sin(this.clock * 1.3 + i) + 1) * .15); this.fx.fillRect(x, y, 2, 2); }
@@ -97,26 +96,16 @@ export class ForestScene extends Phaser.Scene {
    if (shot.kind === 'enemy') return;
    const length = shot.kind === 'arrow' ? 29 : 19;
    const color = shot.kind === 'magic' ? 0x795dff : shot.kind === 'blade' ? 0x1badb7 : 0xe85e33;
-   this.fx.lineStyle(shot.kind === 'arrow' ? 2 : 4, color, .72)
-    .lineBetween(shot.x - Math.cos(angle) * length, shot.y - Math.sin(angle) * length, shot.x, shot.y);
+   const dx = Math.cos(angle), dy = Math.sin(angle);
+   const tip = { x: shot.x + dx * 4, y: shot.y + dy * 4 };
+   const tail = { x: shot.x - dx * length, y: shot.y - dy * length };
+   const spread = shot.kind === 'arrow' ? 3 : 6;
+   this.fx.fillStyle(color, .55).fillTriangle(tail.x, tail.y,
+    tip.x - dy * spread, tip.y + dx * spread, tip.x + dy * spread, tip.y - dx * spread);
+   this.fx.lineStyle(1.6, 0xfff5e3, .9)
+    .lineBetween(shot.x - dx * length * .52, shot.y - dy * length * .52, tip.x, tip.y);
   });
   this.shots.trim(s.projectiles.length);
- }
- private renderSideEntries(s: RunState) {
-  const g = this.fx;
-  for (const {from, target, remaining} of s.sideEntries) {
-   const progress = clamp(1 - remaining / SIDE_ENTRY_WARNING, 0, 1);
-   const x = from.x < 0 ? 18 : W.width - 18, y = from.y;
-   const angle = Math.atan2(target.y - y, target.x - x);
-   const dx = Math.cos(angle), dy = Math.sin(angle);
-   g.fillStyle(0x50305e, .92).fillCircle(x, y, 13);
-   g.lineStyle(2, 0xffebab, .95).strokeCircle(x, y, 13);
-   g.lineStyle(3, 0xf88b4f, 1).beginPath()
-    .arc(x, y, 16, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2).strokePath();
-   for (const offset of [-1, 1]) {
-    g.lineStyle(2, 0xfff4d9, 1).lineBetween(x + dx * 6, y + dy * 6, x - dx * 4 - dy * 6 * offset, y - dy * 4 + dx * 6 * offset);
-   }
-  }
  }
  private renderHazards(s: RunState) {
   const g = this.fx;
@@ -159,17 +148,30 @@ export class ForestScene extends Phaser.Scene {
    }
    if (e.kind === 'text') { if (labelIndex >= 32) continue; let label = this.labels[labelIndex++]; if (!label) { label = this.add.text(0, 0, '', { fontFamily: 'monospace', fontSize: '17px', color: '#fff0cd', stroke: '#27372c', strokeThickness: 3, fontStyle: 'bold' }).setOrigin(.5).setDepth(2100); this.labels.push(label); } label.setText(e.text ?? '').setPosition(e.x, e.y - progress * 27).setAlpha(Math.min(1, f * 2)).setVisible(true); continue; }
    if (e.id > this.lastEffect && e.kind === 'hit') { if (e.color === 0xf2937e) this.audio.hurt(); else this.audio.hit(); }
-   if (e.id > this.lastEffect && (e.kind === 'slash' || e.kind === 'cleave') && s.status === 'running') this.audio.attack(s.hero);
+   if (e.id > this.lastEffect && e.kind === 'slash' && s.status === 'running') this.audio.attack(s.hero);
    g.lineStyle(2, e.color, f);
-   if (e.kind === 'slash' || e.kind === 'cleave') {
-    const span = e.kind === 'cleave' ? Math.PI : 1.7;
-    const radius = e.radius * (.75 + progress * .25);
-    for (const [width, color, offset] of [[13, 0x884132, 0], [8, e.color, 0], [3, 0xfff5d6, -5]]) {
-     g.lineStyle(width * (.45 + f * .55), color, f).beginPath()
-      .arc(e.x, e.y, radius + offset, e.angle - span, e.angle + span).strokePath();
+   if (e.kind === 'slash') {
+    const span = e.halfAngle ?? Math.PI / 4;
+    const radius = e.radius * (.85 + progress * .15);
+    const segments = 18;
+    const inner = (angle: number) => radius - 14 * Math.max(0, 1 - Math.abs(angle - e.angle) / span) * f;
+    g.fillStyle(e.color, f * .82);
+    for (let i = 0; i < segments; i++) {
+     const a = e.angle - span + i / segments * span * 2;
+     const b = e.angle - span + (i + 1) / segments * span * 2;
+     const ax = Math.cos(a), ay = Math.sin(a), bx = Math.cos(b), by = Math.sin(b);
+     g.fillTriangle(e.x + ax * radius, e.y + ay * radius, e.x + bx * radius, e.y + by * radius,
+      e.x + ax * inner(a), e.y + ay * inner(a));
+     g.fillTriangle(e.x + ax * inner(a), e.y + ay * inner(a), e.x + bx * radius, e.y + by * radius,
+      e.x + bx * inner(b), e.y + by * inner(b));
     }
+    g.lineStyle(2.5, 0xfff9e9, f).beginPath()
+     .arc(e.x, e.y, radius, e.angle - span, e.angle + span).strokePath();
+    g.lineStyle(1.5, 0x994e27, f * .65).beginPath()
+     .arc(e.x, e.y, radius - 5, e.angle - span * .76, e.angle + span * .76).strokePath();
    }
    else if (e.kind === 'crystal') {
+    g.lineStyle(2, 0xfff5ef, f * .72).strokeCircle(e.x, e.y, 4 + e.radius * progress);
     for (let i = 0; i < 7; i++) {
      const angle = i * 2.399, x = e.x + Math.cos(angle) * e.radius * progress, y = e.y + Math.sin(angle) * e.radius * progress;
      g.fillStyle(i % 2 ? e.color : 0xfff1ff, f).fillTriangle(x, y - 8, x + 4, y, x - 3, y + 4);

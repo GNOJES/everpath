@@ -73,3 +73,18 @@ it('lets a basic arrow hit two lined-up targets without hitting a third', () => 
  expect(targets[1].hp).toBeLessThan(targets[1].maxHp);
  expect(targets[2].hp).toBe(targets[2].maxHp);
 });
+
+it.each([[1, false, 84], [5, true, 136]])('limits sword level %i to the advertised frontal cone', (weaponLevel, evolved, degrees) => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ const p = sim.state.player;
+ sim.state.weaponLevel = weaponLevel;
+ sim.state.evolved = evolved;
+ const front = sim.spawnEnemy('brute', p.x, p.y - 55)!;
+ const rear = sim.spawnEnemy('brute', p.x, p.y + 62)!;
+ for (const enemy of [front, rear]) enemy.speed = 0;
+ frames(sim, .15);
+ expect(front.hp).toBeLessThan(front.maxHp);
+ expect(rear.hp).toBe(rear.maxHp);
+ const slash = sim.state.effects.find(effect => effect.kind === 'slash');
+ expect((slash?.halfAngle ?? 0) * 360 / Math.PI).toBeCloseTo(degrees);
+});

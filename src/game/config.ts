@@ -2,12 +2,12 @@ import type { HeroConfig, HeroId, EnemyKind, SkillConfig, PermanentId, PassiveId
 export const WORLD = { width: 432, height: 768, scrollSpeed: 22, playerRadius: 12, minY: 38, margin: 22, joystickRadius: 48, joystickDeadzone: 7, invincibility: .8, maxEnemies: 100, maxProjectiles: 180, maxEffects: 60, maxHazards: 12 };
 export const BALANCE = { bossAt: 180, bossEvery: 180, firstSpawn: 0, spawnInterval: 1.05, minSpawnInterval: .23, spawnRateRamp: .0045, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .08, weaponDamageStep: .24, weaponHasteStep: .08, weaponRangeStep: .09, eliteAfter: 80, goldPerKill: .75, bossGold: 40, bossXp: 40, enemyHpGrowth: .0056, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, healOnLevel: .08, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
 export const HEROES: Record<HeroId, HeroConfig> = {
- warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '가까운 적을 베고 검격마다 적 탄환 하나를 지웁니다.', weapon: '새벽의 검', upgradeDescription: '강한 근접 범위 피해. 5레벨에 전 방향을 베고 탄환을 최대 2개 지웁니다.', icon: 'sword', color: '#efae35', hp: 160, speed: 137, damage: 23, cooldown: .98, range: 89, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield'], bars: [5, 3, 3] },
+ warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '전방에 강한 검격을 가하고 범위 안의 적 탄환을 지웁니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격. 강화하면 부채꼴이 넓어지며 5레벨부터 탄환을 최대 두 개 지웁니다.', icon: 'sword', color: '#efae35', hp: 160, speed: 137, damage: 23, cooldown: .98, range: 83, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield'], bars: [5, 3, 3] },
  archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '가장 빠르게 이동하며 일직선의 적을 연속으로 관통합니다.', weapon: '바람의 활', upgradeDescription: '적 둘을 관통하며 두 번째 적은 피해가 줄어듭니다. 3·5레벨에 같은 직선으로 후속 화살을 발사합니다.', icon: 'bow', color: '#f47153', hp: 134, speed: 190, damage: 17, cooldown: .35, range: 310, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain'], bars: [2, 5, 4] },
  mage: { id: 'mage', name: '엘라', title: 'THE ARCANIST', role: '마법사', description: '유도 마법탄과 주문으로 적 하나에 강한 피해를 집중합니다.', weapon: '별빛 지팡이', upgradeDescription: '단일 유도탄. 레벨이 오르면 피해·사거리·공격 속도가 증가합니다.', icon: 'staff', color: '#7583e8', hp: 118, speed: 146, damage: 48, cooldown: .55, range: 290, projectileSpeed: 290, skills: ['chain', 'fire', 'frost'], bars: [2, 3, 5] },
 };
 export const SKILLS: Record<string, SkillConfig> = {
- whirl: { name: '회전베기', subtitle: 'WHIRLWIND', description: '주변을 휩쓰는 검의 소용돌이. 레벨마다 범위와 피해가 증가합니다.', icon: 'whirl', color: '#dfc183', cooldown: 5, damage: 1.6, radius: 115, count: 1 },
+ whirl: { name: '휩쓸기', subtitle: 'WHIRLWIND', description: '전방에 넓은 검격을 가합니다. 강화하면 부채꼴과 피해가 증가합니다.', icon: 'whirl', color: '#dfc183', cooldown: 5, damage: 1.6, radius: 115, count: 1 },
  blade: { name: '검기 발사', subtitle: 'DAWNBLADE', description: '적을 관통하는 검기를 발사합니다. 레벨마다 검기가 추가됩니다.', icon: 'sword', color: '#9fd9d0', cooldown: 4.4, damage: 1.65, radius: 12, count: 1 },
  shield: { name: '수호의 방패', subtitle: 'OAKHEART', description: '피해를 한 번 막는 보호막. 레벨이 오르면 재충전이 빨라지며 중첩되지 않습니다.', icon: 'shield', color: '#e1c988', cooldown: 13, hastePerLevel: .65, damage: 0, radius: 28, count: 1 },
  multishot: { name: '다중 화살', subtitle: 'WIND VOLLEY', description: '적을 향해 부채꼴로 추가 화살을 발사합니다.', icon: 'volley', color: '#f4795f', cooldown: 2.6, damage: 2.0, radius: 7, count: 3 },
@@ -36,14 +36,14 @@ export const PASSIVES: Record<PassiveId, { name: string; subtitle: string; icon:
 
 export const BOSS_PATTERN = { windup: 1.15, dashSpeed: 265, dashDuration: .62, recover: 1.6, chase: 3.2, slamRadius: 75, slamDelay: 1.35, slamDamage: 1.4 };
 
-export const CAMPAIGN = { finalAt: 600, arenaLimit: 100, clearGold: 300, supplyHeal: .3, arenaHeal: .2, wardenRangedDamage: { archer: .60, mage: .78 }, rankMax: 3 };
+export const CAMPAIGN = { finalAt: 600, arenaLimit: 100, clearGold: 300, supplyHeal: .3, arenaHeal: .2, wardenRangedDamage: { archer: .55, mage: .78 }, rankMax: 3 };
 export const EVOLUTIONS = {
- warrior: { name: '여명의 성검', passive: 'power' as const, damageMultiplier: 1.27, description: '검격 범위 +25%, 피해 +27%, 공격 주기 추가 단축.' },
+ warrior: { name: '여명의 성검', passive: 'power' as const, damageMultiplier: 1.27, description: '검격 거리 +25%, 검격 각도 +12°, 피해 +27%.' },
  archer: { name: '폭풍의 활', passive: 'haste' as const, damageMultiplier: 1.65, description: '같은 직선에 화살 1발 추가, 관통 5회, 피해 +65%.' },
  mage: { name: '천체의 지팡이', passive: 'power' as const, damageMultiplier: 1.95, description: '단일 마법탄 피해 +95%, 공격 주기 추가 단축.' },
 };
-// Front-load a portion of the sword's upgrade scaling so a melee opening
-// reaches its first kill sooner while the level-five weapon stays comparable.
-export const WARRIOR_WEAPON_STEPS = [1.38, 1.53, 1.67, 1.82, 1.96] as const;
+export const WARRIOR_WEAPON_STEPS = [2.15, 2.19, 2.23, 2.28, 2.33] as const;
+export const warriorSweepAngle = (level: number, evolved: boolean) =>
+ (42 + (level - 1) * 5 + (evolved ? 6 : 0)) * Math.PI / 180;
 
 export const isBoss = (kind: EnemyKind) => kind === 'boss' || kind === 'warden';

@@ -14,9 +14,32 @@ test('production audio renders finite audible PCM, mutes live channels and bound
  expect(results[0].rms).toBeGreaterThan(.001);expect(results[0].peak).toBeLessThan(1);expect(results[1].rms).toBeLessThan(.0001);
 });
 test('audio survives native suspension and resumes only on user gesture',async({page})=>{
- await page.addInitScript(()=>{const Original=window.AudioContext;(window as any).__contexts=[];window.AudioContext=class extends Original{constructor(...args:any[]){super(...args);(window as any).__contexts.push(this);}};});
+ await page.addInitScript(() => {
+  const Original = window.AudioContext;
+  const probe = window as unknown as { contexts: AudioContext[]; soundtrack: { duration: number; channels: number; offset: number; loop: boolean }[] };
+  probe.contexts = [];
+  probe.soundtrack = [];
+  window.AudioContext = class extends Original {
+   constructor(options?: AudioContextOptions) { super(options); probe.contexts.push(this); }
+   createBufferSource() {
+    const source = super.createBufferSource();
+    const start = source.start.bind(source);
+    source.start = (when, offset, duration) => {
+     probe.soundtrack.push({ duration: source.buffer!.duration, channels: source.buffer!.numberOfChannels, offset: offset ?? 0, loop: source.loop });
+     start(when, offset, duration);
+    };
+    return source;
+   }
+  };
+ });
  await page.goto('/e2e/playtest.html');await page.locator('[data-action="embark"]').click();await page.locator('[data-action="start"]').click();
- await expect.poll(()=>page.evaluate(()=>(window as any).__contexts[0]?.state)).toBe('running');
- await page.evaluate(()=>(window as any).__playtest.nativePause());await expect.poll(()=>page.evaluate(()=>(window as any).__contexts[0]?.state)).toBe('suspended');
- await page.locator('[data-action="resume"]').click();await expect.poll(()=>page.evaluate(()=>(window as any).__contexts[0]?.state)).toBe('running');
+ await expect.poll(()=>page.evaluate(()=>(window as unknown as { contexts:AudioContext[] }).contexts[0]?.state)).toBe('running');
+ const music = () => page.evaluate(() => (window as unknown as { soundtrack: { offset: number; channels: number; duration: number; loop: boolean }[] }).soundtrack);
+ await expect.poll(async () => (await music()).length).toBe(1);
+ expect((await music())[0]).toMatchObject({ offset: 0, channels: 2, loop: true });
+ expect((await music())[0].duration).toBeGreaterThan(50);
+ await page.evaluate(()=>(window as any).__playtest.nativePause());await expect.poll(()=>page.evaluate(()=>(window as unknown as { contexts:AudioContext[] }).contexts[0]?.state)).toBe('suspended');
+ await page.locator('[data-action="resume"]').click();await expect.poll(()=>page.evaluate(()=>(window as unknown as { contexts:AudioContext[] }).contexts[0]?.state)).toBe('running');
+ await expect.poll(async () => (await music()).length).toBe(2);
+ expect((await music())[1].offset).toBeGreaterThan(0);
 });

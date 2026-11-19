@@ -1,14 +1,14 @@
-import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, CAMPAIGN, EVOLUTIONS, WARRIOR_WEAPON_STEPS, isBoss } from './config';
+import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, CAMPAIGN, EVOLUTIONS, WARRIOR_WEAPON_STEPS, warriorSweepAngle, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
-import { spawnInterval, chooseEnemyKind, SIDE_ENTRY_WARNING } from './encounters';
+import { spawnInterval, chooseEnemyKind } from './encounters';
 import type { HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Effect, PassiveId, RunResult } from './types';
 let runCounter = 0;
 export function createRun(hero: HeroId, save: SaveData, rank = 0): RunState {
  const config = HEROES[hero], maxHp = Math.round(config.hp * (1 + save.upgrades.hp * PERMANENT.hp.step));
  return { runId: `${Date.now()}-${++runCounter}-${Math.random().toString(36).slice(2)}`, hero, status: 'running', elapsed: 0, rank, evolved: false, finalSpawned: false, supplies: 0, scroll: 0,
   player: { x: W.width / 2, y: 515, hp: maxHp, maxHp, speed: config.speed * (1 + save.upgrades.speed * PERMANENT.speed.step), invincible: 0, shield: 0, facing: -Math.PI / 2 },
-  enemies: [], sideEntries: [], projectiles: [], effects: [], hazards: [], level: 1, xp: 0, xpNext: B.initialXp, kills: 0, spawned: 0, escaped: 0, withdrawn: 0, bosses: 0, gold: 0, weaponLevel: 1, skills: {}, passives: { power: 0, haste: 0, vitality: 0, speed: 0 }, choices: [], nextBoss: B.bossAt };
+  enemies: [], projectiles: [], effects: [], hazards: [], level: 1, xp: 0, xpNext: B.initialXp, kills: 0, spawned: 0, escaped: 0, withdrawn: 0, bosses: 0, gold: 0, weaponLevel: 1, skills: {}, passives: { power: 0, haste: 0, vitality: 0, speed: 0 }, choices: [], nextBoss: B.bossAt };
 }
 export class GameSimulation {
  readonly state: RunState;
@@ -36,13 +36,12 @@ export class GameSimulation {
   if (input.x || input.y) p.facing = Math.atan2(input.y, input.x);
   if (s.elapsed >= (s.supplies + 1) * 120 && s.supplies < 4) { s.supplies++; p.hp = Math.min(p.maxHp, p.hp + p.maxHp * CAMPAIGN.supplyHeal); this.goldRaw += 15; s.gold = Math.floor(this.goldRaw); this.effect('text', p, 0xcce8ad, 0, 2, 0, '보급 · 체력 +30% · 15G'); }
   if (s.elapsed >= CAMPAIGN.finalAt && !s.finalSpawned) {
-   s.finalSpawned = true; s.withdrawn += s.enemies.filter(e => e.hp > 0).length; s.enemies = []; s.sideEntries = []; s.projectiles = []; s.hazards = []; this.spawnBossFromTop('warden', W.width / 2); s.nextBoss = Infinity;
+   s.finalSpawned = true; s.withdrawn += s.enemies.filter(e => e.hp > 0).length; s.enemies = []; s.projectiles = []; s.hazards = []; this.spawnBossFromTop('warden', W.width / 2); s.nextBoss = Infinity;
    const heal = Math.min(p.maxHp - p.hp, p.maxHp * CAMPAIGN.arenaHeal * this.save.upgrades.hp / B.permanentMax);
    p.hp += heal;
    this.effect('text', { x: W.width / 2, y: 260 }, 0xffd38a, 0, 3, 0, heal >= 1 ? `모르바 등장 · 체력 +${Math.floor(heal)}` : '모르바 등장');
   }
   if (s.finalSpawned && s.elapsed >= CAMPAIGN.finalAt + CAMPAIGN.arenaLimit) { p.shield = 0; p.invincible = 0; this.damagePlayer(p.hp); return; }
-  this.advanceSideEntries(dt);
   this.spawnTimer -= dt; if (!s.finalSpawned && this.spawnTimer <= 0) { this.spawnWave(); this.spawnTimer = spawnInterval(s.elapsed); }
   if (!s.finalSpawned && s.elapsed >= s.nextBoss && s.nextBoss <= B.bossAt + B.bossEvery) {
    const paired = s.nextBoss > B.bossAt;
@@ -87,27 +86,25 @@ export class GameSimulation {
   boss.timer += attackOffset;
  }
  private spawnWave() {
-  const { elapsed, player, sideEntries, enemies } = this.state;
-  if (this.state.spawned === 0 && sideEntries.length === 0) {
+  const { elapsed, player, enemies } = this.state;
+  if (this.state.spawned === 0) {
    for (const x of [112, 216, 320]) {
     if (this.spawnEnemy('slime', x, 145)) this.regularSpawns++;
    }
    return;
   }
   const count = elapsed < 20 ? 1 : this.random() < (elapsed < 200 ? .46 : .10) ? 2 : 1;
-  for (let i = 0; i < count && enemies.length + sideEntries.length < W.maxEnemies; i++) {
+  for (let i = 0; i < count && enemies.length < W.maxEnemies; i++) {
    const kind = chooseEnemyKind(elapsed, this.random);
    const offset = this.random();
-   // Count committed arrivals so double waves and seeded RNG cannot bias the split.
+   // Count arrivals so double waves and seeded RNG cannot bias the split.
    const side = this.sideSpawns < Math.floor((this.regularSpawns + 1) * 2 / 5);
    if (side) {
     const fromLeft = this.sideSpawns % 2 === 0;
     const from = { x: fromLeft ? -18 : W.width + 18, y: 112 + offset * 64 };
     const inset = 72 + offset * 44;
-    sideEntries.push({
-     from, target: { x: fromLeft ? inset : W.width - inset, y: 328 + offset * 48 },
-     kind, remaining: SIDE_ENTRY_WARNING,
-    });
+    const enemy = this.spawnEnemy(kind, from.x, from.y);
+    if (enemy) enemy.entryTarget = { x: fromLeft ? inset : W.width - inset, y: 328 + offset * 48 };
     this.sideSpawns++;
    } else {
     let x = 28 + offset * (W.width - 56);
@@ -115,17 +112,6 @@ export class GameSimulation {
     this.spawnEnemy(kind, x, -18);
    }
    this.regularSpawns++;
-  }
- }
- private advanceSideEntries(dt: number) {
-  const entries = this.state.sideEntries;
-  for (let i = 0; i < entries.length;) {
-   const entry = entries[i];
-   if ((entry.remaining -= dt) > 0) { i++; continue; }
-   if (this.state.enemies.length >= W.maxEnemies) break;
-   const enemy = this.spawnEnemy(entry.kind, entry.from.x, entry.from.y);
-   if (enemy) enemy.entryTarget = entry.target;
-   entries.splice(i, 1);
   }
  }
  private moveEnemies(dt: number) {
@@ -179,6 +165,18 @@ export class GameSimulation {
   for (const e of this.state.enemies) { if (e.hp <= 0 || excluded.has(e.id)) continue; const d = distance(origin, e) - (includeRadius ? e.radius : 0); if (d < min) { best = e; min = d; } }
   return best;
  }
+ private inSweep(origin: Vec, point: Vec, angle: number, halfAngle: number) {
+  const dir = unit(origin, point);
+  return (dir.x === 0 && dir.y === 0) || dir.x * Math.cos(angle) + dir.y * Math.sin(angle) >= Math.cos(halfAngle);
+ }
+ private slash(origin: Vec, radius: number, angle: number, halfAngle: number, damage: number, color: number) {
+  this.effect('slash', origin, color, radius, .24, angle, undefined, undefined, halfAngle);
+  for (const enemy of [...this.state.enemies]) {
+   if (distance(origin, enemy) <= radius + enemy.radius && this.inSweep(origin, enemy, angle, halfAngle)) {
+    this.damageEnemy(enemy, damage);
+   }
+  }
+ }
  private basicAttack(): boolean {
   const s = this.state, p = s.player;
   const target = this.nearest(p, this.range, new Set<number>(), s.hero === 'warrior');
@@ -188,16 +186,12 @@ export class GameSimulation {
    const aim = target ?? threats[0];
    if (!aim) return false;
    const angle = p.facing = Math.atan2(aim.y - p.y, aim.x - p.x);
-   const inSweep = (point: Vec) => {
-    const d = unit(p, point);
-    return s.weaponLevel >= 5 || Math.hypot(d.x, d.y) === 0 || d.x * Math.cos(angle) + d.y * Math.sin(angle) >= Math.cos(1.7);
-   };
-   this.effect(s.weaponLevel >= 5 ? 'cleave' : 'slash', p, 0xffd067, this.range, .23, angle);
-   for (const blocked of threats.filter(inSweep).slice(0, s.weaponLevel >= 5 ? 2 : 1)) {
+   const halfAngle = warriorSweepAngle(s.weaponLevel, s.evolved);
+   for (const blocked of threats.filter(shot => this.inSweep(p, shot, angle, halfAngle)).slice(0, s.weaponLevel >= 5 ? 2 : 1)) {
     blocked.life = 0;
-    this.effect('ring', blocked, 0xffeabc, 18, .24);
+    this.effect('crystal', blocked, 0xffd982, 17, .24);
    }
-   for (const e of [...s.enemies]) if (distance(p, e) <= this.range + e.radius && inSweep(e)) this.damageEnemy(e, this.damage);
+   this.slash(p, this.range, angle, halfAngle, this.damage, 0xffd067);
   } else {
    if (!target) return false;
    const angle = p.facing = Math.atan2(target.y - p.y, target.x - p.x);
@@ -231,7 +225,12 @@ export class GameSimulation {
    return true;
   }
   if (!target) return false;
-  if (id === 'whirl') this.aoe(p, radius, damage, 'cleave', 0xffb73e);
+  if (id === 'whirl') {
+   const close = this.nearest(p, radius, new Set<number>(), true);
+   if (!close) return false;
+   const angle = Math.atan2(close.y - p.y, close.x - p.x);
+   this.slash(p, radius, angle, (64 + (level - 1) * 5) * Math.PI / 180, damage, 0xffa447);
+  }
   else if (id === 'blade' || id === 'multishot' || id === 'pierce') {
    const count = id === 'multishot' ? cfg.count + (level - 1) * 2 : id === 'blade' ? level : 1;
    for (let i = 0; i < count; i++) this.shoot(p, target, id === 'blade' ? 'blade' : 'arrow', damage, id === 'pierce' ? 490 : 350, id === 'multishot' ? 1 : 5 + level, (i - (count - 1) / 2) * .2);
@@ -325,8 +324,8 @@ export class GameSimulation {
   else { const key = id.slice(8) as PassiveId; s.passives[key]++; if (key === 'vitality') { const extra = HEROES[s.hero].hp * B.vitalityStep; s.player.maxHp += extra; s.player.hp = Math.min(s.player.maxHp, s.player.hp + extra * 1.6); } else if (key === 'speed') s.player.speed += HEROES[s.hero].speed * B.speedStep; }
   this.pendingChoices--; this.nextChoice(); return true;
  }
- private effect(kind: Effect['kind'], at: Vec, color: number, radius: number, duration: number, angle = 0, text?: string, to?: Vec) {
-  const effects = this.state.effects; if (effects.length >= W.maxEffects) effects.shift(); effects.push({ id: ++this.serial, kind, x: at.x, y: at.y, color, radius, life: duration, duration, angle, text, x2: to?.x, y2: to?.y });
+ private effect(kind: Effect['kind'], at: Vec, color: number, radius: number, duration: number, angle = 0, text?: string, to?: Vec, halfAngle?: number) {
+  const effects = this.state.effects; if (effects.length >= W.maxEffects) effects.shift(); effects.push({ id: ++this.serial, kind, x: at.x, y: at.y, color, radius, life: duration, duration, angle, text, halfAngle, x2: to?.x, y2: to?.y });
  }
  result(): RunResult { const s = this.state; return { runId: s.runId, hero: s.hero, time: s.elapsed, level: s.level, kills: s.kills, bosses: s.bosses, gold: s.gold, cleared: s.status === 'victory', outcome: s.status === 'victory' ? 'victory' : s.status === 'gameover' ? 'defeat' : 'abandoned', rank: s.rank, combat: { spawned: s.spawned, killed: s.kills, missed: s.spawned - s.kills, escaped: s.escaped, withdrawn: s.withdrawn, remaining: s.enemies.filter(e => e.hp > 0).length, killRate: s.spawned ? s.kills / s.spawned * 100 : 0, missRate: s.spawned ? (s.spawned - s.kills) / s.spawned * 100 : 0 } }; }
 }

@@ -21,22 +21,21 @@ it('uses three upper entries with an exact 3:1:1 split across complete groups', 
  expect(calls.every(([, ,y]) => y <= 176)).toBe(true);
 });
 
-it('warns, advances diagonally through the middle-upper lane, then starts chasing', () => {
+it('spawns a side enemy immediately, then advances diagonally before chasing', () => {
  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
  sim.state.player.y = 75;
- while (!sim.state.sideEntries.length && sim.state.elapsed < 4) sim.update(.025);
- const pending = sim.state.sideEntries[0];
- expect(pending.remaining).toBeCloseTo(.8);
- expect(sim.state.enemies.every(e => !e.entryTarget)).toBe(true);
- for (let i = 0; i < 20; i++) sim.update(.025);
- expect(sim.state.sideEntries[0].remaining).toBeGreaterThan(.25);
+ sim.update(.025);
+ const initial = sim.state.spawned;
  let side = sim.state.enemies.find(e => e.entryTarget);
- for (let i = 0; !side && i < 25; i++) {
+ for (let i = 0; !side && i < 70; i++) {
   sim.update(.025);
   side = sim.state.enemies.find(e => e.entryTarget);
  }
+ expect(sim.state.spawned).toBe(initial + 1);
+ expect(sim.state.elapsed).toBeLessThan(1.2);
  expect(side).toBeDefined();
  const enemy = side!;
+ const target = enemy.entryTarget!;
  const start = { x: enemy.x, y: enemy.y };
  sim.update(.05);
  expect(enemy.x).toBeGreaterThan(start.x);
@@ -46,9 +45,9 @@ it('warns, advances diagonally through the middle-upper lane, then starts chasin
   if (sim.state.choices[0]) sim.chooseUpgrade(sim.state.choices[0].id);
  }
  expect(enemy.entryTarget).toBeUndefined();
- expect(enemy.y).toBeCloseTo(pending.target.y);
+ expect(enemy.y).toBeCloseTo(target.y);
  sim.update(.05);
- expect(enemy.y).toBeLessThan(pending.target.y);
+ expect(enemy.y).toBeLessThan(target.y);
 });
 
 it('compares camping lanes and mobile play for all heroes across six seeds', () => {
