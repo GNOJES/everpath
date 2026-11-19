@@ -1,0 +1,133 @@
+[
+  {
+    "build": "weapon",
+    "hero": "mage",
+    "elapsed": 618.7280333333551,
+    "status": "victory",
+    "hp": 0.6677096666552416,
+    "maxHp": 187,
+    "level": 22,
+    "skills": {
+      "frost": 3,
+      "fire": 3,
+      "chain": 3
+    },
+    "kills": 1312,
+    "bosses": 3,
+    "direction": {
+      "x": 0.7071067811865474,
+      "y": -0.7071067811865477
+    },
+    "center": {
+      "x": 215.99995492788454,
+      "y": 552.9599727395446
+    },
+    "dragging": false,
+    "choice": null,
+    "combat": {
+      "spawned": 1317,
+      "killed": 1312,
+      "missed": 5,
+      "escaped": 0,
+      "withdrawn": 5,
+      "remaining": 0,
+      "killRate": 99.62034927866364,
+      "missRate": 0.3796507213363705
+    },
+    "scroll": 13612.016733341374,
+    "maxEnemies": 13,
+    "maxShots": 34,
+    "maxObjects": 156,
+    "firstLevel": 17.4054333333332,
+    "hpLost": 263,
+    "checkpoints": [
+      {
+        "seconds": 60,
+        "hp": 187,
+        "level": 4,
+        "kills": 40,
+        "bosses": 0,
+        "enemies": 5
+      },
+      {
+        "seconds": 120,
+        "hp": 187,
+        "level": 7,
+        "kills": 106,
+        "bosses": 0,
+        "enemies": 3
+      },
+      {
+        "seconds": 180,
+        "hp": 187,
+        "level": 9,
+        "kills": 192,
+        "bosses": 0,
+        "enemies": 2
+      },
+      {
+        "seconds": 240,
+        "hp": 187,
+        "level": 11,
+        "kills": 295,
+        "bosses": 1,
+        "enemies": 2
+      },
+      {
+        "seconds": 300,
+        "hp": 183,
+        "level": 14,
+        "kills": 416,
+        "bosses": 1,
+        "enemies": 3
+      },
+      {
+        "seconds": 360,
+        "hp": 187,
+        "level": 16,
+        "kills": 561,
+        "bosses": 1,
+        "enemies": 1
+      },
+      {
+        "seconds": 420,
+        "hp": 159,
+        "level": 18,
+        "kills": 717,
+        "bosses": 2,
+        "enemies": 5
+      },
+      {
+        "seconds": 480,
+        "hp": 187,
+        "level": 19,
+        "kills": 896,
+        "bosses": 2,
+        "enemies": 6
+      },
+      {
+        "seconds": 540,
+        "hp": 163,
+        "level": 21,
+        "kills": 1092,
+        "bosses": 2,
+        "enemies": 8
+      },
+      {
+        "seconds": 600,
+        "hp": 177,
+        "level": 22,
+        "kills": 1311,
+        "bosses": 2,
+        "enemies": 1
+      }
+    ],
+    "bossWarning": false,
+    "bossVisible": false,
+    "seed": 42,
+    "meta": "All four permanent ranks10 fixture, normal HP, no combat edits",
+    "input": "Native CDP touch, 200ms steering, real App/Phaser, accelerated browser clock",
+    "realSeconds": 76,
+    "errors": []
+  }
+]

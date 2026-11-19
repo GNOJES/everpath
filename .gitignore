@@ -1,0 +1,19 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.DS_Store
+
+# Android local toolchain, signing and generated APKs
+artifacts/
+.android/
+.gradle/
+*.keystore
+*.jks
+
+# Local editor, hosting linkage, and environment files
+.idea/
+.vercel/
+.env
+.env.*
+!.env.example

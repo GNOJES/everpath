@@ -1,0 +1,30 @@
+{
+  "source": "Recovered summaries from captured Playwright stdout; original aggregate was overwritten after worker restarts. Full missing telemetry is not reconstructed.",
+  "inputHz": 5,
+  "results": [
+    {
+      "hero": "warrior",
+      "elapsed": 249.4682,
+      "kills": 293,
+      "bosses": 0,
+      "maxObjects": 137,
+      "errors": []
+    },
+    {
+      "hero": "archer",
+      "elapsed": 246.3674,
+      "kills": 297,
+      "bosses": 1,
+      "maxObjects": 116,
+      "errors": []
+    },
+    {
+      "hero": "mage",
+      "elapsed": 600.0326,
+      "kills": 1316,
+      "bosses": 3,
+      "maxObjects": 126,
+      "errors": []
+    }
+  ]
+}

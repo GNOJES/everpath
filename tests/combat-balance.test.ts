@@ -1,0 +1,65 @@
+import { describe, it, expect } from 'vitest';
+import { GameSimulation } from '../src/game/simulation';
+import { parseSave } from '../src/game/save';
+const frames = (sim: GameSimulation, seconds: number) => { for (let i = 0; i < seconds * 30; i++) sim.update(1 / 30); };
+describe('weapon and skill balance regressions', () => {
+ it('keeps an aimed arrow at weapon level three instead of missing both sides of a small target', () => {
+  const sim = new GameSimulation('archer', parseSave(null), () => .5); sim.state.weaponLevel = 3;
+  const target = sim.spawnEnemy('slime', 216, 215)!; target.hp = target.maxHp = 1000; target.speed = 0;
+  frames(sim, 1); expect(target.hp).toBeLessThan(1000);
+ });
+ it('retargets piercing magic past a still-living enemy it has already hit', () => {
+  const sim = new GameSimulation('mage', parseSave(null), () => .5); sim.state.weaponLevel = 4;
+  const front = sim.spawnEnemy('slime', 216, 430)!, back = sim.spawnEnemy('slime', 216, 295)!;
+  for (const e of [front, back]) { e.hp = e.maxHp = 10000; e.speed = 0; }
+  frames(sim, 1.5); expect(front.hp).toBeLessThan(10000); expect(back.hp).toBeLessThan(10000);
+ });
+ it('upgrading the basic weapon does not secretly multiply the damage or recharge of learned skills', () => {
+  const cast = (weapon: number) => { const sim = new GameSimulation('mage', parseSave(null), () => .5); sim.state.weaponLevel = weapon; sim.state.skills.fire = 1; const e = sim.spawnEnemy('slime', 216, 450)!; e.hp = 10000; sim.update(.05); return 10000 - e.hp; };
+  expect(cast(5)).toBeCloseTo(cast(1));
+ });
+ it('slows enemies whose collision radius overlaps the visible upgraded frost aura', () => {
+  const run = (frost: number) => { const sim = new GameSimulation('mage', parseSave(null), () => .5); sim.state.skills.frost = frost; sim.update(.05); const e = sim.spawnEnemy('slime', 216, 405)!; const before = e.y; sim.update(.05); return e.y - before; };
+  // Level two is a 100px circle; this 13px-radius slime at 110px overlaps it.
+  expect(run(2)).toBeLessThan(run(0));
+ });
+});
+
+it('makes both level-three bow arrows contribute against a narrow distant target', () => {
+ const sim = new GameSimulation('archer', parseSave(null), () => .5); sim.state.weaponLevel = 3;
+ const target = sim.spawnEnemy('slime', 216, 215)!; target.hp = target.maxHp = 1000; target.speed = 0;
+ frames(sim, 1); expect(1000 - target.hp).toBeGreaterThanOrEqual(47);
+});
+
+it('higher shield ranks improve recharge without stockpiling three fully blocked hits', () => {
+ const sim = new GameSimulation('warrior', parseSave(null)); sim.state.skills.shield = 3; sim.update(.05);
+ expect(sim.state.player.shield).toBe(1);
+});
+
+it('keeps skill recharge independent of weapon haste bonuses', () => {
+ const recharge = (level: number) => { const sim = new GameSimulation('warrior', parseSave(null)); sim.state.skills.shield = 1; sim.state.weaponLevel = level; sim.update(.05); sim.damagePlayer(1); let time = 0; while (sim.state.player.shield === 0 && time < 13) { sim.update(.05); time += .05; } return time; };
+ expect(recharge(5)).toBeCloseTo(recharge(1));
+});
+
+it('lets a sword start a swing when the enemy body already intersects its visible reach', () => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ const target = sim.spawnEnemy('slime', 216, 431)!; target.hp = 1000; target.speed = 0;
+ sim.update(.05); sim.update(.05); sim.update(.05); expect(target.hp).toBeLessThan(1000);
+});
+
+it('the warrior sweeps away an approaching enemy projectile without a melee target', () => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ const { player, projectiles } = sim.state;
+ projectiles.push({ id: 900, x: player.x, y: player.y - 40, kind:'enemy',
+  vx:0, vy:50, pierce:1, damage:25, radius:4, life:1, splash:0, hit:new Set() });
+ frames(sim, .2);
+ expect(sim.state.projectiles.some(shot => shot.id === 900)).toBe(false);
+ expect(player.hp).toBe(player.maxHp);
+});
+
+it('puts three enemies on the field on the first frame of a normal expedition', () => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ sim.update(.016);
+ expect(sim.state.spawned).toBe(3);
+ expect(sim.state.enemies.every(enemy => enemy.y > 0)).toBe(true);
+});

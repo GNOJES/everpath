@@ -1,0 +1,10 @@
+# Progression and audio retune
+User requests more gradual growth, no two-attempt mage clear, sufficiently broad simulations, full sound audit and APK rebuild. Continue authorized inline implementation with TDD and final review.
+- [x] Broaden progression to20 smaller ranks (attack/hp6%,speed1%,gold2.5%; same max bonuses) and polynomial costs24+12L+3L². Exact investment refunds unchanged; legacy saves without investment still use old12*1.65 costs. Keep old purchased ranks' bonus when migrating pre-retune saves (double ranks). Version progressionEconomy2 marks conversion. No currency/records lost.
+- [x] Balance mage frost/area damage; run0/5/10/15/20 rank matrix across6seeds/3builds and multi-schedule retry campaigns (balanced/offense purchase, weapon/skills builds), target first clear >=6attempts across all measured campaigns, median8–16; late growth clears all heroes. No forced purchase gates.
+- [x] Replace direct audio destination gains with live music/sfx/master mixing, cap voices, cancel queued/chiming audio on suspension, remove gameplay Math.random from sound, distinct player hurt/attack/boss/victory/defeat cues. Audio synthesis test plus real-browser routing/lifecycle and offline rendered PCM/spectral checks; don't claim phone speaker listening.
+- [x] Run existing tests and update specified new contracts, browser flows and long normal-HP grown fight, review, docs, APK0.4/code4 and verify signature/assets.
+
+Ruling from broad observations: retain rare five-attempt clears rather than add a purchase gate; require every observed retry campaign >=5 attempts, median8–20 per hero and median ratio<1.6. Extend capped retries to36 for the difficult mage skills/offense path, preserving failed histories. Final bossHP56000 raises the damage/survival commitment of the first objective. Mage24 retains viable skill builds; an experimental21 version produced a stalled path and was rejected.
+
+Final evidence: 85 tests passed; 270 rank comparisons+768 earned-gold retry runs; 12 browser scenarios; 619.390s normal-HP grown touch victory; no Critical/Important review findings.

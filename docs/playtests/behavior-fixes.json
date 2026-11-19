@@ -1,0 +1,5752 @@
+{
+  "conditions": "Normal HP, no meta upgrades, no state edits, 30 Hz simulation, 10 Hz steering; capped at 600 game seconds",
+  "results": [
+    {
+      "hero": "warrior",
+      "seed": 42,
+      "policy": "idle",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 95.9,
+      "status": "gameover",
+      "firstLevel": 27.2,
+      "kills": 66,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 218,
+      "hpLost": 293,
+      "hits": 24,
+      "maxEnemies": 18,
+      "maxShots": 4,
+      "upgrades": [
+        {
+          "time": 27.2,
+          "id": "skill:shield"
+        },
+        {
+          "time": 43.9,
+          "id": "skill:blade"
+        },
+        {
+          "time": 65.1,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 88.4,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 56,
+          "maxHp": 160,
+          "kills": 30,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 7,
+          "skills": {
+            "shield": 1,
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 42,
+      "policy": "idle",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 95.9,
+      "status": "gameover",
+      "firstLevel": 27.2,
+      "kills": 66,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 218,
+      "hpLost": 293,
+      "hits": 24,
+      "maxEnemies": 18,
+      "maxShots": 4,
+      "upgrades": [
+        {
+          "time": 27.2,
+          "id": "skill:shield"
+        },
+        {
+          "time": 43.9,
+          "id": "skill:blade"
+        },
+        {
+          "time": 65.1,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 88.4,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 56,
+          "maxHp": 160,
+          "kills": 30,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 7,
+          "skills": {
+            "shield": 1,
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 42,
+      "policy": "idle",
+      "build": "skills",
+      "duration": 600,
+      "survived": 95.9,
+      "status": "gameover",
+      "firstLevel": 27.2,
+      "kills": 66,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 218,
+      "hpLost": 293,
+      "hits": 24,
+      "maxEnemies": 18,
+      "maxShots": 4,
+      "upgrades": [
+        {
+          "time": 27.2,
+          "id": "skill:shield"
+        },
+        {
+          "time": 43.9,
+          "id": "skill:blade"
+        },
+        {
+          "time": 65.1,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 88.4,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 56,
+          "maxHp": 160,
+          "kills": 30,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 7,
+          "skills": {
+            "shield": 1,
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 42,
+      "policy": "circuit",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 150.8,
+      "status": "gameover",
+      "firstLevel": 40.1,
+      "kills": 153,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 283,
+      "hits": 24,
+      "maxEnemies": 35,
+      "maxShots": 10,
+      "upgrades": [
+        {
+          "time": 40.1,
+          "id": "skill:shield"
+        },
+        {
+          "time": 65.5,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 70.5,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 84,
+          "id": "passive:power"
+        },
+        {
+          "time": 106.3,
+          "id": "skill:blade"
+        },
+        {
+          "time": 128.7,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 133,
+          "maxHp": 160,
+          "kills": 19,
+          "level": 2,
+          "bosses": 0,
+          "enemies": 18,
+          "skills": {
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 55,
+          "maxHp": 160,
+          "kills": 109,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 10,
+          "skills": {
+            "shield": 1,
+            "whirl": 2,
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 42,
+      "policy": "circuit",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 165,
+      "status": "gameover",
+      "firstLevel": 40.1,
+      "kills": 202,
+      "bosses": 0,
+      "level": 8,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 237,
+      "hits": 20,
+      "maxEnemies": 31,
+      "maxShots": 11,
+      "upgrades": [
+        {
+          "time": 40.1,
+          "id": "skill:shield"
+        },
+        {
+          "time": 65.5,
+          "id": "weapon"
+        },
+        {
+          "time": 77.8,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 91,
+          "id": "skill:shield"
+        },
+        {
+          "time": 111.2,
+          "id": "weapon"
+        },
+        {
+          "time": 127.6,
+          "id": "skill:blade"
+        },
+        {
+          "time": 154.4,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 133,
+          "maxHp": 160,
+          "kills": 19,
+          "level": 2,
+          "bosses": 0,
+          "enemies": 18,
+          "skills": {
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 113,
+          "maxHp": 160,
+          "kills": 104,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 15,
+          "skills": {
+            "shield": 2,
+            "whirl": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 42,
+      "policy": "circuit",
+      "build": "skills",
+      "duration": 600,
+      "survived": 150.8,
+      "status": "gameover",
+      "firstLevel": 40.1,
+      "kills": 153,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 283,
+      "hits": 24,
+      "maxEnemies": 35,
+      "maxShots": 10,
+      "upgrades": [
+        {
+          "time": 40.1,
+          "id": "skill:shield"
+        },
+        {
+          "time": 65.5,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 70.5,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 84,
+          "id": "passive:power"
+        },
+        {
+          "time": 106.3,
+          "id": "skill:blade"
+        },
+        {
+          "time": 128.7,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 133,
+          "maxHp": 160,
+          "kills": 19,
+          "level": 2,
+          "bosses": 0,
+          "enemies": 18,
+          "skills": {
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 55,
+          "maxHp": 160,
+          "kills": 109,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 10,
+          "skills": {
+            "shield": 1,
+            "whirl": 2,
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 42,
+      "policy": "reactive",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 223.6,
+      "status": "gameover",
+      "firstLevel": 52.6,
+      "kills": 360,
+      "bosses": 0,
+      "level": 10,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 249,
+      "hits": 15,
+      "maxEnemies": 72,
+      "maxShots": 31,
+      "upgrades": [
+        {
+          "time": 52.6,
+          "id": "skill:blade"
+        },
+        {
+          "time": 61.8,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 75,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 89.1,
+          "id": "skill:shield"
+        },
+        {
+          "time": 106.3,
+          "id": "skill:blade"
+        },
+        {
+          "time": 130.1,
+          "id": "weapon"
+        },
+        {
+          "time": 157.7,
+          "id": "skill:shield"
+        },
+        {
+          "time": 185.2,
+          "id": "skill:shield"
+        },
+        {
+          "time": 209.8,
+          "id": "passive:power"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 160,
+          "maxHp": 160,
+          "kills": 14,
+          "level": 2,
+          "bosses": 0,
+          "enemies": 23,
+          "skills": {
+            "blade": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 141,
+          "maxHp": 160,
+          "kills": 106,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 13,
+          "skills": {
+            "blade": 2,
+            "whirl": 2,
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 89,
+          "maxHp": 160,
+          "kills": 221,
+          "level": 8,
+          "bosses": 0,
+          "enemies": 41,
+          "skills": {
+            "blade": 2,
+            "whirl": 2,
+            "shield": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 42,
+      "policy": "reactive",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 202.4,
+      "status": "gameover",
+      "firstLevel": 52.6,
+      "kills": 278,
+      "bosses": 0,
+      "level": 9,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 288,
+      "hits": 18,
+      "maxEnemies": 58,
+      "maxShots": 21,
+      "upgrades": [
+        {
+          "time": 52.6,
+          "id": "weapon"
+        },
+        {
+          "time": 56.7,
+          "id": "weapon"
+        },
+        {
+          "time": 71.9,
+          "id": "skill:blade"
+        },
+        {
+          "time": 91.2,
+          "id": "skill:shield"
+        },
+        {
+          "time": 114.4,
+          "id": "weapon"
+        },
+        {
+          "time": 129.8,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 157.8,
+          "id": "passive:power"
+        },
+        {
+          "time": 178.4,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 160,
+          "maxHp": 160,
+          "kills": 19,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 18,
+          "skills": {}
+        },
+        {
+          "seconds": 120,
+          "hp": 99,
+          "maxHp": 160,
+          "kills": 95,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 24,
+          "skills": {
+            "blade": 1,
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 63,
+          "maxHp": 189,
+          "kills": 221,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 41,
+          "skills": {
+            "blade": 1,
+            "shield": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 42,
+      "policy": "reactive",
+      "build": "skills",
+      "duration": 600,
+      "survived": 237.7,
+      "status": "gameover",
+      "firstLevel": 52.6,
+      "kills": 428,
+      "bosses": 0,
+      "level": 11,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 311,
+      "hits": 19,
+      "maxEnemies": 62,
+      "maxShots": 26,
+      "upgrades": [
+        {
+          "time": 52.6,
+          "id": "skill:blade"
+        },
+        {
+          "time": 61.8,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 75,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 89.1,
+          "id": "skill:shield"
+        },
+        {
+          "time": 106.3,
+          "id": "skill:blade"
+        },
+        {
+          "time": 130.1,
+          "id": "skill:blade"
+        },
+        {
+          "time": 151,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 176.7,
+          "id": "weapon"
+        },
+        {
+          "time": 199.4,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 230.1,
+          "id": "skill:shield"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 160,
+          "maxHp": 160,
+          "kills": 14,
+          "level": 2,
+          "bosses": 0,
+          "enemies": 23,
+          "skills": {
+            "blade": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 141,
+          "maxHp": 160,
+          "kills": 106,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 13,
+          "skills": {
+            "blade": 2,
+            "whirl": 2,
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 86,
+          "maxHp": 160,
+          "kills": 231,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 31,
+          "skills": {
+            "blade": 3,
+            "whirl": 3,
+            "shield": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 271,
+      "policy": "idle",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 91.4,
+      "status": "gameover",
+      "firstLevel": 28.6,
+      "kills": 58,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 247,
+      "hits": 20,
+      "maxEnemies": 19,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 28.6,
+          "id": "skill:shield"
+        },
+        {
+          "time": 44.4,
+          "id": "skill:blade"
+        },
+        {
+          "time": 65.2,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 89,
+          "id": "skill:whirl"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 40,
+          "maxHp": 160,
+          "kills": 31,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "shield": 1,
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 271,
+      "policy": "idle",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 107.7,
+      "status": "gameover",
+      "firstLevel": 28.6,
+      "kills": 85,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 173,
+      "hits": 12,
+      "maxEnemies": 19,
+      "maxShots": 5,
+      "upgrades": [
+        {
+          "time": 28.6,
+          "id": "weapon"
+        },
+        {
+          "time": 44.3,
+          "id": "weapon"
+        },
+        {
+          "time": 65.8,
+          "id": "weapon"
+        },
+        {
+          "time": 86.5,
+          "id": "skill:shield"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 160,
+          "maxHp": 160,
+          "kills": 31,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {}
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 271,
+      "policy": "idle",
+      "build": "skills",
+      "duration": 600,
+      "survived": 91.4,
+      "status": "gameover",
+      "firstLevel": 28.6,
+      "kills": 58,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 247,
+      "hits": 20,
+      "maxEnemies": 19,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 28.6,
+          "id": "skill:shield"
+        },
+        {
+          "time": 44.4,
+          "id": "skill:blade"
+        },
+        {
+          "time": 65.2,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 89,
+          "id": "skill:whirl"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 40,
+          "maxHp": 160,
+          "kills": 31,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "shield": 1,
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 271,
+      "policy": "circuit",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 127.7,
+      "status": "gameover",
+      "firstLevel": 32,
+      "kills": 102,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 218,
+      "hpLost": 318,
+      "hits": 26,
+      "maxEnemies": 30,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 32,
+          "id": "passive:haste"
+        },
+        {
+          "time": 55.7,
+          "id": "skill:shield"
+        },
+        {
+          "time": 76,
+          "id": "weapon"
+        },
+        {
+          "time": 92.7,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 110.6,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 104,
+          "maxHp": 160,
+          "kills": 20,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 17,
+          "skills": {
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 36,
+          "maxHp": 218,
+          "kills": 97,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 22,
+          "skills": {
+            "shield": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 271,
+      "policy": "circuit",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 127.7,
+      "status": "gameover",
+      "firstLevel": 32,
+      "kills": 102,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 218,
+      "hpLost": 318,
+      "hits": 26,
+      "maxEnemies": 30,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 32,
+          "id": "passive:haste"
+        },
+        {
+          "time": 55.7,
+          "id": "skill:shield"
+        },
+        {
+          "time": 76,
+          "id": "weapon"
+        },
+        {
+          "time": 92.7,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 110.6,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 104,
+          "maxHp": 160,
+          "kills": 20,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 17,
+          "skills": {
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 36,
+          "maxHp": 218,
+          "kills": 97,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 22,
+          "skills": {
+            "shield": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 271,
+      "policy": "circuit",
+      "build": "skills",
+      "duration": 600,
+      "survived": 127.7,
+      "status": "gameover",
+      "firstLevel": 32,
+      "kills": 102,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 218,
+      "hpLost": 318,
+      "hits": 26,
+      "maxEnemies": 30,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 32,
+          "id": "passive:haste"
+        },
+        {
+          "time": 55.7,
+          "id": "skill:shield"
+        },
+        {
+          "time": 76,
+          "id": "weapon"
+        },
+        {
+          "time": 92.7,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 110.6,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 104,
+          "maxHp": 160,
+          "kills": 20,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 17,
+          "skills": {
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 36,
+          "maxHp": 218,
+          "kills": 97,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 22,
+          "skills": {
+            "shield": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 271,
+      "policy": "reactive",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 155.6,
+      "status": "gameover",
+      "firstLevel": 23.4,
+      "kills": 165,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 216,
+      "hits": 15,
+      "maxEnemies": 35,
+      "maxShots": 18,
+      "upgrades": [
+        {
+          "time": 23.4,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 44.4,
+          "id": "skill:blade"
+        },
+        {
+          "time": 67.1,
+          "id": "skill:blade"
+        },
+        {
+          "time": 91.2,
+          "id": "weapon"
+        },
+        {
+          "time": 106.9,
+          "id": "weapon"
+        },
+        {
+          "time": 134.4,
+          "id": "skill:whirl"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 147,
+          "maxHp": 160,
+          "kills": 31,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "whirl": 1,
+            "blade": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 145,
+          "maxHp": 160,
+          "kills": 102,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 17,
+          "skills": {
+            "whirl": 1,
+            "blade": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 271,
+      "policy": "reactive",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 219.6,
+      "status": "gameover",
+      "firstLevel": 23.4,
+      "kills": 351,
+      "bosses": 0,
+      "level": 10,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 255,
+      "hits": 16,
+      "maxEnemies": 53,
+      "maxShots": 21,
+      "upgrades": [
+        {
+          "time": 23.4,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 44.4,
+          "id": "skill:blade"
+        },
+        {
+          "time": 67.1,
+          "id": "skill:blade"
+        },
+        {
+          "time": 91.2,
+          "id": "weapon"
+        },
+        {
+          "time": 106.9,
+          "id": "weapon"
+        },
+        {
+          "time": 134.4,
+          "id": "weapon"
+        },
+        {
+          "time": 159.8,
+          "id": "weapon"
+        },
+        {
+          "time": 179.2,
+          "id": "skill:shield"
+        },
+        {
+          "time": 204.6,
+          "id": "skill:whirl"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 147,
+          "maxHp": 160,
+          "kills": 31,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "whirl": 1,
+            "blade": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 145,
+          "maxHp": 160,
+          "kills": 102,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 17,
+          "skills": {
+            "whirl": 1,
+            "blade": 2
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 87,
+          "maxHp": 160,
+          "kills": 230,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 32,
+          "skills": {
+            "whirl": 1,
+            "blade": 2,
+            "shield": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 271,
+      "policy": "reactive",
+      "build": "skills",
+      "duration": 600,
+      "survived": 243.9,
+      "status": "gameover",
+      "firstLevel": 23.4,
+      "kills": 469,
+      "bosses": 0,
+      "level": 11,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 280,
+      "hits": 18,
+      "maxEnemies": 54,
+      "maxShots": 23,
+      "upgrades": [
+        {
+          "time": 23.4,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 44.4,
+          "id": "skill:blade"
+        },
+        {
+          "time": 67.1,
+          "id": "skill:blade"
+        },
+        {
+          "time": 91.2,
+          "id": "skill:blade"
+        },
+        {
+          "time": 105.8,
+          "id": "skill:shield"
+        },
+        {
+          "time": 127.9,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 154.8,
+          "id": "weapon"
+        },
+        {
+          "time": 177.1,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 205.4,
+          "id": "skill:shield"
+        },
+        {
+          "time": 229.6,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 147,
+          "maxHp": 160,
+          "kills": 31,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "whirl": 1,
+            "blade": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 144,
+          "maxHp": 160,
+          "kills": 110,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 9,
+          "skills": {
+            "whirl": 1,
+            "blade": 3,
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 151,
+          "maxHp": 160,
+          "kills": 225,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 37,
+          "skills": {
+            "whirl": 3,
+            "blade": 3,
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 240,
+          "hp": 11,
+          "maxHp": 160,
+          "kills": 443,
+          "level": 11,
+          "bosses": 0,
+          "enemies": 46,
+          "skills": {
+            "whirl": 3,
+            "blade": 3,
+            "shield": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 2026,
+      "policy": "idle",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 94.9,
+      "status": "gameover",
+      "firstLevel": 27.7,
+      "kills": 67,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 244,
+      "hits": 20,
+      "maxEnemies": 16,
+      "maxShots": 5,
+      "upgrades": [
+        {
+          "time": 27.7,
+          "id": "skill:blade"
+        },
+        {
+          "time": 39.8,
+          "id": "skill:blade"
+        },
+        {
+          "time": 63.5,
+          "id": "passive:power"
+        },
+        {
+          "time": 87.1,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 160,
+          "maxHp": 160,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "blade": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 2026,
+      "policy": "idle",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 98.8,
+      "status": "gameover",
+      "firstLevel": 27.7,
+      "kills": 69,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 185,
+      "hits": 13,
+      "maxEnemies": 20,
+      "maxShots": 7,
+      "upgrades": [
+        {
+          "time": 27.7,
+          "id": "skill:blade"
+        },
+        {
+          "time": 39.8,
+          "id": "weapon"
+        },
+        {
+          "time": 67.7,
+          "id": "weapon"
+        },
+        {
+          "time": 87.6,
+          "id": "skill:shield"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 160,
+          "maxHp": 160,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 2026,
+      "policy": "idle",
+      "build": "skills",
+      "duration": 600,
+      "survived": 113.8,
+      "status": "gameover",
+      "firstLevel": 27.7,
+      "kills": 94,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 248,
+      "hits": 19,
+      "maxEnemies": 17,
+      "maxShots": 7,
+      "upgrades": [
+        {
+          "time": 27.7,
+          "id": "skill:blade"
+        },
+        {
+          "time": 39.8,
+          "id": "skill:blade"
+        },
+        {
+          "time": 63.5,
+          "id": "skill:blade"
+        },
+        {
+          "time": 83.2,
+          "id": "passive:power"
+        },
+        {
+          "time": 107.5,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 160,
+          "maxHp": 160,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "blade": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 2026,
+      "policy": "circuit",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 216.2,
+      "status": "gameover",
+      "firstLevel": 32.5,
+      "kills": 357,
+      "bosses": 0,
+      "level": 10,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 321,
+      "hits": 23,
+      "maxEnemies": 49,
+      "maxShots": 18,
+      "upgrades": [
+        {
+          "time": 32.5,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 47.7,
+          "id": "skill:shield"
+        },
+        {
+          "time": 67.8,
+          "id": "skill:shield"
+        },
+        {
+          "time": 93,
+          "id": "skill:shield"
+        },
+        {
+          "time": 113.1,
+          "id": "passive:power"
+        },
+        {
+          "time": 133.2,
+          "id": "passive:haste"
+        },
+        {
+          "time": 156,
+          "id": "skill:blade"
+        },
+        {
+          "time": 179.4,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 201.9,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 139,
+          "maxHp": 160,
+          "kills": 29,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 8,
+          "skills": {
+            "whirl": 1,
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 147,
+          "maxHp": 160,
+          "kills": 100,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 19,
+          "skills": {
+            "whirl": 1,
+            "shield": 3
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 114,
+          "maxHp": 160,
+          "kills": 240,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 22,
+          "skills": {
+            "whirl": 2,
+            "shield": 3,
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 2026,
+      "policy": "circuit",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 220,
+      "status": "gameover",
+      "firstLevel": 32.5,
+      "kills": 358,
+      "bosses": 0,
+      "level": 10,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 321,
+      "hits": 25,
+      "maxEnemies": 45,
+      "maxShots": 13,
+      "upgrades": [
+        {
+          "time": 32.5,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 47.7,
+          "id": "skill:shield"
+        },
+        {
+          "time": 67.8,
+          "id": "skill:shield"
+        },
+        {
+          "time": 93,
+          "id": "skill:shield"
+        },
+        {
+          "time": 113.1,
+          "id": "passive:power"
+        },
+        {
+          "time": 133.2,
+          "id": "passive:haste"
+        },
+        {
+          "time": 156,
+          "id": "weapon"
+        },
+        {
+          "time": 179.4,
+          "id": "weapon"
+        },
+        {
+          "time": 202.9,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 139,
+          "maxHp": 160,
+          "kills": 29,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 8,
+          "skills": {
+            "whirl": 1,
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 147,
+          "maxHp": 160,
+          "kills": 100,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 19,
+          "skills": {
+            "whirl": 1,
+            "shield": 3
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 57,
+          "maxHp": 160,
+          "kills": 238,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 24,
+          "skills": {
+            "whirl": 1,
+            "shield": 3
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 2026,
+      "policy": "circuit",
+      "build": "skills",
+      "duration": 600,
+      "survived": 216.2,
+      "status": "gameover",
+      "firstLevel": 32.5,
+      "kills": 357,
+      "bosses": 0,
+      "level": 10,
+      "hp": 0,
+      "maxHp": 189,
+      "hpLost": 321,
+      "hits": 23,
+      "maxEnemies": 49,
+      "maxShots": 18,
+      "upgrades": [
+        {
+          "time": 32.5,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 47.7,
+          "id": "skill:shield"
+        },
+        {
+          "time": 67.8,
+          "id": "skill:shield"
+        },
+        {
+          "time": 93,
+          "id": "skill:shield"
+        },
+        {
+          "time": 113.1,
+          "id": "passive:power"
+        },
+        {
+          "time": 133.2,
+          "id": "passive:haste"
+        },
+        {
+          "time": 156,
+          "id": "skill:blade"
+        },
+        {
+          "time": 179.4,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 201.9,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 139,
+          "maxHp": 160,
+          "kills": 29,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 8,
+          "skills": {
+            "whirl": 1,
+            "shield": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 147,
+          "maxHp": 160,
+          "kills": 100,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 19,
+          "skills": {
+            "whirl": 1,
+            "shield": 3
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 114,
+          "maxHp": 160,
+          "kills": 240,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 22,
+          "skills": {
+            "whirl": 2,
+            "shield": 3,
+            "blade": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 2026,
+      "policy": "reactive",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 146.1,
+      "status": "gameover",
+      "firstLevel": 47.4,
+      "kills": 127,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 231,
+      "hits": 17,
+      "maxEnemies": 45,
+      "maxShots": 17,
+      "upgrades": [
+        {
+          "time": 47.4,
+          "id": "weapon"
+        },
+        {
+          "time": 56,
+          "id": "weapon"
+        },
+        {
+          "time": 77.2,
+          "id": "weapon"
+        },
+        {
+          "time": 88.5,
+          "id": "skill:shield"
+        },
+        {
+          "time": 113.4,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 143.5,
+          "id": "skill:blade"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 141,
+          "maxHp": 160,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {}
+        },
+        {
+          "seconds": 120,
+          "hp": 40,
+          "maxHp": 160,
+          "kills": 101,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 18,
+          "skills": {
+            "shield": 1,
+            "whirl": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 2026,
+      "policy": "reactive",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 198.5,
+      "status": "gameover",
+      "firstLevel": 47.4,
+      "kills": 283,
+      "bosses": 0,
+      "level": 9,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 256,
+      "hits": 18,
+      "maxEnemies": 42,
+      "maxShots": 14,
+      "upgrades": [
+        {
+          "time": 47.4,
+          "id": "weapon"
+        },
+        {
+          "time": 56,
+          "id": "weapon"
+        },
+        {
+          "time": 77.2,
+          "id": "weapon"
+        },
+        {
+          "time": 88.5,
+          "id": "weapon"
+        },
+        {
+          "time": 115,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 133.6,
+          "id": "skill:blade"
+        },
+        {
+          "time": 156.3,
+          "id": "skill:blade"
+        },
+        {
+          "time": 177.2,
+          "id": "skill:shield"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 141,
+          "maxHp": 160,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {}
+        },
+        {
+          "seconds": 120,
+          "hp": 128,
+          "maxHp": 160,
+          "kills": 90,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 29,
+          "skills": {
+            "whirl": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 19,
+          "maxHp": 160,
+          "kills": 229,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 33,
+          "skills": {
+            "whirl": 1,
+            "blade": 2,
+            "shield": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "warrior",
+      "seed": 2026,
+      "policy": "reactive",
+      "build": "skills",
+      "duration": 600,
+      "survived": 146.1,
+      "status": "gameover",
+      "firstLevel": 47.4,
+      "kills": 127,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 160,
+      "hpLost": 231,
+      "hits": 17,
+      "maxEnemies": 45,
+      "maxShots": 17,
+      "upgrades": [
+        {
+          "time": 47.4,
+          "id": "weapon"
+        },
+        {
+          "time": 56,
+          "id": "weapon"
+        },
+        {
+          "time": 77.2,
+          "id": "weapon"
+        },
+        {
+          "time": 88.5,
+          "id": "skill:shield"
+        },
+        {
+          "time": 113.4,
+          "id": "skill:whirl"
+        },
+        {
+          "time": 143.5,
+          "id": "skill:blade"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 141,
+          "maxHp": 160,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {}
+        },
+        {
+          "seconds": 120,
+          "hp": 40,
+          "maxHp": 160,
+          "kills": 101,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 18,
+          "skills": {
+            "shield": 1,
+            "whirl": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 42,
+      "policy": "idle",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 90.2,
+      "status": "gameover",
+      "firstLevel": 21.3,
+      "kills": 61,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 14,
+      "maxShots": 6,
+      "upgrades": [
+        {
+          "time": 21.3,
+          "id": "passive:power"
+        },
+        {
+          "time": 40.8,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 65.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 88,
+          "id": "skill:multishot"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 42,
+      "policy": "idle",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 97.5,
+      "status": "gameover",
+      "firstLevel": 21.3,
+      "kills": 73,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 15,
+      "maxShots": 7,
+      "upgrades": [
+        {
+          "time": 21.3,
+          "id": "passive:power"
+        },
+        {
+          "time": 40.8,
+          "id": "weapon"
+        },
+        {
+          "time": 64.4,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 86.3,
+          "id": "skill:pierce"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {}
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 42,
+      "policy": "idle",
+      "build": "skills",
+      "duration": 600,
+      "survived": 90.2,
+      "status": "gameover",
+      "firstLevel": 21.3,
+      "kills": 61,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 14,
+      "maxShots": 6,
+      "upgrades": [
+        {
+          "time": 21.3,
+          "id": "passive:power"
+        },
+        {
+          "time": 40.8,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 65.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 88,
+          "id": "skill:multishot"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 42,
+      "policy": "circuit",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 112,
+      "status": "gameover",
+      "firstLevel": 20.1,
+      "kills": 93,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 110,
+      "hits": 9,
+      "maxEnemies": 15,
+      "maxShots": 13,
+      "upgrades": [
+        {
+          "time": 20.1,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 38.6,
+          "id": "skill:rain"
+        },
+        {
+          "time": 65.4,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 85.1,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 106.4,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "pierce": 1,
+            "rain": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 42,
+      "policy": "circuit",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 112,
+      "status": "gameover",
+      "firstLevel": 20.1,
+      "kills": 93,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 110,
+      "hits": 9,
+      "maxEnemies": 15,
+      "maxShots": 13,
+      "upgrades": [
+        {
+          "time": 20.1,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 38.6,
+          "id": "skill:rain"
+        },
+        {
+          "time": 65.4,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 85.1,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 106.4,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "pierce": 1,
+            "rain": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 42,
+      "policy": "circuit",
+      "build": "skills",
+      "duration": 600,
+      "survived": 112,
+      "status": "gameover",
+      "firstLevel": 20.1,
+      "kills": 93,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 110,
+      "hits": 9,
+      "maxEnemies": 15,
+      "maxShots": 13,
+      "upgrades": [
+        {
+          "time": 20.1,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 38.6,
+          "id": "skill:rain"
+        },
+        {
+          "time": 65.4,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 85.1,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 106.4,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "pierce": 1,
+            "rain": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 42,
+      "policy": "reactive",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 199.7,
+      "status": "gameover",
+      "firstLevel": 20.4,
+      "kills": 280,
+      "bosses": 0,
+      "level": 9,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 125,
+      "hits": 9,
+      "maxEnemies": 41,
+      "maxShots": 22,
+      "upgrades": [
+        {
+          "time": 20.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 39.4,
+          "id": "skill:rain"
+        },
+        {
+          "time": 61.4,
+          "id": "skill:rain"
+        },
+        {
+          "time": 85.5,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 103,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 128.2,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 154.8,
+          "id": "weapon"
+        },
+        {
+          "time": 178.7,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "pierce": 1,
+            "rain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 58,
+          "maxHp": 95,
+          "kills": 106,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 13,
+          "skills": {
+            "pierce": 3,
+            "rain": 2
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 17,
+          "maxHp": 95,
+          "kills": 226,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 36,
+          "skills": {
+            "pierce": 3,
+            "rain": 2,
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 42,
+      "policy": "reactive",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 161.7,
+      "status": "gameover",
+      "firstLevel": 20.4,
+      "kills": 179,
+      "bosses": 0,
+      "level": 8,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 118,
+      "hits": 8,
+      "maxEnemies": 38,
+      "maxShots": 10,
+      "upgrades": [
+        {
+          "time": 20.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 39.4,
+          "id": "skill:rain"
+        },
+        {
+          "time": 61.4,
+          "id": "skill:rain"
+        },
+        {
+          "time": 85.5,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 103,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 128.2,
+          "id": "weapon"
+        },
+        {
+          "time": 155.4,
+          "id": "skill:multishot"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "pierce": 1,
+            "rain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 58,
+          "maxHp": 95,
+          "kills": 106,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 13,
+          "skills": {
+            "pierce": 3,
+            "rain": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 42,
+      "policy": "reactive",
+      "build": "skills",
+      "duration": 600,
+      "survived": 199.7,
+      "status": "gameover",
+      "firstLevel": 20.4,
+      "kills": 280,
+      "bosses": 0,
+      "level": 9,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 125,
+      "hits": 9,
+      "maxEnemies": 41,
+      "maxShots": 22,
+      "upgrades": [
+        {
+          "time": 20.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 39.4,
+          "id": "skill:rain"
+        },
+        {
+          "time": 61.4,
+          "id": "skill:rain"
+        },
+        {
+          "time": 85.5,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 103,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 128.2,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 154.8,
+          "id": "weapon"
+        },
+        {
+          "time": 178.7,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "pierce": 1,
+            "rain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 58,
+          "maxHp": 95,
+          "kills": 106,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 13,
+          "skills": {
+            "pierce": 3,
+            "rain": 2
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 17,
+          "maxHp": 95,
+          "kills": 226,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 36,
+          "skills": {
+            "pierce": 3,
+            "rain": 2,
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 271,
+      "policy": "idle",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 93.9,
+      "status": "gameover",
+      "firstLevel": 21,
+      "kills": 70,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 13,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 21,
+          "id": "skill:rain"
+        },
+        {
+          "time": 39,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 61.5,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 85.7,
+          "id": "skill:rain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "rain": 1,
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 271,
+      "policy": "idle",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 100,
+      "status": "gameover",
+      "firstLevel": 21,
+      "kills": 80,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 13,
+      "maxShots": 5,
+      "upgrades": [
+        {
+          "time": 21,
+          "id": "skill:rain"
+        },
+        {
+          "time": 39,
+          "id": "weapon"
+        },
+        {
+          "time": 62.8,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 86.3,
+          "id": "skill:rain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "rain": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 271,
+      "policy": "idle",
+      "build": "skills",
+      "duration": 600,
+      "survived": 93.9,
+      "status": "gameover",
+      "firstLevel": 21,
+      "kills": 70,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 13,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 21,
+          "id": "skill:rain"
+        },
+        {
+          "time": 39,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 61.5,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 85.7,
+          "id": "skill:rain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "rain": 1,
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 271,
+      "policy": "circuit",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 100.9,
+      "status": "gameover",
+      "firstLevel": 19.6,
+      "kills": 69,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 115,
+      "hits": 10,
+      "maxEnemies": 22,
+      "maxShots": 9,
+      "upgrades": [
+        {
+          "time": 19.6,
+          "id": "passive:power"
+        },
+        {
+          "time": 38.8,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 59.7,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 87,
+          "id": "skill:pierce"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 36,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 1,
+          "skills": {
+            "multishot": 1,
+            "pierce": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 271,
+      "policy": "circuit",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 89.2,
+      "status": "gameover",
+      "firstLevel": 19.6,
+      "kills": 57,
+      "bosses": 0,
+      "level": 4,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 110,
+      "hits": 9,
+      "maxEnemies": 17,
+      "maxShots": 11,
+      "upgrades": [
+        {
+          "time": 19.6,
+          "id": "passive:power"
+        },
+        {
+          "time": 38.8,
+          "id": "weapon"
+        },
+        {
+          "time": 60,
+          "id": "skill:multishot"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 72,
+          "maxHp": 95,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {}
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 271,
+      "policy": "circuit",
+      "build": "skills",
+      "duration": 600,
+      "survived": 100.9,
+      "status": "gameover",
+      "firstLevel": 19.6,
+      "kills": 69,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 115,
+      "hits": 10,
+      "maxEnemies": 22,
+      "maxShots": 9,
+      "upgrades": [
+        {
+          "time": 19.6,
+          "id": "passive:power"
+        },
+        {
+          "time": 38.8,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 59.7,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 87,
+          "id": "skill:pierce"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 36,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 1,
+          "skills": {
+            "multishot": 1,
+            "pierce": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 271,
+      "policy": "reactive",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 134.3,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 126,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 118,
+      "hits": 9,
+      "maxEnemies": 19,
+      "maxShots": 12,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "passive:power"
+        },
+        {
+          "time": 40,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 61.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 84.4,
+          "id": "weapon"
+        },
+        {
+          "time": 104.4,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 126.5,
+          "id": "skill:pierce"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "multishot": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 13,
+          "maxHp": 95,
+          "kills": 105,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 14,
+          "skills": {
+            "multishot": 2,
+            "pierce": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 271,
+      "policy": "reactive",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 97.6,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 69,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 17,
+      "maxShots": 13,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "passive:power"
+        },
+        {
+          "time": 40,
+          "id": "weapon"
+        },
+        {
+          "time": 62.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 87,
+          "id": "skill:multishot"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {}
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 271,
+      "policy": "reactive",
+      "build": "skills",
+      "duration": 600,
+      "survived": 134.3,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 126,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 118,
+      "hits": 9,
+      "maxEnemies": 19,
+      "maxShots": 12,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "passive:power"
+        },
+        {
+          "time": 40,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 61.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 84.4,
+          "id": "weapon"
+        },
+        {
+          "time": 104.4,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 126.5,
+          "id": "skill:pierce"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "multishot": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 13,
+          "maxHp": 95,
+          "kills": 105,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 14,
+          "skills": {
+            "multishot": 2,
+            "pierce": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 2026,
+      "policy": "idle",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 89.6,
+      "status": "gameover",
+      "firstLevel": 22,
+      "kills": 60,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 15,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 22,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 42.4,
+          "id": "weapon"
+        },
+        {
+          "time": 62.8,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 86.3,
+          "id": "skill:rain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 2026,
+      "policy": "idle",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 89.6,
+      "status": "gameover",
+      "firstLevel": 22,
+      "kills": 60,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 15,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 22,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 42.4,
+          "id": "weapon"
+        },
+        {
+          "time": 62.8,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 86.3,
+          "id": "skill:rain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 2026,
+      "policy": "idle",
+      "build": "skills",
+      "duration": 600,
+      "survived": 89.6,
+      "status": "gameover",
+      "firstLevel": 22,
+      "kills": 60,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 103,
+      "hits": 7,
+      "maxEnemies": 15,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 22,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 42.4,
+          "id": "weapon"
+        },
+        {
+          "time": 62.8,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 86.3,
+          "id": "skill:rain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 2026,
+      "policy": "circuit",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 89,
+      "status": "gameover",
+      "firstLevel": 20,
+      "kills": 62,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 118,
+      "hits": 9,
+      "maxEnemies": 12,
+      "maxShots": 12,
+      "upgrades": [
+        {
+          "time": 20,
+          "id": "skill:rain"
+        },
+        {
+          "time": 37.7,
+          "id": "passive:power"
+        },
+        {
+          "time": 59.5,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 81.1,
+          "id": "skill:multishot"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 72,
+          "maxHp": 95,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "rain": 1,
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 2026,
+      "policy": "circuit",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 182.4,
+      "status": "gameover",
+      "firstLevel": 20,
+      "kills": 251,
+      "bosses": 0,
+      "level": 9,
+      "hp": 0,
+      "maxHp": 112,
+      "hpLost": 160,
+      "hits": 12,
+      "maxEnemies": 18,
+      "maxShots": 16,
+      "upgrades": [
+        {
+          "time": 20,
+          "id": "weapon"
+        },
+        {
+          "time": 38.7,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 62.2,
+          "id": "weapon"
+        },
+        {
+          "time": 82.4,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 100.1,
+          "id": "skill:rain"
+        },
+        {
+          "time": 125.2,
+          "id": "weapon"
+        },
+        {
+          "time": 149,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 172.7,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "pierce": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 55,
+          "maxHp": 95,
+          "kills": 112,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 7,
+          "skills": {
+            "pierce": 1,
+            "multishot": 1,
+            "rain": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 1,
+          "maxHp": 112,
+          "kills": 244,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 18,
+          "skills": {
+            "pierce": 1,
+            "multishot": 2,
+            "rain": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 2026,
+      "policy": "circuit",
+      "build": "skills",
+      "duration": 600,
+      "survived": 89,
+      "status": "gameover",
+      "firstLevel": 20,
+      "kills": 62,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 118,
+      "hits": 9,
+      "maxEnemies": 12,
+      "maxShots": 12,
+      "upgrades": [
+        {
+          "time": 20,
+          "id": "skill:rain"
+        },
+        {
+          "time": 37.7,
+          "id": "passive:power"
+        },
+        {
+          "time": 59.5,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 81.1,
+          "id": "skill:multishot"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 72,
+          "maxHp": 95,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "rain": 1,
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 2026,
+      "policy": "reactive",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 113.6,
+      "status": "gameover",
+      "firstLevel": 20.4,
+      "kills": 96,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 110,
+      "hits": 8,
+      "maxEnemies": 15,
+      "maxShots": 10,
+      "upgrades": [
+        {
+          "time": 20.4,
+          "id": "skill:rain"
+        },
+        {
+          "time": 38.6,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 60.3,
+          "id": "weapon"
+        },
+        {
+          "time": 84.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 102.8,
+          "id": "skill:rain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "rain": 1,
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 2026,
+      "policy": "reactive",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 195.5,
+      "status": "gameover",
+      "firstLevel": 20.4,
+      "kills": 286,
+      "bosses": 0,
+      "level": 9,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 117,
+      "hits": 7,
+      "maxEnemies": 23,
+      "maxShots": 19,
+      "upgrades": [
+        {
+          "time": 20.4,
+          "id": "weapon"
+        },
+        {
+          "time": 37.5,
+          "id": "skill:rain"
+        },
+        {
+          "time": 58.6,
+          "id": "weapon"
+        },
+        {
+          "time": 83.7,
+          "id": "weapon"
+        },
+        {
+          "time": 99.6,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 126.7,
+          "id": "weapon"
+        },
+        {
+          "time": 148.1,
+          "id": "skill:rain"
+        },
+        {
+          "time": 168.6,
+          "id": "skill:multishot"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "rain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 113,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "rain": 1,
+            "pierce": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 53,
+          "maxHp": 95,
+          "kills": 248,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 14,
+          "skills": {
+            "rain": 2,
+            "pierce": 1,
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "archer",
+      "seed": 2026,
+      "policy": "reactive",
+      "build": "skills",
+      "duration": 600,
+      "survived": 113.6,
+      "status": "gameover",
+      "firstLevel": 20.4,
+      "kills": 96,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 95,
+      "hpLost": 110,
+      "hits": 8,
+      "maxEnemies": 15,
+      "maxShots": 10,
+      "upgrades": [
+        {
+          "time": 20.4,
+          "id": "skill:rain"
+        },
+        {
+          "time": 38.6,
+          "id": "skill:multishot"
+        },
+        {
+          "time": 60.3,
+          "id": "weapon"
+        },
+        {
+          "time": 84.4,
+          "id": "skill:pierce"
+        },
+        {
+          "time": 102.8,
+          "id": "skill:rain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 95,
+          "maxHp": 95,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "rain": 1,
+            "multishot": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 42,
+      "policy": "idle",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 97.3,
+      "status": "gameover",
+      "firstLevel": 22.3,
+      "kills": 74,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 85,
+      "hits": 6,
+      "maxEnemies": 13,
+      "maxShots": 4,
+      "upgrades": [
+        {
+          "time": 22.3,
+          "id": "passive:power"
+        },
+        {
+          "time": 39,
+          "id": "skill:frost"
+        },
+        {
+          "time": 64.3,
+          "id": "skill:fire"
+        },
+        {
+          "time": 85.5,
+          "id": "skill:chain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 42,
+      "policy": "idle",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 94.7,
+      "status": "gameover",
+      "firstLevel": 22.3,
+      "kills": 74,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 92,
+      "hits": 7,
+      "maxEnemies": 10,
+      "maxShots": 6,
+      "upgrades": [
+        {
+          "time": 22.3,
+          "id": "passive:power"
+        },
+        {
+          "time": 39,
+          "id": "weapon"
+        },
+        {
+          "time": 63.8,
+          "id": "weapon"
+        },
+        {
+          "time": 83.7,
+          "id": "skill:frost"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {}
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 42,
+      "policy": "idle",
+      "build": "skills",
+      "duration": 600,
+      "survived": 97.3,
+      "status": "gameover",
+      "firstLevel": 22.3,
+      "kills": 74,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 85,
+      "hits": 6,
+      "maxEnemies": 13,
+      "maxShots": 4,
+      "upgrades": [
+        {
+          "time": 22.3,
+          "id": "passive:power"
+        },
+        {
+          "time": 39,
+          "id": "skill:frost"
+        },
+        {
+          "time": 64.3,
+          "id": "skill:fire"
+        },
+        {
+          "time": 85.5,
+          "id": "skill:chain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 42,
+      "policy": "circuit",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 140.6,
+      "status": "gameover",
+      "firstLevel": 19.5,
+      "kills": 142,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 100,
+      "hpLost": 137,
+      "hits": 11,
+      "maxEnemies": 18,
+      "maxShots": 7,
+      "upgrades": [
+        {
+          "time": 19.5,
+          "id": "passive:power"
+        },
+        {
+          "time": 39.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 63.4,
+          "id": "skill:fire"
+        },
+        {
+          "time": 82.7,
+          "id": "skill:frost"
+        },
+        {
+          "time": 100.4,
+          "id": "skill:chain"
+        },
+        {
+          "time": 123.1,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 64,
+          "maxHp": 85,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "frost": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 4,
+          "maxHp": 85,
+          "kills": 110,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 9,
+          "skills": {
+            "frost": 2,
+            "fire": 1,
+            "chain": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 42,
+      "policy": "circuit",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 238.4,
+      "status": "gameover",
+      "firstLevel": 19.5,
+      "kills": 470,
+      "bosses": 1,
+      "level": 11,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 111,
+      "hits": 6,
+      "maxEnemies": 15,
+      "maxShots": 17,
+      "upgrades": [
+        {
+          "time": 19.5,
+          "id": "passive:power"
+        },
+        {
+          "time": 39.1,
+          "id": "weapon"
+        },
+        {
+          "time": 62.7,
+          "id": "weapon"
+        },
+        {
+          "time": 82.2,
+          "id": "passive:power"
+        },
+        {
+          "time": 100.8,
+          "id": "skill:fire"
+        },
+        {
+          "time": 124.1,
+          "id": "weapon"
+        },
+        {
+          "time": 142.8,
+          "id": "skill:frost"
+        },
+        {
+          "time": 168.3,
+          "id": "passive:haste"
+        },
+        {
+          "time": 196.2,
+          "id": "weapon"
+        },
+        {
+          "time": 216.8,
+          "id": "skill:chain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 72,
+          "maxHp": 85,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {}
+        },
+        {
+          "seconds": 120,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 115,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "fire": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 68,
+          "maxHp": 85,
+          "kills": 254,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 8,
+          "skills": {
+            "fire": 1,
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 42,
+      "policy": "circuit",
+      "build": "skills",
+      "duration": 600,
+      "survived": 140.6,
+      "status": "gameover",
+      "firstLevel": 19.5,
+      "kills": 142,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 100,
+      "hpLost": 137,
+      "hits": 11,
+      "maxEnemies": 18,
+      "maxShots": 7,
+      "upgrades": [
+        {
+          "time": 19.5,
+          "id": "passive:power"
+        },
+        {
+          "time": 39.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 63.4,
+          "id": "skill:fire"
+        },
+        {
+          "time": 82.7,
+          "id": "skill:frost"
+        },
+        {
+          "time": 100.4,
+          "id": "skill:chain"
+        },
+        {
+          "time": 123.1,
+          "id": "passive:vitality"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 64,
+          "maxHp": 85,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "frost": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 4,
+          "maxHp": 85,
+          "kills": 110,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 9,
+          "skills": {
+            "frost": 2,
+            "fire": 1,
+            "chain": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 42,
+      "policy": "reactive",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 200.9,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 309,
+      "bosses": 0,
+      "level": 10,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 119,
+      "hits": 7,
+      "maxEnemies": 30,
+      "maxShots": 11,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "passive:power"
+        },
+        {
+          "time": 40.3,
+          "id": "skill:frost"
+        },
+        {
+          "time": 64,
+          "id": "skill:fire"
+        },
+        {
+          "time": 86.4,
+          "id": "skill:fire"
+        },
+        {
+          "time": 107.2,
+          "id": "skill:chain"
+        },
+        {
+          "time": 125.4,
+          "id": "passive:power"
+        },
+        {
+          "time": 148.8,
+          "id": "skill:frost"
+        },
+        {
+          "time": 174.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 200.8,
+          "id": "skill:frost"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "frost": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 62,
+          "maxHp": 85,
+          "kills": 113,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "frost": 1,
+            "fire": 2,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 49,
+          "maxHp": 85,
+          "kills": 245,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 17,
+          "skills": {
+            "frost": 2,
+            "fire": 2,
+            "chain": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 42,
+      "policy": "reactive",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 169.7,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 206,
+      "bosses": 0,
+      "level": 8,
+      "hp": 0,
+      "maxHp": 100,
+      "hpLost": 131,
+      "hits": 9,
+      "maxEnemies": 28,
+      "maxShots": 17,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "passive:power"
+        },
+        {
+          "time": 40.3,
+          "id": "weapon"
+        },
+        {
+          "time": 63.7,
+          "id": "skill:frost"
+        },
+        {
+          "time": 90.9,
+          "id": "skill:frost"
+        },
+        {
+          "time": 113.8,
+          "id": "skill:fire"
+        },
+        {
+          "time": 130.5,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 148.9,
+          "id": "skill:chain"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {}
+        },
+        {
+          "seconds": 120,
+          "hp": 48,
+          "maxHp": 85,
+          "kills": 103,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 16,
+          "skills": {
+            "frost": 2,
+            "fire": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 42,
+      "policy": "reactive",
+      "build": "skills",
+      "duration": 600,
+      "survived": 200.9,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 309,
+      "bosses": 0,
+      "level": 10,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 119,
+      "hits": 7,
+      "maxEnemies": 30,
+      "maxShots": 11,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "passive:power"
+        },
+        {
+          "time": 40.3,
+          "id": "skill:frost"
+        },
+        {
+          "time": 64,
+          "id": "skill:fire"
+        },
+        {
+          "time": 86.4,
+          "id": "skill:fire"
+        },
+        {
+          "time": 107.2,
+          "id": "skill:chain"
+        },
+        {
+          "time": 125.4,
+          "id": "passive:power"
+        },
+        {
+          "time": 148.8,
+          "id": "skill:frost"
+        },
+        {
+          "time": 174.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 200.8,
+          "id": "skill:frost"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 32,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "frost": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 62,
+          "maxHp": 85,
+          "kills": 113,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "frost": 1,
+            "fire": 2,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 49,
+          "maxHp": 85,
+          "kills": 245,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 17,
+          "skills": {
+            "frost": 2,
+            "fire": 2,
+            "chain": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 271,
+      "policy": "idle",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 90,
+      "status": "gameover",
+      "firstLevel": 22.4,
+      "kills": 61,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 85,
+      "hits": 6,
+      "maxEnemies": 14,
+      "maxShots": 4,
+      "upgrades": [
+        {
+          "time": 22.4,
+          "id": "skill:chain"
+        },
+        {
+          "time": 38,
+          "id": "weapon"
+        },
+        {
+          "time": 59.5,
+          "id": "skill:frost"
+        },
+        {
+          "time": 84,
+          "id": "skill:frost"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "chain": 1,
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 271,
+      "policy": "idle",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 138.8,
+      "status": "gameover",
+      "firstLevel": 22.4,
+      "kills": 150,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 99,
+      "hits": 7,
+      "maxEnemies": 8,
+      "maxShots": 9,
+      "upgrades": [
+        {
+          "time": 22.4,
+          "id": "skill:chain"
+        },
+        {
+          "time": 38,
+          "id": "weapon"
+        },
+        {
+          "time": 59.5,
+          "id": "weapon"
+        },
+        {
+          "time": 82.1,
+          "id": "weapon"
+        },
+        {
+          "time": 100.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 123,
+          "id": "skill:frost"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 47,
+          "maxHp": 85,
+          "kills": 115,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "chain": 1,
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 271,
+      "policy": "idle",
+      "build": "skills",
+      "duration": 600,
+      "survived": 90,
+      "status": "gameover",
+      "firstLevel": 22.4,
+      "kills": 61,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 85,
+      "hits": 6,
+      "maxEnemies": 14,
+      "maxShots": 4,
+      "upgrades": [
+        {
+          "time": 22.4,
+          "id": "skill:chain"
+        },
+        {
+          "time": 38,
+          "id": "weapon"
+        },
+        {
+          "time": 59.5,
+          "id": "skill:frost"
+        },
+        {
+          "time": 84,
+          "id": "skill:frost"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "chain": 1,
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 271,
+      "policy": "circuit",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 132.4,
+      "status": "gameover",
+      "firstLevel": 19.6,
+      "kills": 127,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 100,
+      "hpLost": 145,
+      "hits": 12,
+      "maxEnemies": 13,
+      "maxShots": 5,
+      "upgrades": [
+        {
+          "time": 19.6,
+          "id": "skill:frost"
+        },
+        {
+          "time": 44.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 62.7,
+          "id": "skill:fire"
+        },
+        {
+          "time": 84.6,
+          "id": "skill:chain"
+        },
+        {
+          "time": 102.8,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 128.9,
+          "id": "skill:fire"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 56,
+          "maxHp": 85,
+          "kills": 31,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "frost": 2
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 37,
+          "maxHp": 100,
+          "kills": 107,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 12,
+          "skills": {
+            "frost": 2,
+            "fire": 1,
+            "chain": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 271,
+      "policy": "circuit",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 87.7,
+      "status": "gameover",
+      "firstLevel": 19.6,
+      "kills": 64,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 105,
+      "hits": 9,
+      "maxEnemies": 16,
+      "maxShots": 6,
+      "upgrades": [
+        {
+          "time": 19.6,
+          "id": "skill:frost"
+        },
+        {
+          "time": 44.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 62.7,
+          "id": "weapon"
+        },
+        {
+          "time": 86,
+          "id": "skill:fire"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 56,
+          "maxHp": 85,
+          "kills": 31,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "frost": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 271,
+      "policy": "circuit",
+      "build": "skills",
+      "duration": 600,
+      "survived": 132.4,
+      "status": "gameover",
+      "firstLevel": 19.6,
+      "kills": 127,
+      "bosses": 0,
+      "level": 7,
+      "hp": 0,
+      "maxHp": 100,
+      "hpLost": 145,
+      "hits": 12,
+      "maxEnemies": 13,
+      "maxShots": 5,
+      "upgrades": [
+        {
+          "time": 19.6,
+          "id": "skill:frost"
+        },
+        {
+          "time": 44.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 62.7,
+          "id": "skill:fire"
+        },
+        {
+          "time": 84.6,
+          "id": "skill:chain"
+        },
+        {
+          "time": 102.8,
+          "id": "passive:vitality"
+        },
+        {
+          "time": 128.9,
+          "id": "skill:fire"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 56,
+          "maxHp": 85,
+          "kills": 31,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "frost": 2
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 37,
+          "maxHp": 100,
+          "kills": 107,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 12,
+          "skills": {
+            "frost": 2,
+            "fire": 1,
+            "chain": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 271,
+      "policy": "reactive",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 169,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 219,
+      "bosses": 0,
+      "level": 9,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 105,
+      "hits": 7,
+      "maxEnemies": 20,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "skill:frost"
+        },
+        {
+          "time": 41.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 59.6,
+          "id": "skill:frost"
+        },
+        {
+          "time": 86,
+          "id": "skill:chain"
+        },
+        {
+          "time": 105.2,
+          "id": "skill:fire"
+        },
+        {
+          "time": 126.3,
+          "id": "passive:power"
+        },
+        {
+          "time": 146.1,
+          "id": "skill:fire"
+        },
+        {
+          "time": 167.4,
+          "id": "passive:power"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "frost": 2,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 70,
+          "maxHp": 85,
+          "kills": 112,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 7,
+          "skills": {
+            "frost": 2,
+            "chain": 2,
+            "fire": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 271,
+      "policy": "reactive",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 351.3,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 1253,
+      "bosses": 1,
+      "level": 15,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 122,
+      "hits": 7,
+      "maxEnemies": 28,
+      "maxShots": 19,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "skill:frost"
+        },
+        {
+          "time": 41.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 59.6,
+          "id": "weapon"
+        },
+        {
+          "time": 82.6,
+          "id": "weapon"
+        },
+        {
+          "time": 100.2,
+          "id": "weapon"
+        },
+        {
+          "time": 121.8,
+          "id": "skill:fire"
+        },
+        {
+          "time": 144.8,
+          "id": "weapon"
+        },
+        {
+          "time": 165.8,
+          "id": "skill:frost"
+        },
+        {
+          "time": 189,
+          "id": "skill:chain"
+        },
+        {
+          "time": 216.7,
+          "id": "passive:power"
+        },
+        {
+          "time": 246.6,
+          "id": "skill:fire"
+        },
+        {
+          "time": 275.3,
+          "id": "passive:power"
+        },
+        {
+          "time": 301,
+          "id": "skill:frost"
+        },
+        {
+          "time": 331.1,
+          "id": "skill:fire"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "frost": 1,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 62,
+          "maxHp": 85,
+          "kills": 114,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 5,
+          "skills": {
+            "frost": 1,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 82,
+          "maxHp": 85,
+          "kills": 255,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 7,
+          "skills": {
+            "frost": 2,
+            "chain": 1,
+            "fire": 1
+          }
+        },
+        {
+          "seconds": 240,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 483,
+          "level": 11,
+          "bosses": 1,
+          "enemies": 6,
+          "skills": {
+            "frost": 2,
+            "chain": 2,
+            "fire": 1
+          }
+        },
+        {
+          "seconds": 300,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 828,
+          "level": 13,
+          "bosses": 1,
+          "enemies": 13,
+          "skills": {
+            "frost": 2,
+            "chain": 2,
+            "fire": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 271,
+      "policy": "reactive",
+      "build": "skills",
+      "duration": 600,
+      "survived": 276.7,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 646,
+      "bosses": 1,
+      "level": 12,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 126,
+      "hits": 8,
+      "maxEnemies": 47,
+      "maxShots": 14,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "skill:frost"
+        },
+        {
+          "time": 41.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 59.6,
+          "id": "skill:frost"
+        },
+        {
+          "time": 86,
+          "id": "skill:chain"
+        },
+        {
+          "time": 105.2,
+          "id": "skill:fire"
+        },
+        {
+          "time": 126.3,
+          "id": "skill:chain"
+        },
+        {
+          "time": 148.2,
+          "id": "skill:fire"
+        },
+        {
+          "time": 169,
+          "id": "skill:frost"
+        },
+        {
+          "time": 196.4,
+          "id": "skill:fire"
+        },
+        {
+          "time": 224.5,
+          "id": "passive:power"
+        },
+        {
+          "time": 249.9,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 35,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "frost": 2,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 70,
+          "maxHp": 85,
+          "kills": 112,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 7,
+          "skills": {
+            "frost": 2,
+            "chain": 2,
+            "fire": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 58,
+          "maxHp": 85,
+          "kills": 251,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 11,
+          "skills": {
+            "frost": 3,
+            "chain": 3,
+            "fire": 2
+          }
+        },
+        {
+          "seconds": 240,
+          "hp": 12,
+          "maxHp": 85,
+          "kills": 468,
+          "level": 11,
+          "bosses": 0,
+          "enemies": 21,
+          "skills": {
+            "frost": 3,
+            "chain": 3,
+            "fire": 3
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 2026,
+      "policy": "idle",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 94.4,
+      "status": "gameover",
+      "firstLevel": 21.7,
+      "kills": 76,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 92,
+      "hits": 7,
+      "maxEnemies": 10,
+      "maxShots": 3,
+      "upgrades": [
+        {
+          "time": 21.7,
+          "id": "skill:frost"
+        },
+        {
+          "time": 42.1,
+          "id": "weapon"
+        },
+        {
+          "time": 64.8,
+          "id": "skill:fire"
+        },
+        {
+          "time": 84,
+          "id": "skill:fire"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 2026,
+      "policy": "idle",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 102.3,
+      "status": "gameover",
+      "firstLevel": 21.7,
+      "kills": 86,
+      "bosses": 0,
+      "level": 6,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 99,
+      "hits": 7,
+      "maxEnemies": 11,
+      "maxShots": 5,
+      "upgrades": [
+        {
+          "time": 21.7,
+          "id": "weapon"
+        },
+        {
+          "time": 40.7,
+          "id": "skill:fire"
+        },
+        {
+          "time": 64.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 85.8,
+          "id": "skill:fire"
+        },
+        {
+          "time": 101.4,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 34,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "fire": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 2026,
+      "policy": "idle",
+      "build": "skills",
+      "duration": 600,
+      "survived": 94.4,
+      "status": "gameover",
+      "firstLevel": 21.7,
+      "kills": 76,
+      "bosses": 0,
+      "level": 5,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 92,
+      "hits": 7,
+      "maxEnemies": 10,
+      "maxShots": 3,
+      "upgrades": [
+        {
+          "time": 21.7,
+          "id": "skill:frost"
+        },
+        {
+          "time": 42.1,
+          "id": "weapon"
+        },
+        {
+          "time": 64.8,
+          "id": "skill:fire"
+        },
+        {
+          "time": 84,
+          "id": "skill:fire"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 33,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 4,
+          "skills": {
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 2026,
+      "policy": "circuit",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 155.4,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 179,
+      "bosses": 0,
+      "level": 8,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 112,
+      "hits": 9,
+      "maxEnemies": 18,
+      "maxShots": 7,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "skill:fire"
+        },
+        {
+          "time": 37.3,
+          "id": "skill:chain"
+        },
+        {
+          "time": 58.2,
+          "id": "skill:fire"
+        },
+        {
+          "time": 84.2,
+          "id": "skill:frost"
+        },
+        {
+          "time": 96.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 125.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 146.6,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 36,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 1,
+          "skills": {
+            "fire": 2,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 79,
+          "maxHp": 85,
+          "kills": 109,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 10,
+          "skills": {
+            "fire": 2,
+            "chain": 2,
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 2026,
+      "policy": "circuit",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 155.4,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 179,
+      "bosses": 0,
+      "level": 8,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 112,
+      "hits": 9,
+      "maxEnemies": 18,
+      "maxShots": 7,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "skill:fire"
+        },
+        {
+          "time": 37.3,
+          "id": "skill:chain"
+        },
+        {
+          "time": 58.2,
+          "id": "skill:fire"
+        },
+        {
+          "time": 84.2,
+          "id": "skill:frost"
+        },
+        {
+          "time": 96.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 125.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 146.6,
+          "id": "weapon"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 36,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 1,
+          "skills": {
+            "fire": 2,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 79,
+          "maxHp": 85,
+          "kills": 109,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 10,
+          "skills": {
+            "fire": 2,
+            "chain": 2,
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 2026,
+      "policy": "circuit",
+      "build": "skills",
+      "duration": 600,
+      "survived": 162,
+      "status": "gameover",
+      "firstLevel": 19.8,
+      "kills": 199,
+      "bosses": 0,
+      "level": 8,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 112,
+      "hits": 9,
+      "maxEnemies": 19,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 19.8,
+          "id": "skill:fire"
+        },
+        {
+          "time": 37.3,
+          "id": "skill:chain"
+        },
+        {
+          "time": 58.2,
+          "id": "skill:fire"
+        },
+        {
+          "time": 84.2,
+          "id": "skill:frost"
+        },
+        {
+          "time": 96.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 125.1,
+          "id": "skill:frost"
+        },
+        {
+          "time": 146.6,
+          "id": "skill:frost"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 36,
+          "level": 4,
+          "bosses": 0,
+          "enemies": 1,
+          "skills": {
+            "fire": 2,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 79,
+          "maxHp": 85,
+          "kills": 109,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 10,
+          "skills": {
+            "fire": 2,
+            "chain": 2,
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 2026,
+      "policy": "reactive",
+      "build": "balanced",
+      "duration": 600,
+      "survived": 177.7,
+      "status": "gameover",
+      "firstLevel": 20.1,
+      "kills": 228,
+      "bosses": 0,
+      "level": 9,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 112,
+      "hits": 7,
+      "maxEnemies": 27,
+      "maxShots": 9,
+      "upgrades": [
+        {
+          "time": 20.1,
+          "id": "skill:fire"
+        },
+        {
+          "time": 37.6,
+          "id": "skill:fire"
+        },
+        {
+          "time": 61.3,
+          "id": "weapon"
+        },
+        {
+          "time": 82.6,
+          "id": "skill:chain"
+        },
+        {
+          "time": 100,
+          "id": "skill:frost"
+        },
+        {
+          "time": 123.4,
+          "id": "skill:fire"
+        },
+        {
+          "time": 146.9,
+          "id": "passive:power"
+        },
+        {
+          "time": 172.8,
+          "id": "skill:frost"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 35,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "fire": 2
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 77,
+          "maxHp": 85,
+          "kills": 110,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 9,
+          "skills": {
+            "fire": 2,
+            "chain": 1,
+            "frost": 1
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 2026,
+      "policy": "reactive",
+      "build": "weapon",
+      "duration": 600,
+      "survived": 405.2,
+      "status": "gameover",
+      "firstLevel": 20.1,
+      "kills": 1857,
+      "bosses": 2,
+      "level": 17,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 163,
+      "hits": 9,
+      "maxEnemies": 46,
+      "maxShots": 23,
+      "upgrades": [
+        {
+          "time": 20.1,
+          "id": "skill:fire"
+        },
+        {
+          "time": 37.6,
+          "id": "skill:fire"
+        },
+        {
+          "time": 61.3,
+          "id": "weapon"
+        },
+        {
+          "time": 82.6,
+          "id": "skill:chain"
+        },
+        {
+          "time": 100,
+          "id": "weapon"
+        },
+        {
+          "time": 120.3,
+          "id": "skill:frost"
+        },
+        {
+          "time": 143.1,
+          "id": "weapon"
+        },
+        {
+          "time": 165.6,
+          "id": "passive:power"
+        },
+        {
+          "time": 194.9,
+          "id": "skill:fire"
+        },
+        {
+          "time": 213.8,
+          "id": "weapon"
+        },
+        {
+          "time": 240.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 270.2,
+          "id": "passive:power"
+        },
+        {
+          "time": 296.9,
+          "id": "passive:power"
+        },
+        {
+          "time": 325.9,
+          "id": "skill:frost"
+        },
+        {
+          "time": 358.7,
+          "id": "passive:haste"
+        },
+        {
+          "time": 389.3,
+          "id": "passive:power"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 35,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "fire": 2
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 62,
+          "maxHp": 85,
+          "kills": 116,
+          "level": 6,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "fire": 2,
+            "chain": 1
+          }
+        },
+        {
+          "seconds": 180,
+          "hp": 82,
+          "maxHp": 85,
+          "kills": 256,
+          "level": 9,
+          "bosses": 0,
+          "enemies": 6,
+          "skills": {
+            "fire": 2,
+            "chain": 1,
+            "frost": 1
+          }
+        },
+        {
+          "seconds": 240,
+          "hp": 74,
+          "maxHp": 85,
+          "kills": 480,
+          "level": 11,
+          "bosses": 1,
+          "enemies": 9,
+          "skills": {
+            "fire": 3,
+            "chain": 1,
+            "frost": 1
+          }
+        },
+        {
+          "seconds": 300,
+          "hp": 77,
+          "maxHp": 85,
+          "kills": 828,
+          "level": 14,
+          "bosses": 1,
+          "enemies": 13,
+          "skills": {
+            "fire": 3,
+            "chain": 2,
+            "frost": 1
+          }
+        },
+        {
+          "seconds": 360,
+          "hp": 70,
+          "maxHp": 85,
+          "kills": 1340,
+          "level": 16,
+          "bosses": 1,
+          "enemies": 12,
+          "skills": {
+            "fire": 3,
+            "chain": 2,
+            "frost": 2
+          }
+        }
+      ]
+    },
+    {
+      "hero": "mage",
+      "seed": 2026,
+      "policy": "reactive",
+      "build": "skills",
+      "duration": 600,
+      "survived": 161.1,
+      "status": "gameover",
+      "firstLevel": 20.1,
+      "kills": 196,
+      "bosses": 0,
+      "level": 8,
+      "hp": 0,
+      "maxHp": 85,
+      "hpLost": 105,
+      "hits": 7,
+      "maxEnemies": 20,
+      "maxShots": 8,
+      "upgrades": [
+        {
+          "time": 20.1,
+          "id": "skill:fire"
+        },
+        {
+          "time": 37.6,
+          "id": "skill:fire"
+        },
+        {
+          "time": 61.3,
+          "id": "skill:fire"
+        },
+        {
+          "time": 80.2,
+          "id": "weapon"
+        },
+        {
+          "time": 99,
+          "id": "skill:chain"
+        },
+        {
+          "time": 117.8,
+          "id": "skill:chain"
+        },
+        {
+          "time": 146.6,
+          "id": "passive:haste"
+        }
+      ],
+      "checkpoints": [
+        {
+          "seconds": 60,
+          "hp": 85,
+          "maxHp": 85,
+          "kills": 35,
+          "level": 3,
+          "bosses": 0,
+          "enemies": 2,
+          "skills": {
+            "fire": 2
+          }
+        },
+        {
+          "seconds": 120,
+          "hp": 84,
+          "maxHp": 85,
+          "kills": 116,
+          "level": 7,
+          "bosses": 0,
+          "enemies": 3,
+          "skills": {
+            "fire": 3,
+            "chain": 2
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7490 @@
+[
+  {
+    "hero": "warrior",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 254.5,
+        "gold": 357,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 256.5,
+        "gold": 371,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 5,
+          "hp": 5,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 402.4,
+        "gold": 846,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 330,
+        "gold": 584,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 3,
+          "gold": 3
+        },
+        "time": 599.3,
+        "gold": 1816,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 576.1,
+        "gold": 1834,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 374.8,
+        "gold": 844,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 697.8,
+        "gold": 2359,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 279,
+        "gold": 404,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 3,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 452.9,
+        "gold": 1063,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 353.9,
+        "gold": 674,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 4,
+          "gold": 1
+        },
+        "time": 345.5,
+        "gold": 663,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 567.2,
+        "gold": 1702,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 321.5,
+        "gold": 611,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 379.6,
+        "gold": 850,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 461.2,
+        "gold": 1183,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 696.1,
+        "gold": 2317,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 266.3,
+        "gold": 380,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 318.8,
+        "gold": 494,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 5,
+          "speed": 1,
+          "gold": 1
+        },
+        "time": 296.5,
+        "gold": 463,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 7,
+          "hp": 6,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 395.9,
+        "gold": 847,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 579.7,
+        "gold": 1742,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 696.2,
+        "gold": 2217,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 260.4,
+        "gold": 363,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 546.9,
+        "gold": 1490,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 8,
+          "hp": 7,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 342.9,
+        "gold": 669,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 9,
+          "hp": 8,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 316,
+        "gold": 605,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 330.5,
+        "gold": 638,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 10,
+          "hp": 9,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 700,
+        "gold": 1972,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 689.8,
+        "gold": 2325,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 254.5,
+        "gold": 357,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 1,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 425.8,
+        "gold": 976,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 8,
+          "hp": 4,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 260,
+        "gold": 387,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 6,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 317.3,
+        "gold": 557,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 7,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 359.6,
+        "gold": 696,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 700,
+        "gold": 1904,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 373.7,
+        "gold": 826,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 13,
+          "hp": 9,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 686,
+        "gold": 2367,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 279,
+        "gold": 404,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 476,
+        "gold": 1154,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 8,
+          "hp": 5,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 316.3,
+        "gold": 546,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 9,
+          "hp": 6,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 359.6,
+        "gold": 712,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 397.8,
+        "gold": 894,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 320.5,
+        "gold": 593,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 12,
+          "hp": 8,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 325.2,
+        "gold": 625,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 690.5,
+        "gold": 2378,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 266.3,
+        "gold": 380,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 1,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 279.5,
+        "gold": 404,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 593.1,
+        "gold": 1704,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 10,
+          "hp": 6,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 301.3,
+        "gold": 533,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 386.3,
+        "gold": 837,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 696.6,
+        "gold": 2324,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 260.4,
+        "gold": 363,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 1,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 294,
+        "gold": 499,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 352.6,
+        "gold": 673,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 5,
+          "speed": 4,
+          "gold": 1
+        },
+        "time": 579.7,
+        "gold": 1702,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 11,
+          "hp": 7,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 303.5,
+        "gold": 543,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 581.3,
+        "gold": 1828,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 13,
+          "hp": 9,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 689.9,
+        "gold": 2332,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 195.5,
+        "gold": 229,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 2,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 290,
+        "gold": 455,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 5,
+          "hp": 5,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 329.6,
+        "gold": 594,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 7,
+          "hp": 6,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 296,
+        "gold": 497,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 8,
+          "hp": 7,
+          "speed": 2,
+          "gold": 2
+        },
+        "time": 300.8,
+        "gold": 532,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 389.6,
+        "gold": 832,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 340.6,
+        "gold": 696,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 10,
+          "hp": 9,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 700,
+        "gold": 1920,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 490.1,
+        "gold": 1368,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 413.9,
+        "gold": 973,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 390.1,
+        "gold": 928,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 8,
+          "gold": 8
+        },
+        "time": 465,
+        "gold": 1321,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 9,
+          "gold": 9
+        },
+        "time": 682.6,
+        "gold": 2462,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 276.3,
+        "gold": 405,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 3,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 327.7,
+        "gold": 589,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 5,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 322.4,
+        "gold": 589,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 354.8,
+        "gold": 709,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 389.6,
+        "gold": 832,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 396.6,
+        "gold": 878,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 462.4,
+        "gold": 1159,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 700,
+        "gold": 1926,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 413.9,
+        "gold": 973,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 390.1,
+        "gold": 928,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 8,
+          "gold": 8
+        },
+        "time": 465,
+        "gold": 1321,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 9,
+          "gold": 9
+        },
+        "time": 682.6,
+        "gold": 2462,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 276.8,
+        "gold": 397,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 3,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 309.5,
+        "gold": 514,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 5,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 344.9,
+        "gold": 648,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 404.8,
+        "gold": 876,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 8,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 355.9,
+        "gold": 695,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 311.1,
+        "gold": 536,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 10,
+          "hp": 9,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 431.8,
+        "gold": 981,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 381.3,
+        "gold": 833,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 332.5,
+        "gold": 666,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 280.8,
+        "gold": 487,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 408.2,
+        "gold": 987,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 700,
+        "gold": 2004,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 453.7,
+        "gold": 1173,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 15,
+          "hp": 14,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 686.3,
+        "gold": 2472,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 223.8,
+        "gold": 284,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 300,
+        "gold": 458,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 5,
+          "hp": 5,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 381.6,
+        "gold": 778,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 3,
+          "gold": 0
+        },
+        "time": 327,
+        "gold": 577,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 392,
+        "gold": 824,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 439.1,
+        "gold": 978,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 320.3,
+        "gold": 601,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 427.8,
+        "gold": 999,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 595.2,
+        "gold": 1991,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 470.5,
+        "gold": 1246,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 691.7,
+        "gold": 2418,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 195.5,
+        "gold": 229,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 302.9,
+        "gold": 456,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 3,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 317.7,
+        "gold": 570,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 4,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 295.2,
+        "gold": 458,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 8,
+          "hp": 6,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 266.4,
+        "gold": 406,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 9,
+          "hp": 6,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 267.3,
+        "gold": 435,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 10,
+          "hp": 6,
+          "speed": 4,
+          "gold": 4
+        },
+        "time": 476.8,
+        "gold": 1298,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 363.6,
+        "gold": 776,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 12,
+          "hp": 8,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 452.7,
+        "gold": 1129,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 13,
+          "hp": 9,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 433,
+        "gold": 1042,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 13,
+          "hp": 11,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 414.1,
+        "gold": 999,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 683.5,
+        "gold": 2400,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 276.3,
+        "gold": 405,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 315.3,
+        "gold": 570,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 296,
+        "gold": 486,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 5,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 398,
+        "gold": 841,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 7,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 268.3,
+        "gold": 435,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 514.2,
+        "gold": 1443,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 11,
+          "hp": 9,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 412.5,
+        "gold": 943,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 462.3,
+        "gold": 1206,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 13,
+          "hp": 10,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 413.9,
+        "gold": 993,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 14,
+          "hp": 10,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 439.5,
+        "gold": 1122,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 14,
+          "hp": 12,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 683.5,
+        "gold": 2444,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 276.8,
+        "gold": 397,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 274.2,
+        "gold": 400,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 4,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 344.1,
+        "gold": 641,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 5,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 336.1,
+        "gold": 628,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 6,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 382.5,
+        "gold": 802,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 382.8,
+        "gold": 835,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 5,
+          "gold": 5
+        },
+        "time": 432,
+        "gold": 1063,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 433.3,
+        "gold": 1064,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 13,
+          "hp": 9,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 395.5,
+        "gold": 900,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 13,
+          "hp": 11,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 474.1,
+        "gold": 1337,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 682.6,
+        "gold": 2376,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "warrior",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 223.8,
+        "gold": 284,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 339.4,
+        "gold": 593,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 3,
+          "speed": 1,
+          "gold": 1
+        },
+        "time": 318.8,
+        "gold": 589,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 5,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 324.8,
+        "gold": 598,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 6,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 378.9,
+        "gold": 795,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 355.9,
+        "gold": 715,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 306.4,
+        "gold": 539,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 11,
+          "hp": 9,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 427,
+        "gold": 998,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 390.3,
+        "gold": 909,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 13,
+          "hp": 10,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 469.6,
+        "gold": 1260,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 14,
+          "hp": 10,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 402.5,
+        "gold": 947,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 414.1,
+        "gold": 1014,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 15,
+          "hp": 11,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 686.3,
+        "gold": 2472,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 380.5,
+        "gold": 771,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 5,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 407.8,
+        "gold": 939,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 448.3,
+        "gold": 1148,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 581.2,
+        "gold": 1844,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 551.7,
+        "gold": 1701,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 549.1,
+        "gold": 1779,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 552,
+        "gold": 1863,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 613.1,
+        "gold": 2115,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 607,
+        "gold": 2181,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 606.9,
+        "gold": 2142,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 613.1,
+        "gold": 2502,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 299.1,
+        "gold": 522,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 4,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 404.4,
+        "gold": 953,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 523.9,
+        "gold": 1455,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 412.3,
+        "gold": 973,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 452.3,
+        "gold": 1158,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 613.6,
+        "gold": 1966,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 440.4,
+        "gold": 1188,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 560.1,
+        "gold": 1849,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 610,
+        "gold": 2116,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 611.7,
+        "gold": 2124,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 611.8,
+        "gold": 2231,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 613.7,
+        "gold": 2228,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 18,
+          "hp": 17,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 614.1,
+        "gold": 2602,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 323.8,
+        "gold": 595,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 4,
+          "speed": 1,
+          "gold": 1
+        },
+        "time": 610.9,
+        "gold": 1871,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 9,
+          "hp": 8,
+          "speed": 4,
+          "gold": 1
+        },
+        "time": 437.3,
+        "gold": 1069,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 10,
+          "hp": 9,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 452.3,
+        "gold": 1158,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 613.6,
+        "gold": 1966,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 556.8,
+        "gold": 1790,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 560.1,
+        "gold": 1888,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 613.6,
+        "gold": 2152,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 562.3,
+        "gold": 1896,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 611.8,
+        "gold": 2231,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 613.7,
+        "gold": 2228,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 18,
+          "hp": 17,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 614.1,
+        "gold": 2647,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 403.4,
+        "gold": 869,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 6,
+          "hp": 5,
+          "speed": 1,
+          "gold": 1
+        },
+        "time": 442.2,
+        "gold": 1078,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 8,
+          "hp": 7,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 359.7,
+        "gold": 738,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 9,
+          "hp": 8,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 532.1,
+        "gold": 1557,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 533.1,
+        "gold": 1558,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 519.6,
+        "gold": 1612,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 609.9,
+        "gold": 2115,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 607,
+        "gold": 2096,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 611.6,
+        "gold": 2179,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 609.7,
+        "gold": 2134,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 17,
+          "hp": 16,
+          "speed": 12,
+          "gold": 9
+        },
+        "time": 604.1,
+        "gold": 2162,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 13,
+          "gold": 10
+        },
+        "time": 604.2,
+        "gold": 2316,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 18,
+          "hp": 18,
+          "speed": 13,
+          "gold": 10
+        },
+        "time": 621.9,
+        "gold": 2238,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 19,
+          "hp": 18,
+          "speed": 14,
+          "gold": 11
+        },
+        "time": 612.7,
+        "gold": 2591,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 380.5,
+        "gold": 771,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 6,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 549,
+        "gold": 1573,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 9,
+          "hp": 7,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 390.3,
+        "gold": 878,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 10,
+          "hp": 8,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 618.3,
+        "gold": 2303,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 299.1,
+        "gold": 522,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 3,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 456.8,
+        "gold": 1107,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 8,
+          "hp": 6,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 526.4,
+        "gold": 1491,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 10,
+          "hp": 8,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 528.4,
+        "gold": 1505,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 571.6,
+        "gold": 1794,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 13,
+          "hp": 10,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 475.5,
+        "gold": 1381,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 613.1,
+        "gold": 2029,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 15,
+          "hp": 12,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 575.3,
+        "gold": 1984,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 606.9,
+        "gold": 2142,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 613.1,
+        "gold": 2502,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 323.8,
+        "gold": 595,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 6,
+          "hp": 2,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 494,
+        "gold": 1290,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 9,
+          "hp": 5,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 421.6,
+        "gold": 1021,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 581,
+        "gold": 1863,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 571.8,
+        "gold": 1819,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 13,
+          "hp": 10,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 558,
+        "gold": 1863,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 14,
+          "hp": 12,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 614,
+        "gold": 2130,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 15,
+          "hp": 13,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 587.1,
+        "gold": 2089,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 12,
+          "gold": 9
+        },
+        "time": 563.5,
+        "gold": 1966,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 12,
+          "gold": 9
+        },
+        "time": 464.4,
+        "gold": 1424,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 18,
+          "hp": 14,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 566.4,
+        "gold": 2043,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 18,
+          "hp": 15,
+          "speed": 13,
+          "gold": 12
+        },
+        "time": 607.2,
+        "gold": 2293,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 19,
+          "hp": 16,
+          "speed": 13,
+          "gold": 12
+        },
+        "time": 609.9,
+        "gold": 2355,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 20,
+          "hp": 16,
+          "speed": 14,
+          "gold": 12
+        },
+        "time": 580.5,
+        "gold": 2178,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 20,
+          "hp": 17,
+          "speed": 15,
+          "gold": 13
+        },
+        "time": 612.6,
+        "gold": 2709,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 403.4,
+        "gold": 869,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 7,
+          "hp": 3,
+          "speed": 1,
+          "gold": 1
+        },
+        "time": 527.1,
+        "gold": 1437,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 9,
+          "hp": 7,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 491.4,
+        "gold": 1357,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 516.2,
+        "gold": 1499,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 557.5,
+        "gold": 1762,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 13,
+          "hp": 11,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 529.6,
+        "gold": 1716,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 14,
+          "hp": 12,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 611.3,
+        "gold": 2086,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 16,
+          "hp": 12,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 518.4,
+        "gold": 1675,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 609.9,
+        "gold": 2277,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 613.4,
+        "gold": 2573,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 321.8,
+        "gold": 572,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 4,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 339.1,
+        "gold": 653,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 6,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 305,
+        "gold": 548,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 7,
+          "speed": 3,
+          "gold": 0
+        },
+        "time": 353.9,
+        "gold": 674,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 8,
+          "speed": 4,
+          "gold": 1
+        },
+        "time": 310,
+        "gold": 561,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 336,
+        "gold": 710,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 10,
+          "hp": 9,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 518.3,
+        "gold": 1559,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 502.2,
+        "gold": 1470,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 624,
+        "gold": 2075,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 422.4,
+        "gold": 1116,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 559.1,
+        "gold": 1850,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 611.7,
+        "gold": 2156,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 573.2,
+        "gold": 2016,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 17,
+          "hp": 16,
+          "speed": 12,
+          "gold": 9
+        },
+        "time": 611.6,
+        "gold": 2207,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 13,
+          "gold": 10
+        },
+        "time": 614.9,
+        "gold": 2591,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 222.6,
+        "gold": 292,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 316.1,
+        "gold": 579,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 5,
+          "speed": 1,
+          "gold": 1
+        },
+        "time": 230.6,
+        "gold": 312,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 6,
+          "hp": 6,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 457.4,
+        "gold": 1161,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 504.9,
+        "gold": 1367,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 314.7,
+        "gold": 611,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 443.3,
+        "gold": 1148,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 509.7,
+        "gold": 1515,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 573.6,
+        "gold": 1879,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 559.1,
+        "gold": 1812,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 15,
+          "hp": 14,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 358.5,
+        "gold": 816,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 313.4,
+        "gold": 660,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 607,
+        "gold": 2140,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 583.7,
+        "gold": 2082,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 17,
+          "hp": 16,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 558.7,
+        "gold": 1948,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 13,
+          "gold": 10
+        },
+        "time": 607.3,
+        "gold": 2231,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 18,
+          "hp": 18,
+          "speed": 13,
+          "gold": 11
+        },
+        "time": 609.7,
+        "gold": 2200,
+        "cleared": false
+      },
+      {
+        "attempt": 18,
+        "levels": {
+          "attack": 19,
+          "hp": 18,
+          "speed": 14,
+          "gold": 11
+        },
+        "time": 612.5,
+        "gold": 2629,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 284.9,
+        "gold": 491,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 350.5,
+        "gold": 678,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 6,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 457.4,
+        "gold": 1161,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 504.9,
+        "gold": 1367,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 314.7,
+        "gold": 611,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 443.3,
+        "gold": 1148,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 509.7,
+        "gold": 1515,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 573.6,
+        "gold": 1839,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 610.1,
+        "gold": 2098,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 15,
+          "hp": 14,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 611.7,
+        "gold": 2156,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 16,
+          "hp": 15,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 573.2,
+        "gold": 2016,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 12,
+          "gold": 9
+        },
+        "time": 334,
+        "gold": 753,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 604.3,
+        "gold": 2269,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 558.7,
+        "gold": 1986,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 18,
+          "hp": 18,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 612.5,
+        "gold": 2259,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 19,
+          "hp": 18,
+          "speed": 13,
+          "gold": 12
+        },
+        "time": 611.5,
+        "gold": 2349,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 19,
+          "hp": 19,
+          "speed": 14,
+          "gold": 12
+        },
+        "time": 612.5,
+        "gold": 2674,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 300.7,
+        "gold": 519,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 4,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 349.9,
+        "gold": 680,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 6,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 433.7,
+        "gold": 1061,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 616.4,
+        "gold": 1940,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 443.3,
+        "gold": 1123,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 546.2,
+        "gold": 1747,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 573.6,
+        "gold": 1879,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 559.1,
+        "gold": 1812,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 15,
+          "hp": 14,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 358.5,
+        "gold": 832,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 313.4,
+        "gold": 674,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 607,
+        "gold": 2184,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 583.7,
+        "gold": 2124,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 614.3,
+        "gold": 2481,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 321.8,
+        "gold": 572,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 6,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 320.7,
+        "gold": 581,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 5,
+          "speed": 3,
+          "gold": 0
+        },
+        "time": 328.2,
+        "gold": 594,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 9,
+          "hp": 5,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 422.3,
+        "gold": 924,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 380.2,
+        "gold": 849,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 555.5,
+        "gold": 1702,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 555.3,
+        "gold": 1755,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 14,
+          "hp": 10,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 403.9,
+        "gold": 992,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 615.9,
+        "gold": 2480,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 222.6,
+        "gold": 292,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 345,
+        "gold": 654,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 4,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 392.3,
+        "gold": 809,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 9,
+          "hp": 5,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 325.7,
+        "gold": 624,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 7,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 331.2,
+        "gold": 673,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 10,
+          "hp": 8,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 309.5,
+        "gold": 618,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 452.1,
+        "gold": 1173,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 435.8,
+        "gold": 1149,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 13,
+          "hp": 10,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 570.1,
+        "gold": 1806,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 538.7,
+        "gold": 1704,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 15,
+          "hp": 12,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 439.5,
+        "gold": 1219,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 15,
+          "hp": 13,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 450.1,
+        "gold": 1287,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 379,
+        "gold": 951,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 16,
+          "hp": 14,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 607,
+        "gold": 2180,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 553,
+        "gold": 1953,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 18,
+          "hp": 15,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 610.3,
+        "gold": 2259,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 19,
+          "hp": 15,
+          "speed": 13,
+          "gold": 12
+        },
+        "time": 609.7,
+        "gold": 2349,
+        "cleared": false
+      },
+      {
+        "attempt": 18,
+        "levels": {
+          "attack": 19,
+          "hp": 16,
+          "speed": 15,
+          "gold": 12
+        },
+        "time": 613,
+        "gold": 2681,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 284.9,
+        "gold": 491,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 418.6,
+        "gold": 941,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 8,
+          "hp": 5,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 478.2,
+        "gold": 1244,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 402.8,
+        "gold": 909,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 403.3,
+        "gold": 936,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 12,
+          "hp": 8,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 410.1,
+        "gold": 1029,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 13,
+          "hp": 9,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 591.5,
+        "gold": 1960,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 422.4,
+        "gold": 1093,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 14,
+          "hp": 12,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 538.7,
+        "gold": 1740,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 15,
+          "hp": 12,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 343.9,
+        "gold": 781,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 15,
+          "hp": 13,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 536,
+        "gold": 1753,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 16,
+          "hp": 14,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 379,
+        "gold": 969,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 614.9,
+        "gold": 2553,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 300.7,
+        "gold": 519,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 3,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 303.3,
+        "gold": 535,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 4,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 288.5,
+        "gold": 519,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 5,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 431.8,
+        "gold": 1078,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 390,
+        "gold": 845,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 542,
+        "gold": 1617,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 349.1,
+        "gold": 784,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 13,
+          "hp": 9,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 568.2,
+        "gold": 1905,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 359,
+        "gold": 829,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 14,
+          "hp": 12,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 609.7,
+        "gold": 2098,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 16,
+          "hp": 12,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 432.3,
+        "gold": 1197,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 522.7,
+        "gold": 1718,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 17,
+          "hp": 13,
+          "speed": 12,
+          "gold": 9
+        },
+        "time": 540.8,
+        "gold": 1799,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 17,
+          "hp": 15,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 615.2,
+        "gold": 2592,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 634,
+        "gold": 1791,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 8,
+          "hp": 7,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 196.6,
+        "gold": 255,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 618.1,
+        "gold": 1805,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 606.9,
+        "gold": 1998,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 615.8,
+        "gold": 2029,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 621.3,
+        "gold": 2069,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 623.2,
+        "gold": 2142,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 615.6,
+        "gold": 2200,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 617,
+        "gold": 2118,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 612.7,
+        "gold": 2203,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 18,
+          "hp": 17,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 612.9,
+        "gold": 2226,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 18,
+          "hp": 18,
+          "speed": 13,
+          "gold": 11
+        },
+        "time": 622.5,
+        "gold": 2630,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 155.6,
+        "gold": 160,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 2,
+          "hp": 2,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 136.5,
+        "gold": 107,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 3,
+          "hp": 2,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 237.7,
+        "gold": 332,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 4,
+          "hp": 4,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 613.6,
+        "gold": 1842,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 8,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 617.9,
+        "gold": 1893,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 329.5,
+        "gold": 655,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 617.3,
+        "gold": 2031,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 615.4,
+        "gold": 2073,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 617.9,
+        "gold": 2111,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 15,
+          "hp": 14,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 621.3,
+        "gold": 2178,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 16,
+          "hp": 15,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 623.5,
+        "gold": 2152,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 17,
+          "hp": 16,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 317.1,
+        "gold": 706,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 17,
+          "hp": 16,
+          "speed": 12,
+          "gold": 9
+        },
+        "time": 623,
+        "gold": 2571,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 209.5,
+        "gold": 279,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 612.2,
+        "gold": 1776,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 624.2,
+        "gold": 1836,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 628.9,
+        "gold": 2314,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "weapon",
+    "strategy": "balanced",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 628.1,
+        "gold": 1781,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 8,
+          "hp": 7,
+          "speed": 3,
+          "gold": 0
+        },
+        "time": 624.2,
+        "gold": 1793,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 403.6,
+        "gold": 855,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 329.5,
+        "gold": 670,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 609.3,
+        "gold": 2015,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 8,
+          "gold": 5
+        },
+        "time": 357.4,
+        "gold": 764,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 615.3,
+        "gold": 2033,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 615.5,
+        "gold": 2146,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 615.7,
+        "gold": 2155,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 618.3,
+        "gold": 2133,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 17,
+          "hp": 16,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 623,
+        "gold": 2616,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 634,
+        "gold": 1791,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 9,
+          "hp": 5,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 607.3,
+        "gold": 1959,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 622.2,
+        "gold": 1977,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 13,
+          "hp": 9,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 616,
+        "gold": 2070,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 612.3,
+        "gold": 2102,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 15,
+          "hp": 12,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 615.7,
+        "gold": 2155,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 618.3,
+        "gold": 2133,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 11,
+          "gold": 10
+        },
+        "time": 386.5,
+        "gold": 968,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 406.2,
+        "gold": 1150,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 18,
+          "hp": 14,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 615.3,
+        "gold": 2326,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 18,
+          "hp": 16,
+          "speed": 13,
+          "gold": 11
+        },
+        "time": 623.5,
+        "gold": 2662,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 155.6,
+        "gold": 160,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 1,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 147.9,
+        "gold": 117,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 4,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 286,
+        "gold": 487,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 6,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 612.8,
+        "gold": 1837,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 394.9,
+        "gold": 835,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 11,
+          "hp": 7,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 618.1,
+        "gold": 1975,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 12,
+          "hp": 10,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 619.1,
+        "gold": 2031,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 625.4,
+        "gold": 2457,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 209.5,
+        "gold": 279,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 286,
+        "gold": 487,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 612.8,
+        "gold": 1837,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 394.9,
+        "gold": 835,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 11,
+          "hp": 7,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 618.1,
+        "gold": 1975,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 12,
+          "hp": 10,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 619.1,
+        "gold": 2031,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 625.4,
+        "gold": 2457,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "weapon",
+    "strategy": "offense",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 628.1,
+        "gold": 1781,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 9,
+          "hp": 5,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 615.7,
+        "gold": 1894,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 618.7,
+        "gold": 1933,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 13,
+          "hp": 9,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 626.2,
+        "gold": 2354,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 188.2,
+        "gold": 228,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 2,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 212.3,
+        "gold": 272,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 4,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 627.1,
+        "gold": 1755,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 286.9,
+        "gold": 481,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 8,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 254.4,
+        "gold": 403,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 280.7,
+        "gold": 473,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 10,
+          "hp": 9,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 300.6,
+        "gold": 588,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 619.6,
+        "gold": 1998,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 296.4,
+        "gold": 573,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 322.6,
+        "gold": 675,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 332.3,
+        "gold": 691,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 325.9,
+        "gold": 705,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 617.8,
+        "gold": 2103,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 15,
+          "hp": 14,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 385.6,
+        "gold": 927,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 15,
+          "hp": 15,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 619.4,
+        "gold": 2100,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 320.2,
+        "gold": 679,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 624.4,
+        "gold": 2583,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 185.2,
+        "gold": 213,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 2,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 145.4,
+        "gold": 144,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 4,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 271,
+        "gold": 405,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 5,
+          "hp": 5,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 268.4,
+        "gold": 397,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 6,
+          "hp": 6,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 281.5,
+        "gold": 492,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 4,
+          "gold": 1
+        },
+        "time": 223.1,
+        "gold": 297,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 8,
+          "hp": 7,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 313.8,
+        "gold": 558,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 9,
+          "hp": 8,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 289.9,
+        "gold": 530,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 347,
+        "gold": 692,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 325.5,
+        "gold": 623,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 284.6,
+        "gold": 528,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 295.9,
+        "gold": 544,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 284.3,
+        "gold": 555,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 345.8,
+        "gold": 738,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 322.6,
+        "gold": 675,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 8,
+          "gold": 6
+        },
+        "time": 332.3,
+        "gold": 677,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 325.9,
+        "gold": 705,
+        "cleared": false
+      },
+      {
+        "attempt": 18,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 617.8,
+        "gold": 2103,
+        "cleared": false
+      },
+      {
+        "attempt": 19,
+        "levels": {
+          "attack": 15,
+          "hp": 14,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 618.6,
+        "gold": 2208,
+        "cleared": false
+      },
+      {
+        "attempt": 20,
+        "levels": {
+          "attack": 16,
+          "hp": 15,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 290,
+        "gold": 598,
+        "cleared": false
+      },
+      {
+        "attempt": 21,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 320.2,
+        "gold": 679,
+        "cleared": false
+      },
+      {
+        "attempt": 22,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 624.4,
+        "gold": 2538,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 219.3,
+        "gold": 290,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 266.2,
+        "gold": 400,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 5,
+          "hp": 5,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 262.1,
+        "gold": 379,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 6,
+          "hp": 6,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 253,
+        "gold": 386,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 7,
+          "hp": 6,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 223.1,
+        "gold": 304,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 612.1,
+        "gold": 1928,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 285.8,
+        "gold": 529,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 11,
+          "hp": 10,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 312.8,
+        "gold": 607,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 11,
+          "hp": 11,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 334.7,
+        "gold": 635,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 12,
+          "hp": 11,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 617.5,
+        "gold": 2011,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 297.1,
+        "gold": 586,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 322,
+        "gold": 689,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 627.6,
+        "gold": 2144,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 15,
+          "hp": 14,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 612.5,
+        "gold": 2140,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 16,
+          "hp": 15,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 345.1,
+        "gold": 775,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 393.2,
+        "gold": 983,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 612.6,
+        "gold": 2174,
+        "cleared": false
+      },
+      {
+        "attempt": 18,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 12,
+          "gold": 9
+        },
+        "time": 626.4,
+        "gold": 2539,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "skills",
+    "strategy": "balanced",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 175.6,
+        "gold": 207,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 207.8,
+        "gold": 273,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 4,
+          "hp": 4,
+          "speed": 1,
+          "gold": 1
+        },
+        "time": 163.5,
+        "gold": 206,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 5,
+          "hp": 4,
+          "speed": 2,
+          "gold": 2
+        },
+        "time": 268.2,
+        "gold": 417,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 6,
+          "hp": 5,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 265.3,
+        "gold": 424,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 7,
+          "hp": 6,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 277.6,
+        "gold": 439,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 285.4,
+        "gold": 519,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 5,
+          "gold": 4
+        },
+        "time": 291.1,
+        "gold": 534,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 9,
+          "hp": 8,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 280.7,
+        "gold": 484,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 350.5,
+        "gold": 745,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 10,
+          "hp": 10,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 619.6,
+        "gold": 1998,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 12,
+          "hp": 12,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 296.4,
+        "gold": 585,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 347.8,
+        "gold": 738,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 327.7,
+        "gold": 647,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 290.6,
+        "gold": 590,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 302.2,
+        "gold": 597,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 13,
+          "hp": 13,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 384.9,
+        "gold": 945,
+        "cleared": false
+      },
+      {
+        "attempt": 18,
+        "levels": {
+          "attack": 14,
+          "hp": 13,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 216.5,
+        "gold": 358,
+        "cleared": false
+      },
+      {
+        "attempt": 19,
+        "levels": {
+          "attack": 14,
+          "hp": 14,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 381.7,
+        "gold": 908,
+        "cleared": false
+      },
+      {
+        "attempt": 20,
+        "levels": {
+          "attack": 15,
+          "hp": 14,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 531.3,
+        "gold": 1789,
+        "cleared": false
+      },
+      {
+        "attempt": 21,
+        "levels": {
+          "attack": 16,
+          "hp": 15,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 392,
+        "gold": 995,
+        "cleared": false
+      },
+      {
+        "attempt": 22,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 10,
+          "gold": 10
+        },
+        "time": 364.5,
+        "gold": 893,
+        "cleared": false
+      },
+      {
+        "attempt": 23,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 11,
+          "gold": 11
+        },
+        "time": 357.4,
+        "gold": 866,
+        "cleared": false
+      },
+      {
+        "attempt": 24,
+        "levels": {
+          "attack": 16,
+          "hp": 16,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 617.4,
+        "gold": 2334,
+        "cleared": false
+      },
+      {
+        "attempt": 25,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 13,
+          "gold": 11
+        },
+        "time": 345.9,
+        "gold": 844,
+        "cleared": false
+      },
+      {
+        "attempt": 26,
+        "levels": {
+          "attack": 17,
+          "hp": 17,
+          "speed": 14,
+          "gold": 11
+        },
+        "time": 617.5,
+        "gold": 2268,
+        "cleared": false
+      },
+      {
+        "attempt": 27,
+        "levels": {
+          "attack": 18,
+          "hp": 18,
+          "speed": 14,
+          "gold": 11
+        },
+        "time": 405.2,
+        "gold": 1070,
+        "cleared": false
+      },
+      {
+        "attempt": 28,
+        "levels": {
+          "attack": 19,
+          "hp": 18,
+          "speed": 14,
+          "gold": 11
+        },
+        "time": 309.5,
+        "gold": 685,
+        "cleared": false
+      },
+      {
+        "attempt": 29,
+        "levels": {
+          "attack": 19,
+          "hp": 18,
+          "speed": 14,
+          "gold": 12
+        },
+        "time": 621.5,
+        "gold": 2700,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 0,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 188.2,
+        "gold": 228,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 271.2,
+        "gold": 407,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 3,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 283.1,
+        "gold": 477,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 7,
+          "hp": 5,
+          "speed": 2,
+          "gold": 1
+        },
+        "time": 189,
+        "gold": 237,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 7,
+          "hp": 6,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 205.6,
+        "gold": 253,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 8,
+          "hp": 6,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 309.7,
+        "gold": 569,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 9,
+          "hp": 6,
+          "speed": 5,
+          "gold": 2
+        },
+        "time": 274.6,
+        "gold": 425,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 10,
+          "hp": 6,
+          "speed": 5,
+          "gold": 3
+        },
+        "time": 264.8,
+        "gold": 415,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 10,
+          "hp": 7,
+          "speed": 6,
+          "gold": 3
+        },
+        "time": 270.6,
+        "gold": 489,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 11,
+          "hp": 7,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 332.3,
+        "gold": 679,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 11,
+          "hp": 9,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 333,
+        "gold": 660,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 6,
+          "gold": 6
+        },
+        "time": 614.7,
+        "gold": 2100,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 13,
+          "hp": 11,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 338,
+        "gold": 692,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 291,
+        "gold": 585,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 331.4,
+        "gold": 692,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 14,
+          "hp": 12,
+          "speed": 9,
+          "gold": 8
+        },
+        "time": 623.3,
+        "gold": 2162,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 16,
+          "hp": 12,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 358.8,
+        "gold": 845,
+        "cleared": false
+      },
+      {
+        "attempt": 18,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 374.8,
+        "gold": 908,
+        "cleared": false
+      },
+      {
+        "attempt": 19,
+        "levels": {
+          "attack": 16,
+          "hp": 14,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 612.6,
+        "gold": 2174,
+        "cleared": false
+      },
+      {
+        "attempt": 20,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 623.3,
+        "gold": 2233,
+        "cleared": false
+      },
+      {
+        "attempt": 21,
+        "levels": {
+          "attack": 18,
+          "hp": 15,
+          "speed": 13,
+          "gold": 10
+        },
+        "time": 622.1,
+        "gold": 2657,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 1,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 185.2,
+        "gold": 213,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 177.2,
+        "gold": 218,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 5,
+          "hp": 2,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 269.7,
+        "gold": 403,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 6,
+          "hp": 4,
+          "speed": 3,
+          "gold": 0
+        },
+        "time": 291.9,
+        "gold": 452,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 8,
+          "hp": 4,
+          "speed": 3,
+          "gold": 0
+        },
+        "time": 291.4,
+        "gold": 508,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 9,
+          "hp": 5,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 232.2,
+        "gold": 336,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 9,
+          "hp": 6,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 618.4,
+        "gold": 1982,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 11,
+          "hp": 9,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 272.5,
+        "gold": 488,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 611.3,
+        "gold": 2017,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 13,
+          "hp": 10,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 275.9,
+        "gold": 480,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 13,
+          "hp": 11,
+          "speed": 9,
+          "gold": 6
+        },
+        "time": 279.7,
+        "gold": 554,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 13,
+          "hp": 11,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 302.2,
+        "gold": 597,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 13,
+          "hp": 12,
+          "speed": 10,
+          "gold": 7
+        },
+        "time": 384.9,
+        "gold": 908,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 14,
+          "hp": 12,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 214,
+        "gold": 343,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 14,
+          "hp": 12,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 380.6,
+        "gold": 908,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 15,
+          "hp": 12,
+          "speed": 10,
+          "gold": 9
+        },
+        "time": 527.1,
+        "gold": 1767,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 312.5,
+        "gold": 682,
+        "cleared": false
+      },
+      {
+        "attempt": 18,
+        "levels": {
+          "attack": 16,
+          "hp": 14,
+          "speed": 11,
+          "gold": 9
+        },
+        "time": 612.6,
+        "gold": 2174,
+        "cleared": false
+      },
+      {
+        "attempt": 19,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 623.3,
+        "gold": 2233,
+        "cleared": false
+      },
+      {
+        "attempt": 20,
+        "levels": {
+          "attack": 18,
+          "hp": 15,
+          "speed": 13,
+          "gold": 10
+        },
+        "time": 622.1,
+        "gold": 2657,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 2,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 219.3,
+        "gold": 290,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 265.3,
+        "gold": 399,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 3,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 305.5,
+        "gold": 537,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 205.6,
+        "gold": 273,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 8,
+          "hp": 5,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 297.5,
+        "gold": 550,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 9,
+          "hp": 6,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 618.4,
+        "gold": 1937,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 286.9,
+        "gold": 549,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 12,
+          "hp": 8,
+          "speed": 7,
+          "gold": 4
+        },
+        "time": 277.7,
+        "gold": 467,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 12,
+          "hp": 9,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 261.6,
+        "gold": 421,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 12,
+          "hp": 10,
+          "speed": 7,
+          "gold": 6
+        },
+        "time": 292.9,
+        "gold": 529,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 12,
+          "hp": 10,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 339.4,
+        "gold": 712,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 13,
+          "hp": 10,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 322,
+        "gold": 689,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 14,
+          "hp": 10,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 617.3,
+        "gold": 2103,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 15,
+          "hp": 12,
+          "speed": 9,
+          "gold": 7
+        },
+        "time": 326.7,
+        "gold": 682,
+        "cleared": false
+      },
+      {
+        "attempt": 15,
+        "levels": {
+          "attack": 15,
+          "hp": 12,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 527.1,
+        "gold": 1732,
+        "cleared": false
+      },
+      {
+        "attempt": 16,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 312.5,
+        "gold": 669,
+        "cleared": false
+      },
+      {
+        "attempt": 17,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 11,
+          "gold": 10
+        },
+        "time": 612.6,
+        "gold": 2217,
+        "cleared": false
+      },
+      {
+        "attempt": 18,
+        "levels": {
+          "attack": 17,
+          "hp": 14,
+          "speed": 12,
+          "gold": 10
+        },
+        "time": 623.3,
+        "gold": 2233,
+        "cleared": false
+      },
+      {
+        "attempt": 19,
+        "levels": {
+          "attack": 18,
+          "hp": 15,
+          "speed": 12,
+          "gold": 11
+        },
+        "time": 622.8,
+        "gold": 2652,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "build": "skills",
+    "strategy": "offense",
+    "offset": 3,
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 175.6,
+        "gold": 207,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 2,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 207.8,
+        "gold": 273,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 5,
+          "hp": 3,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 221.2,
+        "gold": 291,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 6,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 282.8,
+        "gold": 421,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 7,
+          "hp": 5,
+          "speed": 3,
+          "gold": 1
+        },
+        "time": 233.9,
+        "gold": 329,
+        "cleared": false
+      },
+      {
+        "attempt": 6,
+        "levels": {
+          "attack": 8,
+          "hp": 5,
+          "speed": 4,
+          "gold": 1
+        },
+        "time": 267.4,
+        "gold": 419,
+        "cleared": false
+      },
+      {
+        "attempt": 7,
+        "levels": {
+          "attack": 9,
+          "hp": 5,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 612.7,
+        "gold": 1984,
+        "cleared": false
+      },
+      {
+        "attempt": 8,
+        "levels": {
+          "attack": 11,
+          "hp": 8,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 303.8,
+        "gold": 567,
+        "cleared": false
+      },
+      {
+        "attempt": 9,
+        "levels": {
+          "attack": 12,
+          "hp": 8,
+          "speed": 6,
+          "gold": 5
+        },
+        "time": 614.7,
+        "gold": 2055,
+        "cleared": false
+      },
+      {
+        "attempt": 10,
+        "levels": {
+          "attack": 13,
+          "hp": 10,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 319.5,
+        "gold": 653,
+        "cleared": false
+      },
+      {
+        "attempt": 11,
+        "levels": {
+          "attack": 14,
+          "hp": 10,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 280.3,
+        "gold": 551,
+        "cleared": false
+      },
+      {
+        "attempt": 12,
+        "levels": {
+          "attack": 14,
+          "hp": 11,
+          "speed": 8,
+          "gold": 7
+        },
+        "time": 627.6,
+        "gold": 2144,
+        "cleared": false
+      },
+      {
+        "attempt": 13,
+        "levels": {
+          "attack": 15,
+          "hp": 12,
+          "speed": 10,
+          "gold": 8
+        },
+        "time": 612.5,
+        "gold": 2185,
+        "cleared": false
+      },
+      {
+        "attempt": 14,
+        "levels": {
+          "attack": 16,
+          "hp": 13,
+          "speed": 11,
+          "gold": 8
+        },
+        "time": 624.4,
+        "gold": 2538,
+        "cleared": true
+      }
+    ]
+  }
+]

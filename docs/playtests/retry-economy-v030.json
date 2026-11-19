@@ -1,0 +1,149 @@
+[
+  {
+    "hero": "warrior",
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 237.6,
+        "gold": 291,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 3,
+          "hp": 3,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 417.7,
+        "gold": 880,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 6,
+          "hp": 6,
+          "speed": 3,
+          "gold": 2
+        },
+        "time": 353.7,
+        "gold": 699,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 7,
+          "hp": 7,
+          "speed": 4,
+          "gold": 3
+        },
+        "time": 655.4,
+        "gold": 2374,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "archer",
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 332.9,
+        "gold": 587,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 5,
+          "hp": 4,
+          "speed": 2,
+          "gold": 0
+        },
+        "time": 424.2,
+        "gold": 953,
+        "cleared": false
+      },
+      {
+        "attempt": 3,
+        "levels": {
+          "attack": 7,
+          "hp": 6,
+          "speed": 4,
+          "gold": 2
+        },
+        "time": 531.7,
+        "gold": 1625,
+        "cleared": false
+      },
+      {
+        "attempt": 4,
+        "levels": {
+          "attack": 8,
+          "hp": 8,
+          "speed": 6,
+          "gold": 4
+        },
+        "time": 517,
+        "gold": 1628,
+        "cleared": false
+      },
+      {
+        "attempt": 5,
+        "levels": {
+          "attack": 9,
+          "hp": 9,
+          "speed": 7,
+          "gold": 5
+        },
+        "time": 609.6,
+        "gold": 2617,
+        "cleared": true
+      }
+    ]
+  },
+  {
+    "hero": "mage",
+    "trials": [
+      {
+        "attempt": 1,
+        "levels": {
+          "attack": 0,
+          "hp": 0,
+          "speed": 0,
+          "gold": 0
+        },
+        "time": 272.6,
+        "gold": 434,
+        "cleared": false
+      },
+      {
+        "attempt": 2,
+        "levels": {
+          "attack": 4,
+          "hp": 4,
+          "speed": 1,
+          "gold": 0
+        },
+        "time": 615.4,
+        "gold": 2121,
+        "cleared": true
+      }
+    ]
+  }
+]

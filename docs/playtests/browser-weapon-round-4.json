@@ -1,0 +1,289 @@
+[
+  {
+    "build": "weapon",
+    "hero": "warrior",
+    "elapsed": 199.2838666666446,
+    "status": "gameover",
+    "hp": 0,
+    "maxHp": 160,
+    "level": 9,
+    "skills": {
+      "blade": 1,
+      "whirl": 2
+    },
+    "kills": 205,
+    "bosses": 0,
+    "direction": {
+      "x": -0.7071067811865475,
+      "y": 0.7071067811865476
+    },
+    "center": {
+      "x": 216.0000029930625,
+      "y": 552.9599824966782
+    },
+    "dragging": false,
+    "choice": null,
+    "scroll": 4384.245066666193,
+    "maxEnemies": 25,
+    "maxShots": 14,
+    "maxObjects": 128,
+    "firstLevel": 30.059766666665407,
+    "hpLost": 200,
+    "checkpoints": [
+      {
+        "seconds": 60,
+        "hp": 160,
+        "level": 3,
+        "kills": 31,
+        "bosses": 0,
+        "enemies": 14
+      },
+      {
+        "seconds": 120,
+        "hp": 158,
+        "level": 6,
+        "kills": 92,
+        "bosses": 0,
+        "enemies": 17
+      },
+      {
+        "seconds": 180,
+        "hp": 75,
+        "level": 9,
+        "kills": 170,
+        "bosses": 0,
+        "enemies": 24
+      }
+    ],
+    "bossWarning": false,
+    "bossVisible": true,
+    "seed": 42,
+    "input": "Native CDP touch, 100ms steering, real App/Phaser, accelerated browser clock",
+    "realSeconds": 39,
+    "errors": []
+  },
+  {
+    "build": "weapon",
+    "hero": "archer",
+    "elapsed": 532.8915666668194,
+    "status": "gameover",
+    "hp": 0,
+    "maxHp": 129.2,
+    "level": 18,
+    "skills": {
+      "rain": 2,
+      "multishot": 3,
+      "pierce": 1
+    },
+    "kills": 1067,
+    "bosses": 2,
+    "direction": {
+      "x": -0.9238795325112868,
+      "y": -0.38268343236508967
+    },
+    "center": {
+      "x": 215.9999978065231,
+      "y": 552.9599821654789
+    },
+    "dragging": false,
+    "choice": null,
+    "scroll": 11723.614466669946,
+    "maxEnemies": 16,
+    "maxShots": 26,
+    "maxObjects": 134,
+    "firstLevel": 17.989166666666485,
+    "hpLost": 237,
+    "checkpoints": [
+      {
+        "seconds": 60,
+        "hp": 95,
+        "level": 4,
+        "kills": 42,
+        "bosses": 0,
+        "enemies": 3
+      },
+      {
+        "seconds": 120,
+        "hp": 95,
+        "level": 7,
+        "kills": 109,
+        "bosses": 0,
+        "enemies": 0
+      },
+      {
+        "seconds": 180,
+        "hp": 73,
+        "level": 9,
+        "kills": 189,
+        "bosses": 0,
+        "enemies": 5
+      },
+      {
+        "seconds": 240,
+        "hp": 88,
+        "level": 11,
+        "kills": 294,
+        "bosses": 1,
+        "enemies": 3
+      },
+      {
+        "seconds": 300,
+        "hp": 40,
+        "level": 13,
+        "kills": 415,
+        "bosses": 1,
+        "enemies": 4
+      },
+      {
+        "seconds": 360,
+        "hp": 27,
+        "level": 14,
+        "kills": 556,
+        "bosses": 1,
+        "enemies": 6
+      },
+      {
+        "seconds": 420,
+        "hp": 43,
+        "level": 16,
+        "kills": 717,
+        "bosses": 2,
+        "enemies": 5
+      },
+      {
+        "seconds": 480,
+        "hp": 29,
+        "level": 17,
+        "kills": 896,
+        "bosses": 2,
+        "enemies": 6
+      }
+    ],
+    "bossWarning": false,
+    "bossVisible": false,
+    "seed": 42,
+    "input": "Native CDP touch, 100ms steering, real App/Phaser, accelerated browser clock",
+    "realSeconds": 113,
+    "errors": []
+  },
+  {
+    "build": "weapon",
+    "hero": "mage",
+    "elapsed": 600.0999333333846,
+    "status": "running",
+    "hp": 51.89347084444201,
+    "maxHp": 85,
+    "level": 19,
+    "skills": {
+      "fire": 3,
+      "frost": 3,
+      "chain": 2
+    },
+    "kills": 1312,
+    "bosses": 3,
+    "direction": {
+      "x": -0.7071067811865477,
+      "y": -0.7071067811865475
+    },
+    "center": {
+      "x": 216.00001535418582,
+      "y": 552.959969423695
+    },
+    "dragging": false,
+    "choice": null,
+    "scroll": 13202.198533339495,
+    "maxEnemies": 12,
+    "maxShots": 17,
+    "maxObjects": 128,
+    "firstLevel": 21.590833333332803,
+    "hpLost": 53,
+    "checkpoints": [
+      {
+        "seconds": 60,
+        "hp": 85,
+        "level": 4,
+        "kills": 40,
+        "bosses": 0,
+        "enemies": 5
+      },
+      {
+        "seconds": 120,
+        "hp": 85,
+        "level": 7,
+        "kills": 108,
+        "bosses": 0,
+        "enemies": 1
+      },
+      {
+        "seconds": 180,
+        "hp": 85,
+        "level": 9,
+        "kills": 191,
+        "bosses": 0,
+        "enemies": 3
+      },
+      {
+        "seconds": 240,
+        "hp": 85,
+        "level": 11,
+        "kills": 295,
+        "bosses": 1,
+        "enemies": 2
+      },
+      {
+        "seconds": 300,
+        "hp": 85,
+        "level": 13,
+        "kills": 414,
+        "bosses": 1,
+        "enemies": 5
+      },
+      {
+        "seconds": 360,
+        "hp": 72,
+        "level": 15,
+        "kills": 557,
+        "bosses": 1,
+        "enemies": 5
+      },
+      {
+        "seconds": 420,
+        "hp": 78,
+        "level": 16,
+        "kills": 716,
+        "bosses": 2,
+        "enemies": 6
+      },
+      {
+        "seconds": 480,
+        "hp": 85,
+        "level": 17,
+        "kills": 897,
+        "bosses": 2,
+        "enemies": 5
+      },
+      {
+        "seconds": 540,
+        "hp": 85,
+        "level": 18,
+        "kills": 1097,
+        "bosses": 2,
+        "enemies": 4
+      },
+      {
+        "seconds": 600,
+        "hp": 52,
+        "level": 19,
+        "kills": 1312,
+        "bosses": 3,
+        "enemies": 5
+      }
+    ],
+    "bossWarning": false,
+    "bossVisible": false,
+    "seed": 42,
+    "input": "Native CDP touch, 100ms steering, real App/Phaser, accelerated browser clock",
+    "realSeconds": 129,
+    "errors": []
+  }
+]

@@ -1,0 +1,118 @@
+{
+  "hero": "mage",
+  "elapsed": 600.0360666667242,
+  "status": "running",
+  "hp": 83.05446322221978,
+  "maxHp": 85,
+  "level": 19,
+  "skills": {
+    "chain": 3,
+    "fire": 3,
+    "frost": 3
+  },
+  "kills": 1315,
+  "bosses": 3,
+  "direction": {
+    "x": -1.8369701987210297e-16,
+    "y": -1
+  },
+  "center": {
+    "x": 215.9999780124656,
+    "y": 552.9599721713173
+  },
+  "dragging": false,
+  "choice": null,
+  "scroll": 13200.793466672683,
+  "maxEnemies": 13,
+  "maxShots": 19,
+  "maxObjects": 136,
+  "firstLevel": 20.12516666666629,
+  "hpLost": 22,
+  "checkpoints": [
+    {
+      "seconds": 60,
+      "hp": 85,
+      "level": 4,
+      "kills": 43,
+      "bosses": 0,
+      "enemies": 2
+    },
+    {
+      "seconds": 120,
+      "hp": 85,
+      "level": 7,
+      "kills": 103,
+      "bosses": 0,
+      "enemies": 6
+    },
+    {
+      "seconds": 180,
+      "hp": 85,
+      "level": 9,
+      "kills": 192,
+      "bosses": 0,
+      "enemies": 2
+    },
+    {
+      "seconds": 240,
+      "hp": 85,
+      "level": 11,
+      "kills": 294,
+      "bosses": 1,
+      "enemies": 3
+    },
+    {
+      "seconds": 300,
+      "hp": 85,
+      "level": 13,
+      "kills": 417,
+      "bosses": 1,
+      "enemies": 2
+    },
+    {
+      "seconds": 360,
+      "hp": 85,
+      "level": 14,
+      "kills": 557,
+      "bosses": 1,
+      "enemies": 5
+    },
+    {
+      "seconds": 420,
+      "hp": 85,
+      "level": 16,
+      "kills": 715,
+      "bosses": 2,
+      "enemies": 7
+    },
+    {
+      "seconds": 480,
+      "hp": 69,
+      "level": 17,
+      "kills": 897,
+      "bosses": 2,
+      "enemies": 5
+    },
+    {
+      "seconds": 540,
+      "hp": 76,
+      "level": 18,
+      "kills": 1099,
+      "bosses": 2,
+      "enemies": 2
+    },
+    {
+      "seconds": 600,
+      "hp": 83,
+      "level": 19,
+      "kills": 1315,
+      "bosses": 3,
+      "enemies": 2
+    }
+  ],
+  "bossVisible": false,
+  "seed": 42,
+  "input": "Native CDP touch, 100ms steering, real App/Phaser, accelerated browser clock",
+  "realSeconds": 117,
+  "errors": []
+}

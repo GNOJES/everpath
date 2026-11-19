@@ -1,0 +1,28 @@
+import { describe, it, expect } from 'vitest';
+import { SaveStore, parseSave } from '../src/game/save';
+
+class MemoryStorage { data = new Map<string, string>(); getItem(k: string) { return this.data.get(k) ?? null; } setItem(k: string, v: string) { this.data.set(k, v); } }
+describe('persistent progression', () => {
+ it('recovers corrupt, future and malformed saves without accepting invalid currency', () => {
+  expect(parseSave('{oops').gold).toBe(0);
+  expect(parseSave(JSON.stringify({ version: 999, gold: 100 })).gold).toBe(0);
+  const save = parseSave(JSON.stringify({ version: 1, gold: -20, upgrades: { attack: 999, hp: -2 }, lastHero: 'hacker', settings: { music: 5, sfx: -1 } }));
+  expect(save.gold).toBe(0); expect(save.upgrades.attack).toBe(20); expect(save.upgrades.hp).toBe(0); expect(save.lastHero).toBe('warrior'); expect(save.settings.music).toBe(1); expect(save.settings.sfx).toBe(0);
+ });
+ it('settles each run exactly once, including after reload', () => {
+  const storage = new MemoryStorage(); const store = new SaveStore(storage);
+  const result = { runId: 'run-1', hero: 'warrior' as const, time: 82, level: 4, kills: 23, bosses: 0, gold: 27 };
+  expect(store.settle(result)).toBe(true); expect(store.settle(result)).toBe(false);
+  const next = new SaveStore(storage); expect(next.settle(result)).toBe(false); expect(next.data.gold).toBe(27); expect(next.data.bestTime).toBe(82);
+ });
+ it('charges purchases once and persists levels, rejects unaffordable and capped upgrades', () => {
+  const store = new SaveStore(new MemoryStorage()); store.data.gold = 100;
+  expect(store.purchase('attack')).toBe(true); expect(store.data.gold).toBe(76); expect(store.data.upgrades.attack).toBe(1);
+  store.data.gold = 0; expect(store.purchase('hp')).toBe(false);
+  store.data.gold = 9999; store.data.upgrades.attack = 20; expect(store.purchase('attack')).toBe(false);
+ });
+ it('continues in memory when storage is denied', () => {
+  const store = new SaveStore({ getItem() { throw new Error('denied'); }, setItem() { throw new Error('quota'); } });
+  store.data.gold = 30; expect(store.purchase('hp')).toBe(true); expect(store.data.upgrades.hp).toBe(1); expect(store.persistent).toBe(false);
+ });
+});

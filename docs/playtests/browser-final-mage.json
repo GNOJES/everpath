@@ -1,0 +1,120 @@
+{
+  "build": "weapon",
+  "hero": "mage",
+  "elapsed": 600.0999333333846,
+  "status": "running",
+  "hp": 51.89347084444201,
+  "maxHp": 85,
+  "level": 19,
+  "skills": {
+    "fire": 3,
+    "frost": 3,
+    "chain": 2
+  },
+  "kills": 1312,
+  "bosses": 3,
+  "direction": {
+    "x": -0.7071067811865477,
+    "y": -0.7071067811865475
+  },
+  "center": {
+    "x": 216.00001535418582,
+    "y": 552.959969423695
+  },
+  "dragging": false,
+  "choice": null,
+  "scroll": 13202.198533339495,
+  "maxEnemies": 12,
+  "maxShots": 17,
+  "maxObjects": 128,
+  "firstLevel": 21.590833333332803,
+  "hpLost": 53,
+  "checkpoints": [
+    {
+      "seconds": 60,
+      "hp": 85,
+      "level": 4,
+      "kills": 40,
+      "bosses": 0,
+      "enemies": 5
+    },
+    {
+      "seconds": 120,
+      "hp": 85,
+      "level": 7,
+      "kills": 108,
+      "bosses": 0,
+      "enemies": 1
+    },
+    {
+      "seconds": 180,
+      "hp": 85,
+      "level": 9,
+      "kills": 191,
+      "bosses": 0,
+      "enemies": 3
+    },
+    {
+      "seconds": 240,
+      "hp": 85,
+      "level": 11,
+      "kills": 295,
+      "bosses": 1,
+      "enemies": 2
+    },
+    {
+      "seconds": 300,
+      "hp": 85,
+      "level": 13,
+      "kills": 414,
+      "bosses": 1,
+      "enemies": 5
+    },
+    {
+      "seconds": 360,
+      "hp": 72,
+      "level": 15,
+      "kills": 557,
+      "bosses": 1,
+      "enemies": 5
+    },
+    {
+      "seconds": 420,
+      "hp": 78,
+      "level": 16,
+      "kills": 716,
+      "bosses": 2,
+      "enemies": 6
+    },
+    {
+      "seconds": 480,
+      "hp": 85,
+      "level": 17,
+      "kills": 897,
+      "bosses": 2,
+      "enemies": 5
+    },
+    {
+      "seconds": 540,
+      "hp": 85,
+      "level": 18,
+      "kills": 1097,
+      "bosses": 2,
+      "enemies": 4
+    },
+    {
+      "seconds": 600,
+      "hp": 52,
+      "level": 19,
+      "kills": 1312,
+      "bosses": 3,
+      "enemies": 5
+    }
+  ],
+  "bossWarning": false,
+  "bossVisible": false,
+  "seed": 42,
+  "input": "Native CDP touch, 100ms steering, real App/Phaser, accelerated browser clock",
+  "realSeconds": 129,
+  "errors": []
+}

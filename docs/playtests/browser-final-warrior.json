@@ -1,0 +1,80 @@
+{
+  "build": "weapon",
+  "hero": "warrior",
+  "elapsed": 348.7615000000282,
+  "status": "gameover",
+  "hp": 0,
+  "maxHp": 160,
+  "level": 14,
+  "skills": {
+    "blade": 3,
+    "shield": 2,
+    "whirl": 1
+  },
+  "kills": 516,
+  "bosses": 1,
+  "direction": {
+    "x": -1,
+    "y": 1.2246467991473532e-16
+  },
+  "center": {
+    "x": 216.00001639076302,
+    "y": 552.9599698530593
+  },
+  "dragging": false,
+  "choice": null,
+  "scroll": 7672.752999998198,
+  "maxEnemies": 26,
+  "maxShots": 16,
+  "maxObjects": 135,
+  "firstLevel": 43.756699999997544,
+  "hpLost": 285,
+  "checkpoints": [
+    {
+      "seconds": 60,
+      "hp": 160,
+      "level": 4,
+      "kills": 36,
+      "bosses": 0,
+      "enemies": 9
+    },
+    {
+      "seconds": 120,
+      "hp": 132,
+      "level": 6,
+      "kills": 92,
+      "bosses": 0,
+      "enemies": 17
+    },
+    {
+      "seconds": 180,
+      "hp": 141,
+      "level": 9,
+      "kills": 181,
+      "bosses": 0,
+      "enemies": 13
+    },
+    {
+      "seconds": 240,
+      "hp": 115,
+      "level": 11,
+      "kills": 281,
+      "bosses": 0,
+      "enemies": 16
+    },
+    {
+      "seconds": 300,
+      "hp": 122,
+      "level": 13,
+      "kills": 396,
+      "bosses": 1,
+      "enemies": 23
+    }
+  ],
+  "bossWarning": false,
+  "bossVisible": false,
+  "seed": 42,
+  "input": "Native CDP touch, 100ms steering, real App/Phaser, accelerated browser clock",
+  "realSeconds": 73,
+  "errors": []
+}
