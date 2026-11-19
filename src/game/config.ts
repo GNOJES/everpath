@@ -3,8 +3,8 @@ export const WORLD = { width: 432, height: 768, scrollSpeed: 22, playerRadius: 1
 export const BALANCE = { bossAt: 180, bossEvery: 180, firstSpawn: 0, spawnInterval: 1.05, minSpawnInterval: .23, spawnRateRamp: .0045, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .08, weaponDamageStep: .24, weaponHasteStep: .08, weaponRangeStep: .09, eliteAfter: 80, goldPerKill: .75, bossGold: 40, bossXp: 40, enemyHpGrowth: .0056, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, healOnLevel: .08, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
 export const HEROES: Record<HeroId, HeroConfig> = {
  warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '가까운 적을 베고 검격마다 적 탄환 하나를 지웁니다.', weapon: '새벽의 검', upgradeDescription: '강한 근접 범위 피해. 5레벨에 전 방향을 베고 탄환을 최대 2개 지웁니다.', icon: 'sword', color: '#efae35', hp: 160, speed: 137, damage: 23, cooldown: .98, range: 89, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield'], bars: [5, 3, 3] },
- archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '가장 빠르게 이동하며 일직선의 적을 연속으로 관통합니다.', weapon: '바람의 활', upgradeDescription: '기본 관통 2회. 3·5레벨에 같은 직선으로 후속 화살을 발사합니다.', icon: 'bow', color: '#f47153', hp: 134, speed: 190, damage: 17, cooldown: .35, range: 310, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain'], bars: [2, 5, 4] },
- mage: { id: 'mage', name: '엘라', title: 'THE ARCANIST', role: '마법사', description: '유도 마법탄과 주문으로 적 하나에 강한 피해를 집중합니다.', weapon: '별빛 지팡이', upgradeDescription: '단일 유도탄. 레벨이 오르면 피해·사거리·공격 속도가 증가합니다.', icon: 'staff', color: '#7583e8', hp: 112, speed: 146, damage: 48, cooldown: .55, range: 290, projectileSpeed: 290, skills: ['chain', 'fire', 'frost'], bars: [2, 3, 5] },
+ archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '가장 빠르게 이동하며 일직선의 적을 연속으로 관통합니다.', weapon: '바람의 활', upgradeDescription: '적 둘을 관통하며 두 번째 적은 피해가 줄어듭니다. 3·5레벨에 같은 직선으로 후속 화살을 발사합니다.', icon: 'bow', color: '#f47153', hp: 134, speed: 190, damage: 17, cooldown: .35, range: 310, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain'], bars: [2, 5, 4] },
+ mage: { id: 'mage', name: '엘라', title: 'THE ARCANIST', role: '마법사', description: '유도 마법탄과 주문으로 적 하나에 강한 피해를 집중합니다.', weapon: '별빛 지팡이', upgradeDescription: '단일 유도탄. 레벨이 오르면 피해·사거리·공격 속도가 증가합니다.', icon: 'staff', color: '#7583e8', hp: 118, speed: 146, damage: 48, cooldown: .55, range: 290, projectileSpeed: 290, skills: ['chain', 'fire', 'frost'], bars: [2, 3, 5] },
 };
 export const SKILLS: Record<string, SkillConfig> = {
  whirl: { name: '회전베기', subtitle: 'WHIRLWIND', description: '주변을 휩쓰는 검의 소용돌이. 레벨마다 범위와 피해가 증가합니다.', icon: 'whirl', color: '#dfc183', cooldown: 5, damage: 1.6, radius: 115, count: 1 },
@@ -36,9 +36,9 @@ export const PASSIVES: Record<PassiveId, { name: string; subtitle: string; icon:
 
 export const BOSS_PATTERN = { windup: 1.15, dashSpeed: 265, dashDuration: .62, recover: 1.6, chase: 3.2, slamRadius: 75, slamDelay: 1.35, slamDamage: 1.4 };
 
-export const CAMPAIGN = { finalAt: 600, arenaLimit: 100, clearGold: 300, supplyHeal: .3, arenaHeal: .2, wardenRangedDamage: { archer: .64, mage: .78 }, rankMax: 3 };
+export const CAMPAIGN = { finalAt: 600, arenaLimit: 100, clearGold: 300, supplyHeal: .3, arenaHeal: .2, wardenRangedDamage: { archer: .60, mage: .78 }, rankMax: 3 };
 export const EVOLUTIONS = {
- warrior: { name: '여명의 성검', passive: 'power' as const, damageMultiplier: 1.31, description: '검격 범위 +25%, 피해 +31%, 공격 주기 추가 단축.' },
+ warrior: { name: '여명의 성검', passive: 'power' as const, damageMultiplier: 1.27, description: '검격 범위 +25%, 피해 +27%, 공격 주기 추가 단축.' },
  archer: { name: '폭풍의 활', passive: 'haste' as const, damageMultiplier: 1.65, description: '같은 직선에 화살 1발 추가, 관통 5회, 피해 +65%.' },
  mage: { name: '천체의 지팡이', passive: 'power' as const, damageMultiplier: 1.95, description: '단일 마법탄 피해 +95%, 공격 주기 추가 단축.' },
 };

@@ -73,24 +73,3 @@ it('lets a basic arrow hit two lined-up targets without hitting a third', () => 
  expect(targets[1].hp).toBeLessThan(targets[1].maxHp);
  expect(targets[2].hp).toBe(targets[2].maxHp);
 });
-
-it('brings waves in from all four edges while the player waits near the top', () => {
- let state = 2026;
- const sim = new GameSimulation('warrior', parseSave(null), () => {
-  state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-  return state / 4294967296;
- });
- sim.state.player.y = 40;
- const sides = new Set<string>();
- for (let i = 0; i < 1200; i++) {
-  sim.update(.033);
-  for (const { x, y } of sim.state.enemies) {
-   if (x < 0) sides.add('left');
-   if (x > 432) sides.add('right');
-   if (y < 0) sides.add('top');
-   if (y > 768) sides.add('bottom');
-  }
-  if (sim.state.choices[0]) sim.chooseUpgrade(sim.state.choices[0].id);
- }
- expect(sides.size).toBe(4);
-});

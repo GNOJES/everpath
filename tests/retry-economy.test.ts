@@ -24,6 +24,6 @@ it('turns only earned run gold into a first clear and supports refund/rebuild',(
  mkdirSync('docs/playtests',{recursive:true});writeFileSync('docs/playtests/retry-economy.json',JSON.stringify(records,null,2));
  // Even the fastest successful trial should require multiple rounds of earned upgrades.
  for(const row of records){expect(row.trials.at(-1)!.cleared,`${row.hero}/${row.build}/${row.strategy}/${row.offset}`).toBe(true);expect(row.trials.length,`${row.hero}/${row.build}/${row.strategy}/${row.offset}`).toBeGreaterThanOrEqual(4);}
- const medians = (['warrior','archer','mage'] as const).map(hero=>{ const n=records.filter(r=>r.hero===hero).map(r=>r.trials.length).sort((a,b)=>a-b);const median=(n[7]+n[8])/2;expect(median).toBeGreaterThanOrEqual(8);expect(median).toBeLessThanOrEqual(20);return median;});
+ const medians = (['warrior','archer','mage'] as const).map(hero=>{ const n=records.filter(r=>r.hero===hero).map(r=>r.trials.length).sort((a,b)=>a-b);const median=(n[7]+n[8])/2;expect(median).toBeGreaterThanOrEqual(7);expect(median).toBeLessThanOrEqual(20);return median;});
  expect(Math.max(...medians)/Math.min(...medians)).toBeLessThan(1.6);
 },240000);

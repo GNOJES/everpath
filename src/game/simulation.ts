@@ -1,17 +1,18 @@
 import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, CAMPAIGN, EVOLUTIONS, WARRIOR_WEAPON_STEPS, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
-import { spawnInterval, chooseEnemyKind } from './encounters';
+import { spawnInterval, chooseEnemyKind, SIDE_ENTRY_WARNING } from './encounters';
 import type { HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Effect, PassiveId, RunResult } from './types';
 let runCounter = 0;
 export function createRun(hero: HeroId, save: SaveData, rank = 0): RunState {
  const config = HEROES[hero], maxHp = Math.round(config.hp * (1 + save.upgrades.hp * PERMANENT.hp.step));
  return { runId: `${Date.now()}-${++runCounter}-${Math.random().toString(36).slice(2)}`, hero, status: 'running', elapsed: 0, rank, evolved: false, finalSpawned: false, supplies: 0, scroll: 0,
   player: { x: W.width / 2, y: 515, hp: maxHp, maxHp, speed: config.speed * (1 + save.upgrades.speed * PERMANENT.speed.step), invincible: 0, shield: 0, facing: -Math.PI / 2 },
-  enemies: [], projectiles: [], effects: [], hazards: [], level: 1, xp: 0, xpNext: B.initialXp, kills: 0, spawned: 0, escaped: 0, withdrawn: 0, bosses: 0, gold: 0, weaponLevel: 1, skills: {}, passives: { power: 0, haste: 0, vitality: 0, speed: 0 }, choices: [], nextBoss: B.bossAt };
+  enemies: [], sideEntries: [], projectiles: [], effects: [], hazards: [], level: 1, xp: 0, xpNext: B.initialXp, kills: 0, spawned: 0, escaped: 0, withdrawn: 0, bosses: 0, gold: 0, weaponLevel: 1, skills: {}, passives: { power: 0, haste: 0, vitality: 0, speed: 0 }, choices: [], nextBoss: B.bossAt };
 }
 export class GameSimulation {
  readonly state: RunState;
+ private regularSpawns = 0; private sideSpawns = 0;
  private serial = 0; private spawnTimer = B.firstSpawn; private attackTimer = .1; private skillTimers: Record<string, number> = {}; private pendingChoices = 0; private goldRaw = 0;
  constructor(hero: HeroId, private save: SaveData, private random: () => number = Math.random, rank = 0) { this.save = structuredClone(save); this.state = createRun(hero, this.save, Math.floor(clamp(rank, 0, save.challengeUnlocked))); }
  private hasWon() { return this.state.status === 'victory'; }
@@ -35,12 +36,13 @@ export class GameSimulation {
   if (input.x || input.y) p.facing = Math.atan2(input.y, input.x);
   if (s.elapsed >= (s.supplies + 1) * 120 && s.supplies < 4) { s.supplies++; p.hp = Math.min(p.maxHp, p.hp + p.maxHp * CAMPAIGN.supplyHeal); this.goldRaw += 15; s.gold = Math.floor(this.goldRaw); this.effect('text', p, 0xcce8ad, 0, 2, 0, '보급 · 체력 +30% · 15G'); }
   if (s.elapsed >= CAMPAIGN.finalAt && !s.finalSpawned) {
-   s.finalSpawned = true; s.withdrawn += s.enemies.filter(e => e.hp > 0).length; s.enemies = []; s.projectiles = []; s.hazards = []; this.spawnEnemy('warden', W.width / 2, 170); s.nextBoss = Infinity;
+   s.finalSpawned = true; s.withdrawn += s.enemies.filter(e => e.hp > 0).length; s.enemies = []; s.sideEntries = []; s.projectiles = []; s.hazards = []; this.spawnEnemy('warden', W.width / 2, 170); s.nextBoss = Infinity;
    const heal = Math.min(p.maxHp - p.hp, p.maxHp * CAMPAIGN.arenaHeal * this.save.upgrades.hp / B.permanentMax);
    p.hp += heal;
    this.effect('text', { x: W.width / 2, y: 260 }, 0xffd38a, 0, 3, 0, heal >= 1 ? `모르바 등장 · 체력 +${Math.floor(heal)}` : '모르바 등장');
   }
   if (s.finalSpawned && s.elapsed >= CAMPAIGN.finalAt + CAMPAIGN.arenaLimit) { p.shield = 0; p.invincible = 0; this.damagePlayer(p.hp); return; }
+  this.advanceSideEntries(dt);
   this.spawnTimer -= dt; if (!s.finalSpawned && this.spawnTimer <= 0) { this.spawnWave(); this.spawnTimer = spawnInterval(s.elapsed); }
   if (!s.finalSpawned && s.elapsed >= s.nextBoss && s.nextBoss < 540) { this.spawnEnemy('boss', W.width / 2, 162); s.nextBoss += B.bossEvery; this.effect('text', { x: W.width / 2, y: 215 }, 0xffd38a, 0, 2, 0, '그롬 등장'); }
   this.moveEnemies(dt); if (p.hp <= 0) return;
@@ -68,28 +70,45 @@ export class GameSimulation {
   s.enemies.push(enemy); s.spawned++; return enemy;
  }
  private spawnWave() {
-  if (this.state.spawned === 0) {
-   for (const x of [112, 216, 320]) this.spawnEnemy('slime', x, 280);
+  const { elapsed, player, sideEntries, enemies } = this.state;
+  if (this.state.spawned === 0 && sideEntries.length === 0) {
+   for (const x of [112, 216, 320]) {
+    if (this.spawnEnemy('slime', x, 145)) this.regularSpawns++;
+   }
    return;
   }
-  const { elapsed, player } = this.state;
-  const edge = Math.floor(this.random() * 4);
   const count = elapsed < 20 ? 1 : this.random() < (elapsed < 200 ? .46 : .10) ? 2 : 1;
-  for (let i = 0; i < count; i++) {
-   const lane = (edge + i) % 4;
-   const along = (this.random() - .5) * 360;
-   const entry = [
-    { x: clamp(player.x + along, 28, W.width - 28), y: -18 },
-    { x: W.width + 18, y: clamp(player.y + along, 40, W.height - 40) },
-    { x: clamp(player.x + along, 28, W.width - 28), y: W.height + 18 },
-    { x: -18, y: clamp(player.y + along, 40, W.height - 40) },
-   ][lane];
-   // An edge still needs a safe lead-in when the player is already hugging it.
-   if (distance(entry, player) < 110) {
-    if (lane % 2) entry.y = clamp(player.y + (player.y > W.height / 2 ? -155 : 155), 40, W.height - 40);
-    else entry.x = clamp(player.x + (player.x > W.width / 2 ? -155 : 155), 28, W.width - 28);
+  for (let i = 0; i < count && enemies.length + sideEntries.length < W.maxEnemies; i++) {
+   const kind = chooseEnemyKind(elapsed, this.random);
+   const offset = this.random();
+   // Count committed arrivals so double waves and seeded RNG cannot bias the split.
+   const side = this.sideSpawns < Math.floor((this.regularSpawns + 1) * 2 / 5);
+   if (side) {
+    const fromLeft = this.sideSpawns % 2 === 0;
+    const from = { x: fromLeft ? -18 : W.width + 18, y: 112 + offset * 64 };
+    const inset = 72 + offset * 44;
+    sideEntries.push({
+     from, target: { x: fromLeft ? inset : W.width - inset, y: 328 + offset * 48 },
+     kind, remaining: SIDE_ENTRY_WARNING,
+    });
+    this.sideSpawns++;
+   } else {
+    let x = 28 + offset * (W.width - 56);
+    if (distance({ x, y: -18 }, player) < 110) x = clamp(player.x + (player.x > W.width / 2 ? -155 : 155), 28, W.width - 28);
+    this.spawnEnemy(kind, x, -18);
    }
-   this.spawnEnemy(chooseEnemyKind(elapsed, this.random), entry.x, entry.y);
+   this.regularSpawns++;
+  }
+ }
+ private advanceSideEntries(dt: number) {
+  const entries = this.state.sideEntries;
+  for (let i = 0; i < entries.length;) {
+   const entry = entries[i];
+   if ((entry.remaining -= dt) > 0) { i++; continue; }
+   if (this.state.enemies.length >= W.maxEnemies) break;
+   const enemy = this.spawnEnemy(entry.kind, entry.from.x, entry.from.y);
+   if (enemy) enemy.entryTarget = entry.target;
+   entries.splice(i, 1);
   }
  }
  private moveEnemies(dt: number) {
@@ -98,6 +117,21 @@ export class GameSimulation {
    if (e.hp <= 0) continue; e.hitFlash = Math.max(0, e.hitFlash - dt); e.timer -= dt;
    let dir = unit(e, p), speed = e.speed;
    if (s.skills.frost && distance(e, p) < SKILLS.frost.radius + (s.skills.frost - 1) * B.skillRadiusStep + e.radius) speed *= .82 - .06 * Math.min(3, s.skills.frost);
+   if (e.entryTarget) {
+    const step = speed * 1.75 * dt;
+    const remaining = distance(e, e.entryTarget);
+    dir = unit(e, e.entryTarget);
+    if (remaining <= step) {
+     e.x = e.entryTarget.x;
+     e.y = e.entryTarget.y;
+     e.entryTarget = undefined;
+    } else {
+     e.x += dir.x * step;
+     e.y += dir.y * step;
+    }
+    if (distance(e, p) < e.radius + W.playerRadius) this.damagePlayer(e.damage);
+    continue;
+   }
    if (e.kind === 'warden') {
     speed *= .8; if (e.timer <= 0) {
      this.addHazard({ ...p }, 57, 1.65, e.damage * 1.15, 'enemy', 'slam');
@@ -156,16 +190,16 @@ export class GameSimulation {
     const direction = unit(p, target);
     for (let i = 0; i < count; i++) {
      const origin = { x: p.x - direction.x * i * 13, y: p.y - direction.y * i * 13 };
-     this.shoot(origin, target, 'arrow', this.damage, config.projectileSpeed, s.evolved ? 5 : 2 + Number(s.weaponLevel >= 4));
+     this.shoot(origin, target, 'arrow', this.damage, config.projectileSpeed, s.evolved ? 5 : 2 + Number(s.weaponLevel >= 4), 0, undefined, .82);
     }
    }
   }
   return true;
  }
- private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number) {
+ private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number, pierceScale = 1) {
   const s = this.state; if (s.projectiles.length >= W.maxProjectiles) return;
   const a = Math.atan2(to.y - from.y, to.x - from.x) + spread;
-  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius: kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' ? 6 : 4, damage, kind, life: 3.5, pierce, hit: new Set(), target });
+  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius: kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' ? 6 : 4, damage, kind, life: 3.5, pierce, hit: new Set(), target, pierceScale });
  }
  private castSkill(id: string, level: number): boolean {
   const s = this.state, p = s.player, cfg = SKILLS[id], target = this.nearest(p, 500), damage = this.power * cfg.damage * (1 + (level - 1) * B.skillDamageStep), radius = cfg.radius + (level - 1) * B.skillRadiusStep;
@@ -217,7 +251,7 @@ export class GameSimulation {
    if (shot.kind === 'enemy') { if (distance(shot, s.player) < shot.radius + W.playerRadius) { this.damagePlayer(shot.damage); shot.life = 0; } }
    else for (const e of s.enemies) {
     if (shot.life <= 0 || e.hp <= 0 || shot.hit.has(e.id)) continue;
-    if (distance(shot, e) < shot.radius + e.radius) { shot.hit.add(e.id); this.damageEnemy(e, shot.damage); if (shot.kind === 'magic') this.effect('crystal', shot, 0xad8dff, 20, .24); shot.pierce--; if (shot.pierce <= 0) shot.life = 0; }
+    if (distance(shot, e) < shot.radius + e.radius) { shot.hit.add(e.id); this.damageEnemy(e, shot.damage); shot.damage *= shot.pierceScale ?? 1; if (shot.kind === 'magic') this.effect('crystal', shot, 0xad8dff, 20, .24); shot.pierce--; if (shot.pierce <= 0) shot.life = 0; }
    }
   }
   s.projectiles = s.projectiles.filter(p => p.life > 0 && p.x > -50 && p.x < W.width + 50 && p.y > -60 && p.y < W.height + 60);

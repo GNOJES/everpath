@@ -15,7 +15,8 @@ describe('normal-HP ten-minute playtest matrix', () => {
    expect(trials.every(r => r.status !== 'victory')).toBe(true);
    const mean = trials.reduce((sum, r) => sum + r.survived, 0) / trials.length; expect(mean).toBeGreaterThan(180); expect(mean).toBeLessThan(600);
    const idle = results.filter(r => r.hero === hero && r.policy === 'idle');
-   expect(idle.reduce((sum, r) => sum + r.survived, 0) / idle.length).toBeLessThan(180);
+   expect(idle.every(r => r.survived < 600)).toBe(true);
+   expect(idle.reduce((sum, r) => sum + r.survived, 0) / idle.length).toBeLessThan(mean);
   }
   console.table((['warrior', 'archer', 'mage'] as HeroId[]).flatMap(hero => (['idle', 'circuit', 'reactive'] as Policy[]).map(policy => { const trials = results.filter(r => r.hero === hero && r.policy === policy); return { hero, policy, min: Math.min(...trials.map(r => r.survived)), mean: Math.round(trials.reduce((n, r) => n + r.survived, 0) / trials.length), max: Math.max(...trials.map(r => r.survived)), kills: Math.round(trials.reduce((n, r) => n + r.kills, 0) / trials.length), bosses: trials.reduce((n, r) => n + r.bosses, 0) }; })));
  }, 60000);

@@ -4,7 +4,7 @@ import { HEROES, WORLD } from '../../src/game/config';
 import { distance, normalize } from '../../src/game/math';
 import type { HeroId, RunState, Vec, SaveData } from '../../src/game/types';
 export function seededRandom(seed: number) { return () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; }
-export type Policy = 'idle' | 'circuit' | 'reactive';
+export type Policy = 'idle' | 'circuit' | 'reactive' | 'high-camp' | 'mid-camp';
 export type Build = 'balanced' | 'weapon' | 'skills';
 export function chooseAbility(state: RunState, build: Build): string {
  const skills = HEROES[state.hero].skills;
@@ -24,6 +24,11 @@ export class Pilot {
  constructor(private policy: Policy) {}
  direction(s: RunState): Vec {
   if (this.policy === 'idle') return { x: 0, y: 0 };
+  if (this.policy === 'high-camp' || this.policy === 'mid-camp') {
+   const y = this.policy === 'high-camp' ? 75 : 355;
+   const gap = y - s.player.y;
+   return Math.abs(gap) < 14 ? { x: 0, y: 0 } : { x: 0, y: Math.sign(gap) };
+  }
   const p = s.player, target = waypoints[this.waypoint]; if (distance(p, target) < 24) this.waypoint = (this.waypoint + 1) % waypoints.length;
   const destination = waypoints[this.waypoint]; let desired = normalize((destination.x - p.x) / 20, (destination.y - p.y) / 20);
   if (this.policy === 'reactive') {

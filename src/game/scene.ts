@@ -1,3 +1,4 @@
+import { SIDE_ENTRY_WARNING } from './encounters';
 import Phaser from 'phaser';
 import { createArt } from './art';
 import { WORLD as W, BALANCE, BOSS_PATTERN, HEROES, ENEMIES, SKILLS, isBoss } from './config';
@@ -47,7 +48,7 @@ export class ForestScene extends Phaser.Scene {
   this.hero.setPosition(p.x, p.y + (moving ? Math.sin(this.clock * 18) * 1.5 : Math.sin(this.clock * 2) * .7)).setDepth(100 + p.y).setFlipX(Math.cos(p.facing) < -.2).setAlpha(p.invincible > 0 && Math.sin(this.clock * 40) > 0 ? .4 : 1);
   this.shadow(p.x, p.y + 7, 18, 7);
   this.companions.forEach((image, i) => { image.setVisible(!s); if (!s) { image.y = 530 + i * 12 + Math.sin(this.clock * 2 + i) * .8; image.setDepth(100 + image.y); this.shadow(image.x, image.y + 7, 15, 6); } });
-  if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderEffects(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (s.skills.frost - 1) * BALANCE.skillRadiusStep); } }
+  if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderEffects(s); this.renderSideEntries(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (s.skills.frost - 1) * BALANCE.skillRadiusStep); } }
   else { this.actors.trim(0); this.shots.trim(0); for (const label of this.labels) label.setVisible(false); }
   // Small drifting spores are bounded and deterministic, rather than particle emitters.
   for (let i = 0; i < 17; i++) { const x = ((i * 107 + Math.sin(this.clock * .6 + i) * 18) % 430 + 430) % 430, y = (i * 61 + this.clock * (6 + i % 4)) % 768; this.fx.fillStyle(0xf5dca0, .15 + (Math.sin(this.clock * 1.3 + i) + 1) * .15); this.fx.fillRect(x, y, 2, 2); }
@@ -83,6 +84,22 @@ export class ForestScene extends Phaser.Scene {
     .lineBetween(shot.x - Math.cos(angle) * length, shot.y - Math.sin(angle) * length, shot.x, shot.y);
   });
   this.shots.trim(s.projectiles.length);
+ }
+ private renderSideEntries(s: RunState) {
+  const g = this.fx;
+  for (const {from, target, remaining} of s.sideEntries) {
+   const progress = clamp(1 - remaining / SIDE_ENTRY_WARNING, 0, 1);
+   const x = from.x < 0 ? 18 : W.width - 18, y = from.y;
+   const angle = Math.atan2(target.y - y, target.x - x);
+   const dx = Math.cos(angle), dy = Math.sin(angle);
+   g.fillStyle(0x50305e, .92).fillCircle(x, y, 13);
+   g.lineStyle(2, 0xffebab, .95).strokeCircle(x, y, 13);
+   g.lineStyle(3, 0xf88b4f, 1).beginPath()
+    .arc(x, y, 16, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2).strokePath();
+   for (const offset of [-1, 1]) {
+    g.lineStyle(2, 0xfff4d9, 1).lineBetween(x + dx * 6, y + dy * 6, x - dx * 4 - dy * 6 * offset, y - dy * 4 + dx * 6 * offset);
+   }
+  }
  }
  private renderHazards(s: RunState) {
   const g = this.fx;
