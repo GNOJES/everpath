@@ -22,7 +22,7 @@ function cleanResult(value: unknown): RunResult | undefined {
  return result;
 }
 export function parseSave(raw: string | null): SaveData {
- const defaults: SaveData = { version: 1, progressionEconomy: 2, gold: 0, history: [], invested: 0, clears: { warrior: 0, archer: 0, mage: 0 }, challengeUnlocked: 0, upgrades: emptyUpgrades(), bestTime: 0, bestKills: 0, totalRuns: 0, lastHero: 'warrior', settings: { music: .55, sfx: .75 }, settledRuns: [] };
+ const defaults: SaveData = { version: 1, progressionEconomy: 2, gold: 0, history: [], invested: 0, clears: { warrior: 0, archer: 0, mage: 0 }, challengeUnlocked: 0, upgrades: emptyUpgrades(), bestTime: 0, bestKills: 0, totalRuns: 0, lastHero: 'warrior', settings: { music: 1, sfx: 1 }, settledRuns: [] };
  try {
   const data = raw ? JSON.parse(raw) : null; if (!data || data.version !== 1) return defaults;
   if (Array.isArray(data.history)) defaults.history = data.history.slice(-20).map(cleanResult).filter((r: RunResult | undefined): r is RunResult => !!r);

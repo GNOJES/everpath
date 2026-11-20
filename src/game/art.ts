@@ -13,9 +13,27 @@ const heroPalette = {
  mage: { ...palette, d: '#4d4d9d', p: '#5243b1', P: '#a68eff' },
 };
 const heroMaps = {
- warrior: ['       oo       ', '     oaaaao     ', '    oabbbbao    ', '    oaddddao    ', '    oalsslao    ', '     osssso     ', '     orrro      ', '   oaarRraao    ', '  oabaarabaab   ', '  osdabbbaaso   ', '  osoabbbaoso l ', '   ooaabaaao  l ', '    oadddao  ll ', '   oadddddao ll ', '   oddoodddo ol ', '   oddo oddo oh ', '   ohho ohho    ', '  odddo odddo   ', '  ooooo ooooo   '],
- archer: ['       oo       ', '      oggo      ', '     ogGGgo     ', '    oggGGggo    ', '    ogshhsgo    ', '    ogsswsgo h  ', '     ogssgo  hh ', '     ogggo   h h', '   ogGGGGggo h h', '   oshGGhso  h h', '   osghhgs   h h', '    oghhgo   h h', '    ogGGgo   hh ', '   ogGGGGgo  h  ', '    oddddo      ', '    odoodo      ', '    oh  ho      ', '   ohhoohho     ', '   ooo oooo     '],
- mage: ['        p       ', '       opo      ', '      opPpo     ', '     oppPppo    ', '    opppPPppo   ', '   oPPPPPPPPPo  ', '    oswsswso  c ', '     osssso  cwc', '     oppppo   c ', '   opPPPPppo  h ', '   osPpPpPso  h ', '   osppPppso  h ', '    opPPppo   h ', '    oppPppo   h ', '   opppPpppo  h ', '   opPPPPPpo  h ', '  opppPpPpppo h ', '  oPPPPPPPPPo   ', '  ooooooooooo   '],
+ warrior: [
+  '       ooo      ', '      orRo      ', '    oooRrooo    ', '   oabbbbbbao   ',
+  '   obllllllbo   ', '   obddddddbo l ', '   odssssssdo ll',
+  '   osowsswoso bl', '    osshhssobbl ', '     ooooo obo  ',
+  '    oaRRaao h   ', '   oadaaadaoh   ', '    odddddo     ',
+  '    odooddo     ', '    ooo ooo     ',
+ ],
+ archer: [
+  '       ooo      ', '      ogGgoo    ', '    oGGGGgggo   ', '   oGGGgGGgggo  ',
+  '   oGssssssGgo  ', '   ogowsswsggo h', '    osshhssgo hh',
+  '     oooooo    h', '    ogGGGgo    h', '   osghhGso    h',
+  '    ogGGgo    hh', '    odoodo   h  ', '    ooo oo      ',
+  '                ', '                ',
+ ],
+ mage: [
+  '        oo      ', '       oPo      ', '      oPPpo  c  ', '     opPPpo cwc ',
+  '   oopPPppoo c  ', '  oPPPPPPPPPo h ', '   odssssdo   h ',
+  '    owsswo    h ', '    osshso    h ', '     oooo     h ',
+  '    opPPpo   sh ', '   oppyPppoooh  ', '   oppPPPppo    ',
+  '   ooo  oooo    ', '                ',
+ ],
 };
 export function createArt(scene: Phaser.Scene) {
  const add = (key: string, source: HTMLCanvasElement) => { if (!scene.textures.exists(key)) scene.textures.addCanvas(key, source); artUrls[key] = source.toDataURL(); };

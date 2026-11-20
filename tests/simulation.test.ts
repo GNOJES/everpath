@@ -32,7 +32,7 @@ describe('combat and run lifecycle', () => {
   expect(sim.state.status).toBe('running'); expect(sim.state.level).toBeGreaterThan(2);
  });
  it('handles no remaining upgrades without blocking play', () => {
-  const sim = new GameSimulation('warrior', parseSave(null)); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.skills = { whirl: 3, blade: 3, shield: 3 }; sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 }; sim.gainXp(100); expect(sim.state.status).toBe('running');
+  const sim = new GameSimulation('warrior', parseSave(null)); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.skills = { whirl: 3, blade: 3, shield: 3, bash: 3 }; sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 }; sim.gainXp(100); expect(sim.state.status).toBe('running');
  });
  it('spawns a boss at 3 minutes without stopping the scroll, stays bounded over a long run', () => {
   const sim = new GameSimulation('warrior', parseSave(null), () => .4); sim.state.player.hp = sim.state.player.maxHp = 100000;
@@ -49,7 +49,7 @@ describe('combat and run lifecycle', () => {
 });
 
 describe('skills, bosses and bounded encounters', () => {
- for (const [hero, skills] of [ ['warrior', ['whirl', 'blade', 'shield']], ['archer', ['multishot', 'pierce', 'rain']], ['mage', ['chain', 'fire', 'frost']] ] as const) {
+ for (const [hero, skills] of [ ['warrior', ['whirl', 'blade', 'shield', 'bash']], ['archer', ['multishot', 'pierce', 'rain', 'snare']], ['mage', ['chain', 'fire', 'frost', 'meteor']] ] as const) {
   for (const id of skills) it(`${hero} casts ${id} automatically`, () => {
    const sim = new GameSimulation(hero, parseSave(null), () => .5); sim.state.skills[id] = 3;
    const enemy = sim.spawnEnemy('slime', 216, 450)!; enemy.hp = enemy.maxHp = 1000;
@@ -66,7 +66,7 @@ describe('skills, bosses and bounded encounters', () => {
   const sim = new GameSimulation('warrior', parseSave(null)); const boss = sim.spawnEnemy('boss', 216, 160)!;
   tick(sim, 3.1); expect(boss.phase).toBe('warn'); tick(sim, 1.2); expect(boss.phase).toBe('dash');
   tick(sim, 1); expect(boss.y).toBeLessThan(768); expect(sim.state.scroll).toBeGreaterThan(0);
-  sim.damageEnemy(boss, 1e6); expect(sim.state.bosses).toBe(1); expect(sim.state.pickups).toContainEqual(expect.objectContaining({kind:'chest',gold:60})); expect(sim.state.status).not.toBe('gameover');
+  sim.damageEnemy(boss, 1e6); expect(sim.state.bosses).toBe(1); expect(sim.state.pickups).toContainEqual(expect.objectContaining({kind:'chest',gold:120})); expect(sim.state.status).not.toBe('gameover');
  });
  it('reserves room for a scheduled boss even when normal enemies fill the cap', () => {
   const sim = new GameSimulation('warrior', parseSave(null));
@@ -83,7 +83,7 @@ describe('skills, bosses and bounded encounters', () => {
 describe('endless run endurance', () => {
  it('keeps actors, projectiles, hazards and effects bounded through ten minutes', () => {
   const sim = new GameSimulation('mage', parseSave(null), () => .37); sim.state.player.hp = sim.state.player.maxHp = 1e7;
-  sim.state.skills = { chain: 3, fire: 3, frost: 3 }; sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 };
+  sim.state.skills = { chain: 3, fire: 3, frost: 3, meteor: 3 }; sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 };
   for (let i = 0; i < 12000; i++) { sim.update(.05, { x: Math.sin(i / 60), y: Math.cos(i / 80) });
    if (sim.state.enemies.length > 100 || sim.state.projectiles.length > 180 || sim.state.effects.length > 60 || sim.state.hazards.length > 12) throw new Error('entity limit exceeded');
   }
@@ -97,4 +97,14 @@ describe('fatal frame ordering', () => {
   const enemy = sim.spawnEnemy('slime', sim.state.player.x, sim.state.player.y)!; enemy.hp = 1;
   sim.update(.05); expect(sim.state.status).toBe('gameover'); expect(sim.state.player.hp).toBe(0); expect(sim.state.kills).toBe(0); expect(sim.state.level).toBe(1);
  });
+});
+
+for (const hero of ['warrior', 'archer', 'mage'] as const) it(`gives ${hero} single-digit starting damage without one-shotting the first enemies`, () => {
+ const sim = new GameSimulation(hero, parseSave(null), () => .5);
+ expect(sim.damage).toBeLessThan(10);
+ for (const kind of ['slime','goblin','bat'] as const) {
+  const enemy = sim.spawnEnemy(kind, 216, 160)!;
+  sim.damageEnemy(enemy, sim.damage);
+  expect(enemy.hp).toBeGreaterThan(0);
+ }
 });

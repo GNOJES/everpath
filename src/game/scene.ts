@@ -29,9 +29,9 @@ export class ForestScene extends Phaser.Scene {
   for (let i = 0; i < 24; i++) { const row = Math.floor(i / 2), left = i % 2 === 0; const x = left ? 8 + Math.sin(i * 41) * 28 : 417 + Math.sin(i * 17) * 25; const y = row * 102 - 120; const image = this.add.image(x, y, i % 4 === 0 ? 'pine' : 'tree').setOrigin(.5, 1).setScale(i % 4 === 0 ? 1.25 : 1.35); this.scenery.push({ image, x, y }); }
   for (let i = 0; i < 22; i++) { const x = i % 2 ? 323 + (i * 17 % 59) : 48 + (i * 17 % 58), y = i * 56; const key = ['bush', 'rock', 'bush', 'mushroom', 'stump'][i % 5]; const image = this.add.image(x, y, key).setOrigin(.5, 1).setScale(1.7); this.scenery.push({ image, x, y }); }
   for (const [x, y] of [[133, 480], [299, 1010]]) { const image = this.add.image(x, y, 'lantern').setOrigin(.5, 1).setScale(1.8); this.scenery.push({ image, x, y }); }
-  this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.add.image(216, 515, 'warrior').setScale(2.4).setOrigin(.5, .8);
+  this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.add.image(216, 515, 'warrior').setScale(2.15).setOrigin(.5, .84);
   this.fallenWarden = this.add.image(0, 0, 'warden').setOrigin(.5, .8).setVisible(false);
-  this.companions = [this.add.image(174, 559, 'archer'), this.add.image(263, 548, 'mage')]; this.companions.forEach(image => image.setScale(2.25).setOrigin(.5, .8));
+  this.companions = [this.add.image(174, 559, 'archer'), this.add.image(263, 548, 'mage')]; this.companions.forEach(image => image.setScale(2.05).setOrigin(.5, .84));
   this.controls = new PlayerInput(this.game.canvas, () => this.onPause?.(), event => this.onInputObservation?.(event));
   this.events.once('shutdown', () => this.controls.destroy()); this.onReady?.();
  }
@@ -60,7 +60,7 @@ export class ForestScene extends Phaser.Scene {
   // Small drifting spores are bounded and deterministic, rather than particle emitters.
   for (let i = 0; i < 17; i++) { const x = ((i * 107 + Math.sin(this.clock * .6 + i) * 18) % 430 + 430) % 430, y = (i * 61 + this.clock * (6 + i % 4)) % 768; this.fx.fillStyle(0xf5dca0, .15 + (Math.sin(this.clock * 1.3 + i) + 1) * .15); this.fx.fillRect(x, y, 2, 2); }
   if (s?.status === 'running') { for (const e of s.enemies) if (isBoss(e.kind) && !this.announcedBosses.has(e.id)) { this.announcedBosses.add(e.id); this.audio.boss(); } const shot = s.projectiles.find(p => p.kind !== 'enemy' && p.id > this.lastShotSound); if (shot) { this.lastShotSound = Math.max(...s.projectiles.map(p => p.id)); this.audio.attack(s.hero); } }
-  this.renderJoystick(s); this.audio.tick(dt, s?.status === 'running'); this.onFrame?.(s, this.endFxTime);
+  this.renderJoystick(s); this.audio.syncMusic(s?.status, s?.finalSpawned); this.onFrame?.(s, this.endFxTime);
  }
  private shadow(x: number, y: number, w: number, h: number) { this.shadows.fillStyle(0x34475d, .26); this.shadows.fillEllipse(x, y, w * 2, h * 2); }
  private renderEnemies(s: RunState) {
@@ -73,7 +73,13 @@ export class ForestScene extends Phaser.Scene {
     this.fx.fillStyle(e.elite ? 0xe1b46b : 0xaec17d).fillRect(e.x - 13, e.y - 35, 26 * Math.max(0, e.hp / e.maxHp), 3);
    }
    if (e.kind === 'warden') this.fx.lineStyle(2, 0xd0a3e9, .6).strokeCircle(e.x, e.y - 12, e.radius + 12 + Math.sin(this.clock * 3) * 4);
-   if (isBoss(e.kind) && e.phase === 'warn') {
+   if (e.kind === 'warden' && e.phase === 'warn') {
+    const angle = Math.atan2(e.aim.y, e.aim.x);
+    const cone = [new Phaser.Math.Vector2(e.x, e.y), ...[-.41, .41].map(offset =>
+     new Phaser.Math.Vector2(e.x + Math.cos(angle + offset) * 245, e.y + Math.sin(angle + offset) * 245))];
+    this.fx.fillStyle(0xd681b9, .17).fillPoints(cone, true);
+    this.fx.lineStyle(2, 0xffc8f2, .75).strokePoints(cone, true);
+   } else if (e.kind === 'boss' && e.phase === 'warn') {
     const travel = BOSS_PATTERN.dashSpeed * BOSS_PATTERN.dashDuration, side = { x: -e.aim.y * e.radius, y: e.aim.x * e.radius };
     const start = { x: e.x - e.aim.x * e.radius, y: e.y - e.aim.y * e.radius }, end = { x: e.x + e.aim.x * (travel + e.radius), y: e.y + e.aim.y * (travel + e.radius) };
     const lane = [new Phaser.Math.Vector2(start.x + side.x, start.y + side.y), new Phaser.Math.Vector2(end.x + side.x, end.y + side.y), new Phaser.Math.Vector2(end.x - side.x, end.y - side.y), new Phaser.Math.Vector2(start.x - side.x, start.y - side.y)];
@@ -149,24 +155,26 @@ export class ForestScene extends Phaser.Scene {
  }
  private renderPickups(s: RunState) {
   const g = this.fx;
-  for (const { x, y, kind, life } of s.pickups) {
-   const lift = y - 10 + Math.sin(this.clock * 4 + x) * 2;
-   const alpha = clamp(life, .25, 1);
-   g.fillStyle(0x172927, .4 * alpha).fillEllipse(x, y + 5, kind === 'chest' ? 34 : 20, 8);
+  for (const { x, groundY, kind } of s.pickups) {
+   const y = groundY + s.scroll;
+   const lift = y - 6;
+   g.fillStyle(0x172927, .4).fillEllipse(x, y + 5, kind === 'chest' ? 34 : 20, 8);
    if (kind === 'chest') {
-    g.fillStyle(0xffcf69, .15 * alpha).fillCircle(x, lift, 29);
-    g.fillStyle(0x71452e, alpha).fillRoundedRect(x - 14, lift - 9, 28, 20, 4);
-    g.lineStyle(2, 0xffdd92, alpha).strokeRoundedRect(x - 14, lift - 9, 28, 20, 4);
+    const glint = .5 + Math.sin(this.clock * 5) * .2;
+    g.fillStyle(0xffcf69, .18 * glint).fillEllipse(x, y + 3, 58, 25);
+    g.fillStyle(0xffe2a0, .32 * glint).fillTriangle(x - 8, lift, x + 8, lift, x, lift - 46);
+    g.fillStyle(0x71452e, 1).fillRoundedRect(x - 14, lift - 9, 28, 20, 4);
+    g.lineStyle(2, 0xffdd92, 1).strokeRoundedRect(x - 14, lift - 9, 28, 20, 4);
     g.lineBetween(x - 14, lift, x + 14, lift);
-    g.fillStyle(0xffdc82, alpha).fillRect(x - 3, lift - 3, 6, 8);
+    g.fillStyle(0xffdc82, 1).fillRect(x - 3, lift - 3, 6, 8);
    } else if (kind === 'heal') {
-    g.fillStyle(0x58cda0, .22 * alpha).fillCircle(x, lift, 20);
-    g.fillStyle(0x39785e, alpha).fillCircle(x, lift + 1, 9);
-    g.lineStyle(2, 0xc7f7c8, alpha).strokeCircle(x, lift + 1, 9);
+    g.fillStyle(0x58cda0, .22).fillCircle(x, lift, 20);
+    g.fillStyle(0x39785e, 1).fillCircle(x, lift + 1, 9);
+    g.lineStyle(2, 0xc7f7c8, 1).strokeCircle(x, lift + 1, 9);
     g.lineBetween(x - 4, lift + 1, x + 4, lift + 1).lineBetween(x, lift - 3, x, lift + 5);
    } else {
-    g.fillStyle(0xe3a640, alpha).fillCircle(x, lift, 7);
-    g.lineStyle(1.4, 0xffe197, alpha).strokeCircle(x, lift, 7);
+    g.fillStyle(0xe3a640, 1).fillCircle(x, lift, 7);
+    g.lineStyle(1.4, 0xffe197, 1).strokeCircle(x, lift, 7);
     g.lineBetween(x, lift - 3, x, lift + 3);
    }
   }

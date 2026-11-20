@@ -5,7 +5,7 @@ import Phaser from 'phaser';
 import { ForestScene } from '../game/scene';
 import { SaveStore, upgradeCost } from '../game/save';
 import { GameSimulation } from '../game/simulation';
-import { HEROES, SKILLS, PERMANENT, WORLD, permanentLimit, EVOLUTIONS, CAMPAIGN } from '../game/config';
+import { HEROES, SKILLS, PASSIVES, PERMANENT, WORLD, permanentLimit, EVOLUTIONS, CAMPAIGN } from '../game/config';
 import { portrait } from '../game/art';
 import { formatTime } from '../game/math';
 import { icon } from './icons';
@@ -166,7 +166,7 @@ export class App {
  }
  private topbar(title: string, action: string) { return `<div class="modal-topbar"><button class="icon-button" data-action="${action}" aria-label="뒤로">${icon('back')}</button><span>${title}</span><span class="purse">${icon('coin')} ${this.store.data.gold}</span></div>`; }
  private render() {
-  if (this.sim?.state.status !== 'running') this.scene.audio.tick(0, false);
+  this.scene.audio.syncMusic(this.sim?.state.status, this.sim?.state.finalSpawned);
   this.syncDiagnosticContext();
   this.hud.classList.toggle('hidden', this.screen !== 'run'); this.overlay.className = `overlay screen-${this.screen}`;
   if (this.screen === 'title') this.renderTitle(); else if (this.screen === 'select') this.renderSelect(); else if (this.screen === 'shop') this.renderShop(); else if (this.screen === 'settings') this.renderSettings(); else if (this.screen === 'diagnostics') this.renderDiagnostics(); else if (this.screen === 'history') this.renderHistory(); else if (this.screen === 'result') this.renderResult(); else this.renderRun();
@@ -283,7 +283,14 @@ export class App {
  }
  private renderRun() {
   const s = this.sim!.state;
-  this.hud.innerHTML = `<div class="hud-top"><div class="hud-first-row"><span class="hud-hero">${portrait(s.hero)}<b>${HEROES[s.hero].name}</b><small id="hud-level">Lv.${s.level}</small></span><span class="hud-time">${icon('clock')}<strong id="hud-time">00:00</strong></span><button class="pause-button" data-action="pause" aria-label="일시정지" ${s.status === 'gameover' || s.status === 'victory' ? 'disabled' : ''}>${icon('pause')}</button></div><div class="hp-row">${icon('heart')}<div class="hp-track"><div id="hp-fill"></div></div><span id="hp-text"></span></div><div class="xp-row"><div class="xp-track"><div id="xp-fill"></div></div><span id="xp-text"></span></div><div class="hud-meta"><div class="loadout">${[{ icon: HEROES[s.hero].icon, level: s.weaponLevel, name: s.evolved ? EVOLUTIONS[s.hero].name : HEROES[s.hero].weapon }, ...HEROES[s.hero].skills.map(id => ({ icon: SKILLS[id].icon, level: s.skills[id] ?? 0, name: SKILLS[id].name }))].map(item => `<div class="loadout-slot ${item.level ? 'learned' : ''}" title="${item.name} Lv.${item.level}">${item.level ? icon(item.icon) : icon('plus')}<small>${item.level || '·'}</small></div>`).join('')}</div><div class="hud-counters"><span>${icon('skull')} <b id="hud-kills">0</b></span><span>${icon('coin')} <b id="hud-gold">0</b></span></div></div></div><div class="hud-objective"><span id="campaign-goal"></span></div>${new URLSearchParams(location.search).has('debug') ? '<output id="debug-stats" class="debug-stats"></output>' : ''}`;
+  this.hud.innerHTML = `<div class="hud-first-row">
+   <span class="hud-hero">${portrait(s.hero)}<b>${HEROES[s.hero].name}</b><small id="hud-level">Lv.${s.level}</small></span>
+   <span class="hud-time"><strong id="hud-time">00:00</strong></span>
+   <button class="pause-button" data-action="pause" aria-label="일시정지" ${s.status === 'gameover' || s.status === 'victory' ? 'disabled' : ''}>${icon('pause')}</button>
+  </div><div class="hud-vitals">
+   ${icon('heart')}<div class="hud-bars"><div class="hp-track"><div id="hp-fill"></div></div><div class="xp-track"><div id="xp-fill"></div></div></div>
+   <span id="hp-text"></span><span id="campaign-goal" hidden></span>
+  </div>${new URLSearchParams(location.search).has('debug') ? '<output id="debug-stats" class="debug-stats"></output>' : ''}`;
   this.updateHud(s);
   if (s.status === 'running') { this.overlay.innerHTML = ''; this.overlay.classList.add('inactive'); }
   else if (s.status === 'gameover') {
@@ -296,8 +303,28 @@ export class App {
    if (impact && impact.y > WORLD.height * .6) this.overlay.classList.add('victory-banner-high');
    this.overlay.innerHTML = `<div class="victory-banner" role="status">${icon('trophy')}<div><span>원정 클리어</span><strong>모르바 격파</strong></div></div>`;
   }
-  else if (s.status === 'paused') this.overlay.innerHTML = `<div class="pause-panel"><div class="modal-emblem">${icon('leaf')}</div><h2>일시정지</h2><div class="pause-stats"><span>${formatTime(s.elapsed)}<small>생존 시간</small></span><span>${s.kills}<small>처치한 적</small></span><span>${s.gold}<small>획득 골드</small></span></div><button class="button primary" data-action="resume">${icon('play')} 모험 계속하기</button><button class="button secondary" data-action="settings">${icon('settings')} 설정</button><button class="button secondary" data-action="diagnostics">실기기 진단 · 로그</button><button class="text-button" data-action="title">원정 마치고 타이틀로</button></div>`;
+  else if (s.status === 'paused') this.renderPause(s);
   else if (s.status === 'upgrade') this.renderUpgradeChoices(s);
+ }
+ private renderPause(s: RunState) {
+  const hero = HEROES[s.hero];
+  const learned = [
+   { name: s.evolved ? EVOLUTIONS[s.hero].name : hero.weapon, icon: hero.icon, level: s.weaponLevel },
+   ...hero.skills.filter(id => s.skills[id] > 0).map(id => ({ ...SKILLS[id], level: s.skills[id] })),
+   ...Object.entries(PASSIVES).flatMap(([id, skill]) => {
+    const level = s.passives[id as keyof RunState['passives']];
+    return level > 0 ? [{ ...skill, level }] : [];
+   }),
+  ];
+  this.overlay.innerHTML = `<section class="pause-panel" aria-labelledby="pause-title">
+   <h2 id="pause-title">일시정지</h2>
+   <div class="pause-run-summary">${formatTime(s.elapsed)} · ${s.kills}처치 · ${s.gold}G</div>
+   <h3>습득한 스킬</h3>
+   <ul class="pause-skills">${learned.map(skill => `<li>${icon(skill.icon)}<span>${skill.name}</span><b>Lv.${skill.level}</b></li>`).join('')}</ul>
+   <button class="button primary" data-action="resume">${icon('play')} 모험 계속하기</button>
+   <div class="pause-actions"><button class="button secondary" data-action="settings">설정</button><button class="button secondary" data-action="diagnostics">실기기 진단 · 로그</button></div>
+   <button class="text-button" data-action="title">원정 마치고 타이틀로</button>
+  </section>`;
  }
  private renderUpgradeChoices(s: RunState) {
   this.overlay.innerHTML = `<section class="upgrade-panel" aria-labelledby="upgrade-title">
@@ -334,10 +361,11 @@ export class App {
  private updateHud(s: RunState) {
   this.updateTimeStop(s);
   const text = (id: string, value: string) => { const el = this.hud.querySelector(`#${id}`); if (el && el.textContent !== value) el.textContent = value; };
-  text('campaign-goal', s.status === 'victory' ? '원정 완료' : s.finalSpawned
-   ? `남은 시간 ${Math.max(0, Math.ceil(CAMPAIGN.finalAt + CAMPAIGN.arenaLimit - s.elapsed))}초`
-   : `10:00 모르바${s.rank ? ' · 도전 ' + s.rank : ''}`);
-  text('hud-level', `Lv.${s.level}`); text('hud-time', formatTime(s.elapsed)); text('hp-text', `${Math.ceil(s.player.hp)} / ${Math.round(s.player.maxHp)}`); text('xp-text', `${Math.floor(s.xp)} / ${s.xpNext}`); text('hud-kills', `${s.kills}`); text('hud-gold', `${s.gold}`);
+  const goal = this.hud.querySelector<HTMLElement>('#campaign-goal');
+  if (goal) goal.hidden = !s.finalSpawned && s.status !== 'victory';
+  text('campaign-goal', s.status === 'victory' ? '원정 완료' :
+   `남은 시간 ${Math.max(0, Math.ceil(CAMPAIGN.finalAt + CAMPAIGN.arenaLimit - s.elapsed))}초`);
+  text('hud-level', `Lv.${s.level}`); text('hud-time', formatTime(s.elapsed)); text('hp-text', `${Math.ceil(s.player.hp)} / ${Math.round(s.player.maxHp)}`);
   const hp = this.hud.querySelector<HTMLElement>('#hp-fill'), xp = this.hud.querySelector<HTMLElement>('#xp-fill'); if (hp) hp.style.width = `${s.player.hp / s.player.maxHp * 100}%`; if (xp) xp.style.width = `${s.xp / s.xpNext * 100}%`;
   text('debug-stats', `${Math.round(this.game?.loop.actualFps ?? 0)} FPS · ENEMY ${s.enemies.length}/${WORLD.maxEnemies} · SHOT ${s.projectiles.length}/${WORLD.maxProjectiles} · POS ${Math.round(s.player.x)},${Math.round(s.player.y)} · ${this.scene.controls.dragging ? 'DRAG' : 'IDLE'}`);
  }

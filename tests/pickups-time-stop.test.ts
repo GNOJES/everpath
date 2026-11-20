@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PICKUPS } from '../src/game/config';
+import { PICKUPS, WORLD } from '../src/game/config';
 import { GameSimulation } from '../src/game/simulation';
 import { parseSave, SaveStore } from '../src/game/save';
 
@@ -11,6 +11,12 @@ describe('field pickups', () => {
   p.hp = 20;
   sim.update(.05);
   expect([p.hp, sim.state.gold]).toEqual([20, 0]);
+  const earlyEnemy = sim.spawnEnemy('goblin', p.x + 100, p.y)!;
+  earlyEnemy.seed = 0;
+  sim.damageEnemy(earlyEnemy, 1e9);
+  expect(sim.state.pickups).toHaveLength(0);
+  sim.state.elapsed = PICKUPS.from;
+  sim.state.nextBoss = Infinity;
   const enemy = sim.spawnEnemy('goblin', p.x + 100, p.y)!;
   enemy.seed = PICKUPS.healChance * Math.PI * 3;
   sim.damageEnemy(enemy, 1e9);
@@ -28,7 +34,8 @@ describe('field pickups', () => {
  it('caps scarce recovery drops, keeps them at full HP, and heals on contact', () => {
   const sim = new GameSimulation('warrior', parseSave(null), () => .5);
   const p = sim.state.player;
-  sim.state.elapsed = 120;
+  sim.state.elapsed = PICKUPS.from;
+  sim.state.nextBoss = Infinity;
   for (let i = 0; i < 4; i++) {
    const enemy = sim.spawnEnemy('slime', p.x, p.y)!;
    enemy.seed = 0;
@@ -43,6 +50,25 @@ describe('field pickups', () => {
   expect(sim.state.pickups).toHaveLength(1);
  });
 
+ it('carries drops with the scrolled ground until they leave the bottom', () => {
+  const sim = new GameSimulation('archer', parseSave(null), () => .5);
+  sim.state.elapsed = PICKUPS.from;
+  sim.state.nextBoss = Infinity;
+  const p = sim.state.player;
+  const enemy = sim.spawnEnemy('goblin', WORLD.margin, WORLD.height - 20)!;
+  enemy.seed = 0;
+  sim.damageEnemy(enemy, 1e9);
+  const item = sim.state.pickups[0];
+  const anchoredY = item.groundY;
+  sim.update(.05);
+  expect(item.groundY).toBe(anchoredY);
+  expect(item.groundY + sim.state.scroll).toBeGreaterThan(anchoredY);
+  expect(sim.state.pickups).toContain(item);
+  for (let i = 0; i < 45; i++) sim.update(.05);
+  expect(sim.state.pickups).not.toContain(item);
+  expect(p.hp).toBe(p.maxHp);
+ });
+
  it('guarantees a chest with gold after a middle boss', () => {
   const sim = new GameSimulation('warrior', parseSave(null), () => .5);
   const s = sim.state;
@@ -53,9 +79,9 @@ describe('field pickups', () => {
   expect(chest.kind).toBe('chest');
   sim.update(.05);
   expect(s.gold).toBe(before);
-  s.player.x = chest.x; s.player.y = chest.y;
+  s.player.x = chest.x; s.player.y = chest.groundY + s.scroll;
   sim.update(.05);
-  expect(s.gold).toBe(before + PICKUPS.chestGold);
+  expect(s.gold).toBe(before + PICKUPS.firstChestGold);
   expect(s.status).toBe('running');
   expect(s.pickups).toHaveLength(0);
  });

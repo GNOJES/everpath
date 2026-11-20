@@ -242,3 +242,36 @@ body{background:#e5eef1}
  .upgrade-choices{gap:4px}
  .upgrade-card{padding:5px 7px}
 }
+
+.hud{padding:3px 9px 6px}
+.hud-first-row{display:grid;grid-template-columns:minmax(0,1fr) auto 44px;gap:7px;height:44px}
+.hud-hero{min-width:0;gap:5px}
+.hud-hero>b,.hud-hero>small{font-size:12px;white-space:nowrap}
+.hud-hero>.pixel-portrait{height:25px}
+.hud-time{margin:0}
+.hud-time strong{font-size:19px}
+.hud-vitals{display:flex;gap:5px;align-items:center;font:11px monospace;line-height:1;min-height:14px;white-space:nowrap}
+.hud-vitals>.icon{width:13px;height:13px;color:#ff8e96}
+.hud-bars{flex:1;display:grid;gap:3px;min-width:28px}
+.hud-bars .hp-track{height:5px;border:0;border-radius:6px;overflow:hidden}
+.hud-bars .xp-track{height:2px;border-radius:3px;overflow:hidden}
+.hud-vitals #campaign-goal{font:700 10px/1.1 system-ui;color:#ffdb91}
+.pause-panel{padding:12px;max-height:calc(100% - 12px);overflow-y:auto;gap:6px}
+.pause-panel h2{margin:0;font-size:clamp(19px,5.5cqw,27px)}
+.pause-panel h3{margin:1px 0 0;font-size:14px;align-self:flex-start}
+.pause-run-summary{color:#455778;font-size:12px}
+.pause-skills{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%;padding:0;margin:0}
+.pause-skills li{display:flex;align-items:center;gap:3px;min-width:0;padding:4px 3px;border:1px solid #b8c9e3;border-radius:5px;background:#edf3ff;font-size:clamp(9px,3.4cqw,13px);text-align:left}
+.pause-skills .icon{width:13px;height:13px;flex:none;color:#31528e}
+.pause-skills li>span{line-height:1.12;word-break:keep-all}
+.pause-skills b{margin-left:auto;font-size:9px;white-space:nowrap;color:#274c97}
+.pause-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px;width:100%}
+.pause-panel .button{min-height:40px;margin:0;font-size:12px}
+.pause-panel .text-button{padding:4px;font-size:11px}
+.starting-skills{flex-wrap:wrap}
+@media(max-width:380px){
+ .starting-skills{display:grid;grid-template-columns:1fr 1fr;gap:3px 6px;margin-top:4px}
+ .starting-skills>span{font-size:10px!important;line-height:1.15;padding:0}
+ .starting-skills>span>.icon{width:11px;height:11px}
+ .hero-detail>p{line-height:1.35;margin-block:6px}
+}

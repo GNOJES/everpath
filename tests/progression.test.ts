@@ -9,7 +9,7 @@ describe('upgrade choices', () => {
   const rolled = rollUpgrades(run, () => .1); expect(rolled).toHaveLength(3); expect(new Set(rolled.map(x => x.id)).size).toBe(3);
  });
  it('excludes capped upgrades and handles an empty pool', () => {
-  const run = createRun('warrior', parseSave(null)); run.weaponLevel = 5; run.evolved = true; run.skills = { whirl: 3, blade: 3, shield: 3 }; run.passives = { power: 5, haste: 5, vitality: 5, speed: 5 };
+  const run = createRun('warrior', parseSave(null)); run.weaponLevel = 5; run.evolved = true; run.skills = { whirl: 3, blade: 3, shield: 3, bash: 3 }; run.passives = { power: 5, haste: 5, vitality: 5, speed: 5 };
   expect(availableUpgrades(run)).toHaveLength(0); expect(rollUpgrades(run, Math.random)).toEqual([]);
   run.skills.shield = 2; expect(rollUpgrades(run, Math.random).map(x => x.id)).toEqual(['skill:shield']);
  });

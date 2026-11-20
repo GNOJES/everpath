@@ -15,7 +15,7 @@ test('growth refund requires confirmation, preserves records, persists and can b
 });
 test('first objective and locked challenges are visible before a normal run',async({page})=>{
  await page.goto('/');await page.locator('[data-action="embark"]').click();await expect(page.locator('.hero-clear-record')).toContainText('무기 진화');await expect(page.locator('[data-rank="1"]')).toBeDisabled();await page.locator('[data-action="start"]').click();
- await expect(page.locator('#campaign-goal')).toContainText('10:00 모르바');await expect(page.locator('#hud')).toBeVisible();
+ await expect(page.locator('#campaign-goal')).toBeHidden();await expect(page.locator('#hud')).toBeVisible();
 });
 
 test('common menus fit one small screen and refund buttons work without a reset', async ({ browser }) => {
@@ -110,6 +110,7 @@ test('skill upgrades fit a short phone and remain legible while pressed', async 
   const {sim} = (window as unknown as {skillTest:{sim:import('../src/game/simulation').GameSimulation}}).skillTest;
   const {availableUpgrades} = await import('../src/game/progression');
   sim.state.skills.shield = 1;
+  sim.state.skills.bash = 1;
   sim.state.choices = availableUpgrades(sim.state).filter(choice => ['weapon','skill:shield','passive:vitality'].includes(choice.id));
   sim.state.status = 'upgrade';
  });
@@ -143,4 +144,10 @@ test('skill upgrades fit a short phone and remain legible while pressed', async 
   }
   await page.screenshot({path:'test-results/skill-upgrade-pressed-small.png'});
  } finally { await page.mouse.up(); }
+ await page.getByRole('button', {name:'일시정지',exact:true}).click();
+ await expect(page.getByRole('heading', {name:'습득한 스킬'})).toBeVisible();
+ await expect(page.locator('.pause-skills')).toContainText('방패 밀치기');
+ await expect(page.locator('.pause-skills')).toContainText('수호의 방패');
+ await expect(page.locator('#hud .loadout')).toHaveCount(0);
+ expect(await page.locator('.pause-panel').evaluate(el=>el.scrollHeight-el.clientHeight)).toBeLessThanOrEqual(1);
 });

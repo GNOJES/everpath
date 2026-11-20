@@ -17,10 +17,10 @@ room.wetDryMix = 14
 engine.attach(room)
 engine.connect(orchestra, to: room, format: format)
 engine.connect(room, to: engine.mainMixerNode, format: format)
-engine.mainMixerNode.outputVolume = 0.78
-let programs: [UInt8] = [48, 42, 60, 56, 68, 47, 46, 0]
-let levels: [Float] = [0.55, 0.59, 0.77, 0.44, 0.69, 0.75, 0.36, 0.55]
-let pans: [Float] = [-0.34, 0.22, -0.12, 0.21, 0.32, -0.08, 0.37, 0.05]
+engine.mainMixerNode.outputVolume = 0.69
+let programs: [UInt8] = [48, 42, 60, 56, 68, 47, 46, 73, 45, 52, 9, 61, 0]
+let levels: [Float] = [0.50, 0.55, 0.68, 0.40, 0.57, 0.56, 0.39, 0.45, 0.44, 0.27, 0.26, 0.35, 0.46]
+let pans: [Float] = [-0.34, 0.22, -0.12, 0.21, 0.32, -0.08, 0.37, -0.26, 0.29, 0, 0.42, -0.19, 0.05]
 let samplers = try programs.enumerated().map { index, program in
     let sampler = AVAudioUnitSampler()
     engine.attach(sampler)

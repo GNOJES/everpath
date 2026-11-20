@@ -8,9 +8,9 @@ it('counts successful spawns, kills, escaped enemies and unresolved enemies with
 it('does not count rejected spawns and marks cap replacements as un defeated',()=>{
  const sim=new GameSimulation('warrior',parseSave(null));for(let i=0;i<100;i++)sim.spawnEnemy('slime',10,10);expect(sim.spawnEnemy('slime',10,10)).toBeUndefined();sim.spawnEnemy('boss',216,160);expect(sim.result().combat).toMatchObject({spawned:101,killed:0,missed:101,withdrawn:1,remaining:100});
 });
-it('accounts for final arena clearing and freezes every result after victory',()=>{
+it('counts enemies still on the field at victory and freezes every result',()=>{
  const sim=new GameSimulation('mage',parseSave(null),()=>.5);sim.spawnEnemy('slime',10,10);sim.state.elapsed=599.99;sim.update(.05);const boss=sim.state.enemies.find(e=>e.kind==='warden')!;sim.damageEnemy(boss,1e9);
- expect(sim.result().combat).toMatchObject({spawned:2,killed:1,missed:1,withdrawn:1,remaining:0,killRate:50,missRate:50});const r=sim.result();for(let i=0;i<100;i++)sim.update(.05);expect(sim.result()).toEqual(r);
+ expect(sim.result().combat).toMatchObject({spawned:2,killed:1,missed:1,withdrawn:0,remaining:1,killRate:50,missRate:50});const r=sim.result();for(let i=0;i<100;i++)sim.update(.05);expect(sim.result()).toEqual(r);
 });
 it('uses zero rates for no encounters and counts surviving monsters at death',()=>{
  const sim=new GameSimulation('mage',parseSave(null));expect(sim.result().combat).toMatchObject({spawned:0,missRate:0,killRate:0});sim.spawnEnemy('slime',30,30);sim.damagePlayer(1e6);expect(sim.result().combat).toMatchObject({spawned:1,missed:1,remaining:1,missRate:100});

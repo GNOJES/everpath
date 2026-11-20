@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { GameSimulation } from '../src/game/simulation';
+import { HEROES } from '../src/game/config';
 import { parseSave } from '../src/game/save';
 const frames = (sim: GameSimulation, seconds: number) => { for (let i = 0; i < seconds * 30; i++) sim.update(1 / 30); };
 describe('weapon and skill balance regressions', () => {
@@ -23,12 +24,6 @@ describe('weapon and skill balance regressions', () => {
   // Level two is a 118px circle; this 13px-radius slime at 126px overlaps it.
   expect(run(2)).toBeLessThan(run(0));
  });
-});
-
-it('makes both level-three bow arrows contribute against a narrow distant target', () => {
- const sim = new GameSimulation('archer', parseSave(null), () => .5); sim.state.weaponLevel = 3;
- const target = sim.spawnEnemy('slime', 216, 274)!; target.hp = target.maxHp = 1000; target.speed = 0;
- frames(sim, 1); expect(1000 - target.hp).toBeGreaterThanOrEqual(sim.damage * 2 - .001);
 });
 
 it('higher shield ranks improve recharge without stockpiling three fully blocked hits', () => {
@@ -64,17 +59,22 @@ it('puts three enemies on the field on the first frame of a normal expedition', 
  expect(sim.state.enemies.every(enemy => enemy.y > 0)).toBe(true);
 });
 
-it('lets a basic arrow hit two lined-up targets without hitting a third', () => {
+it.each([[1, 1], [2, 2], [3, 3]])('unlocks pierce with bow rank %i', (rank, hits) => {
  const sim = new GameSimulation('archer', parseSave(null), () => .5);
- const targets = [445, 397, 349].map(y => sim.spawnEnemy('brute', 216, y)!);
+ sim.state.weaponLevel = rank;
+ const targets = [465, 420, 375, 330].map(y => sim.spawnEnemy('brute', 216, y)!);
  for (const enemy of targets) enemy.speed = 0;
- frames(sim, .4);
- expect(targets[0].hp).toBeLessThan(targets[0].maxHp);
- expect(targets[1].hp).toBeLessThan(targets[1].maxHp);
- expect(targets[2].hp).toBe(targets[2].maxHp);
+ frames(sim, .41);
+ expect(targets.filter(enemy => enemy.hp < enemy.maxHp)).toHaveLength(hits);
 });
 
-it.each([[1, false, 84], [5, true, 136]])('limits sword level %i to the advertised frontal cone', (weaponLevel, evolved, degrees) => {
+it('gives the archer the lowest base single-target DPS', () => {
+ const dps = (id: keyof typeof HEROES) => new GameSimulation(id, parseSave(null)).damage / HEROES[id].cooldown;
+ expect(dps('archer')).toBeLessThan(dps('mage'));
+ expect(dps('mage')).toBeLessThan(dps('warrior'));
+});
+
+it.each([[1, false, 70], [5, true, 112]])('limits sword level %i to the advertised frontal cone', (weaponLevel, evolved, degrees) => {
  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
  const p = sim.state.player;
  sim.state.weaponLevel = weaponLevel;
@@ -84,6 +84,7 @@ it.each([[1, false, 84], [5, true, 136]])('limits sword level %i to the advertis
  for (const enemy of [front, rear]) enemy.speed = 0;
  frames(sim, .15);
  expect(front.hp).toBeLessThan(front.maxHp);
+ expect(front.y).toBeLessThan(p.y - 65);
  expect(rear.hp).toBe(rear.maxHp);
  const slash = sim.state.effects.find(effect => effect.kind === 'slash');
  expect((slash?.halfAngle ?? 0) * 360 / Math.PI).toBeCloseTo(degrees);

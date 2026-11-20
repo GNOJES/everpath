@@ -1,17 +1,20 @@
-import { BALANCE } from './config';
+import { BALANCE, CAMPAIGN } from './config';
+import { clamp } from './math';
 import type { EnemyKind } from './types';
 // A continuous arrival rate avoids the old 65-second jumps in simultaneous spawns.
 export function spawnInterval(seconds: number): number {
- return Math.max(BALANCE.minSpawnInterval, 1 / (1 / BALANCE.spawnInterval + Math.max(0, seconds) * BALANCE.spawnRateRamp));
+ const normal = Math.max(BALANCE.minSpawnInterval, 1 / (1 / BALANCE.spawnInterval + Math.max(0, seconds) * BALANCE.spawnRateRamp));
+ const approach = clamp((seconds - CAMPAIGN.approachAt) / (CAMPAIGN.finalAt - CAMPAIGN.approachAt), 0, 1);
+ return normal / (1 - approach * .84);
 }
 export const FOREST_ENCOUNTERS: { from: number; mix: [EnemyKind, number][] }[] = [
  { from: 0, mix: [['slime', 1]] },
- { from: 25, mix: [['slime', .65], ['goblin', .35]] },
- { from: 50, mix: [['slime', .4], ['goblin', .35], ['bat', .25]] },
- { from: 110, mix: [['slime', .32], ['goblin', .28], ['bat', .2], ['skeleton', .2]] },
- { from: 240, mix: [['goblin', .25], ['bat', .2], ['skeleton', .3], ['brute', .25]] },
- { from: 390, mix: [['goblin', .15], ['bat', .15], ['skeleton', .2], ['brute', .38], ['shaman', .12]] },
- { from: 510, mix: [['bat', .15], ['skeleton', .2], ['brute', .5], ['shaman', .15]] },
+ { from: 16, mix: [['slime', .65], ['goblin', .35]] },
+ { from: 38, mix: [['slime', .4], ['goblin', .35], ['bat', .25]] },
+ { from: 85, mix: [['slime', .32], ['goblin', .28], ['bat', .2], ['skeleton', .2]] },
+ { from: 240, mix: [['goblin', .25], ['bat', .26], ['skeleton', .30], ['brute', .19]] },
+ { from: 390, mix: [['goblin', .17], ['bat', .21], ['skeleton', .2], ['brute', .35], ['shaman', .07]] },
+ { from: 510, mix: [['bat', .29], ['skeleton', .22], ['brute', .41], ['shaman', .08]] },
 ];
 export function chooseEnemyKind(seconds: number, random: () => number): EnemyKind {
  const encounter = [...FOREST_ENCOUNTERS].reverse().find(e => seconds >= e.from) ?? FOREST_ENCOUNTERS[0]; let roll = random();

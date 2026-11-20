@@ -75,7 +75,7 @@ describe('boss entry waves', () => {
   const killsBefore = sim.state.bosses;
   for (const boss of pair) sim.damageEnemy(boss, 1e9);
   expect(sim.state.gold).toBe(goldBefore);
-  expect(sim.state.pickups.filter(item => item.kind === 'chest').map(item => item.gold)).toEqual([60, 30, 30]);
+  expect(sim.state.pickups.filter(item => item.kind === 'chest').map(item => item.gold)).toEqual([120, 85, 85]);
   expect(sim.state.bosses - killsBefore).toBe(2);
  });
 
@@ -95,4 +95,44 @@ describe('boss entry waves', () => {
   expect(player.hp).toBe(hp);
   expect(boss.timer).toBe(3);
  });
+});
+
+it('keeps living enemies, shots and telegraphs as the Warden joins the field', () => {
+ const sim = new GameSimulation('mage', parseSave(null), () => .5);
+ const s = sim.state;
+ s.elapsed = 599.99;
+ const regular = sim.spawnEnemy('goblin', 35, 120)!;
+ const shot = {id:4001, x:40, y:35, vx:0, vy:95, life:3, damage:5, radius:4, kind:'enemy' as const, pierce:1, hit:new Set<number>()};
+ const zone = {id:4002, x:40, y:70, life:1, delay:.7, radius:25, damage:3, owner:'enemy' as const, kind:'slam' as const, fired:false};
+ s.projectiles.push(shot); s.hazards.push(zone);
+ sim.update(.025);
+ expect(s.enemies).toContain(regular);
+ expect(s.enemies.find(enemy => enemy.kind === 'warden')?.y).toBeLessThan(0);
+ expect(s.projectiles).toContain(shot);
+ expect(s.hazards).toContain(zone);
+ expect(s.withdrawn).toBe(0);
+ const spawned = s.spawned;
+ for (let i = 0; i < 60; i++) sim.update(.025);
+ expect(s.spawned).toBe(spawned);
+});
+
+it('cycles through warning circles, a targeted fan and a radial volley in the Warden fight', () => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ const s = sim.state;
+ s.elapsed = 600; s.finalSpawned = true;
+ const boss = sim.spawnEnemy('warden', 216, 155)!;
+ expect(boss.maxHp).toBe(9600);
+ boss.speed = 0; boss.timer = 0;
+ sim.update(.025);
+ expect(s.hazards.filter(zone => zone.owner === 'enemy')).toHaveLength(2);
+ boss.timer = 0;
+ sim.update(.025);
+ expect(boss.phase).toBe('warn');
+ boss.timer = 0;
+ sim.update(.025);
+ expect(s.projectiles.filter(shot => shot.kind === 'enemy')).toHaveLength(5);
+ boss.hp = boss.maxHp / 2; boss.timer = 0;
+ sim.update(.025);
+ expect(s.projectiles.filter(shot => shot.kind === 'enemy')).toHaveLength(19);
+ expect(s.hazards.filter(zone => zone.owner === 'enemy')).toHaveLength(3);
 });
