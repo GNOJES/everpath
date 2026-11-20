@@ -5,6 +5,7 @@ import { SAVE_KEY } from './game/save';
 import { App } from './ui/app';
 import { connectNativeApp } from './platform/native';
 import { openNativeSave } from './platform/native-save';
+import { preventPullToRefresh } from './platform/mobile-web';
 
 const root = document.querySelector<HTMLElement>('#app')!;
 
@@ -22,8 +23,9 @@ async function boot() {
   }
  }
  const app = new App(root, store);
+ const removeTouchGuard = !Capacitor.isNativePlatform() && navigator.maxTouchPoints > 0 ? preventPullToRefresh() : undefined;
  const nativeLifecycle = connectNativeApp(app).catch(error => { console.warn('Native lifecycle unavailable', error); return async () => {}; });
- if (import.meta.hot) import.meta.hot.dispose(() => { void nativeLifecycle.then(cleanup => cleanup()); });
+ if (import.meta.hot) import.meta.hot.dispose(() => { removeTouchGuard?.(); void nativeLifecycle.then(cleanup => cleanup()); });
 }
 
 void boot();

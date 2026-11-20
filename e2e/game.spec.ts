@@ -103,3 +103,41 @@ test('mobile screen edge remains usable during a long drag', async ({ browser })
  await page.screenshot({ path: `docs/playtests/mobile-edge-${process.env.EDGE_CAPTURE ?? 'after'}.png` });
  await context.close();
 });
+
+test('mobile launch requests fullscreen and blocks pull-to-refresh at the scroll boundary', async ({ browser }) => {
+ const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+ try {
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+   Object.defineProperty(document, 'fullscreenEnabled', { value: true });
+   HTMLElement.prototype.requestFullscreen = function () {
+    this.setAttribute('data-test-fullscreen', 'requested');
+    return Promise.resolve();
+   };
+  });
+  await page.goto('/');
+  const manifest = await page.request.get('/manifest.webmanifest');
+  expect(await manifest.json()).toMatchObject({ start_url: '/', display: 'standalone' });
+  expect(await page.locator('html').evaluate(el => getComputedStyle(el).overscrollBehaviorY)).toBe('none');
+  await page.getByRole('button', { name: '모험 시작' }).tap();
+  await expect(page.locator('html')).toHaveAttribute('data-test-fullscreen', 'requested');
+  const gestures = await page.locator('.menu-panel').evaluate(panel => {
+   panel.style.height = '180px';
+   const child = document.createElement('div');
+   child.style.minHeight = '1200px';
+   panel.append(child);
+   const pull = (fromY: number, toY: number, count = 1) => {
+    const contacts = (y: number) => Array.from({length: count}, (_, i) => new Touch({identifier: i, target: child, clientX: 60, clientY: y}));
+    child.dispatchEvent(new TouchEvent('touchstart', {bubbles: true, touches: contacts(fromY)}));
+    const move = new TouchEvent('touchmove', {bubbles: true, cancelable: true, touches: contacts(toY)});
+    child.dispatchEvent(move);
+    return move.defaultPrevented;
+   };
+   panel.scrollTop = 100;
+   const inside = pull(80, 160);
+   panel.scrollTop = 0;
+   return [inside, pull(80, 160), pull(160, 80), pull(80, 160, 2)];
+  });
+  expect(gestures).toEqual([false, true, false, false]);
+ } finally { await context.close(); }
+});

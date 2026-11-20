@@ -1,5 +1,6 @@
 import { backupLimit, decodeBackup, encodeBackup } from '../game/backup';
 import { exportBackupFile } from '../platform/backup-file';
+import { enterMobileFullscreen } from '../platform/mobile-web';
 import type { SaveData } from '../game/types';
 import Phaser from 'phaser';
 import { ForestScene } from '../game/scene';
@@ -56,7 +57,7 @@ export class App {
   if (this.backupBusy) return;
   const button = (event.target as Element).closest<HTMLButtonElement>('[data-action]'); if (!button || button.disabled) return;
   this.scene.audio.unlock(); this.scene.audio.click(); const action = button.dataset.action!;
-  if (action === 'embark') { this.screen = 'select'; this.render(); }
+  if (action === 'embark') { enterMobileFullscreen(); this.screen = 'select'; this.render(); }
   else if (action === 'hero') { const id = button.dataset.hero as HeroId; if (!Object.hasOwn(HEROES, id)) return; this.hero = id; this.store.data.lastHero = id; this.store.write(); this.render(); }
   else if (action === 'start') this.startRun();
   else if (action === 'retry') {

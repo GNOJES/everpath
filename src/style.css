@@ -175,6 +175,7 @@ body{background:#e5eef1}
 .result-panel .menu-bottom{gap:6px}
 .result-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .result-actions>.button{padding:5px;font-size:13px}
+html,body{overscroll-behavior-y:none}
 .history-list{min-height:0;overflow-y:auto;flex:1 1 auto}
 .history-pages{display:flex;align-items:center;justify-content:center;gap:12px;font-size:14px}
 .history-pages .icon-button{width:44px;height:44px}
