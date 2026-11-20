@@ -6,8 +6,8 @@ test('production audio renders finite audible PCM, mutes live channels and bound
   const {GameAudio}=await import('/src/game/audio.ts' as string);const Original=window.AudioContext;const results=[];
   try{for(const mute of [false,true]){
    const offline=new OfflineAudioContext(1,44100*3,44100);
-   (window as any).AudioContext=class{state='running';currentTime=0;destination=offline.destination;createGain=()=>offline.createGain();createOscillator=()=>offline.createOscillator();createDynamicsCompressor=()=>offline.createDynamicsCompressor();resume=()=>Promise.resolve();suspend=()=>Promise.resolve();};
-   const a=new GameAudio();a.music=1;a.sfx=1;a.unlock();a.syncMusic('running');a.click();a.hurt();a.boss();a.victory();a.defeat();a.levelUp();a.attack('mage');if(mute){a.music=0;a.sfx=0;}
+   (window as any).AudioContext=class{state='running';currentTime=0;sampleRate=offline.sampleRate;destination=offline.destination;createBuffer=offline.createBuffer.bind(offline);createBufferSource=()=>offline.createBufferSource();createBiquadFilter=()=>offline.createBiquadFilter();createGain=()=>offline.createGain();createOscillator=()=>offline.createOscillator();createDynamicsCompressor=()=>offline.createDynamicsCompressor();resume=()=>Promise.resolve();suspend=()=>Promise.resolve();};
+   const a=new GameAudio();a.music=1;a.sfx=1;a.unlock();a.syncMusic('running');a.click();a.hurt();a.boss();a.levelUp();a.attack('mage');a.playCue('whirl');a.playCue('wardenFan');if(mute){a.music=0;a.sfx=0;}
    const samples=(await offline.startRendering()).getChannelData(0);let peak=0,energy=0,count=0;for(let i=4410;i<samples.length;i++){if(!Number.isFinite(samples[i]))throw new Error('Nonfinite PCM');peak=Math.max(peak,Math.abs(samples[i]));energy+=samples[i]*samples[i];count++;}results.push({mute,peak,rms:Math.sqrt(energy/count)});
   }}finally{window.AudioContext=Original;}return results;
  });
@@ -108,4 +108,49 @@ test('music pauses on pause and background, and plays at 30% during upgrades', a
  await expect.poll(async () => (await music()).duration ?? 0).toBeGreaterThan(40);
  await expect.poll(async () => (await music()).duration ?? 0).toBeLessThan(50);
  expect((await music()).same).toBe(false);
+});
+
+test('each combat cue renders a different audible waveform', async ({ page }) => {
+ await page.goto('/');
+ const values = await page.evaluate(async () => {
+  const {GameAudio} = await import('/src/game/audio.ts' as string) as typeof import('../src/game/audio');
+  const {COMBAT_SOUNDS} = await import('/src/game/combat-sounds.ts' as string) as typeof import('../src/game/combat-sounds');
+  const Original = window.AudioContext;
+  const values = [];
+  try {
+   for (const cue of Object.keys(COMBAT_SOUNDS) as (keyof typeof COMBAT_SOUNDS)[]) {
+    const render = new OfflineAudioContext(1, 44100 * 1.2, 44100);
+    window.AudioContext = class {
+     readonly state = 'running';
+     readonly currentTime = 0;
+     readonly sampleRate = render.sampleRate;
+     readonly destination = render.destination;
+     createGain = render.createGain.bind(render);
+     createDynamicsCompressor = render.createDynamicsCompressor.bind(render);
+     createOscillator = render.createOscillator.bind(render);
+     createBuffer = render.createBuffer.bind(render);
+     createBufferSource = render.createBufferSource.bind(render);
+     createBiquadFilter = render.createBiquadFilter.bind(render);
+     resume = () => Promise.resolve();
+    } as unknown as typeof AudioContext;
+    const audio = new GameAudio();
+    audio.unlock();
+    audio.playCue(cue);
+    const pcm = (await render.startRendering()).getChannelData(0);
+    let peak = 0, signature = 0;
+    for (const value of pcm) {
+     peak = Math.max(peak, Math.abs(value));
+     signature = (Math.imul(signature, 31) + Math.round(value * 1e6)) | 0;
+    }
+    values.push({cue, peak, signature});
+   }
+  } finally { window.AudioContext = Original; }
+  return values;
+ });
+ expect(values).toHaveLength(37);
+ for (const {cue,peak} of values) {
+  expect(peak, cue).toBeGreaterThan(.005);
+  expect(peak, cue).toBeLessThan(1);
+ }
+ expect(new Set(values.map(value => value.signature)).size).toBe(values.length);
 });

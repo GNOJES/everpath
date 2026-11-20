@@ -5,7 +5,7 @@ import Phaser from 'phaser';
 import { ForestScene } from '../game/scene';
 import { SaveStore, upgradeCost } from '../game/save';
 import { GameSimulation } from '../game/simulation';
-import { HEROES, SKILLS, PASSIVES, PERMANENT, WORLD, permanentLimit, EVOLUTIONS, CAMPAIGN } from '../game/config';
+import { DEFAULT_SFX_VOLUME, HEROES, SKILLS, PASSIVES, PERMANENT, WORLD, permanentLimit, EVOLUTIONS, CAMPAIGN } from '../game/config';
 import { portrait } from '../game/art';
 import { formatTime } from '../game/math';
 import { icon } from './icons';
@@ -108,7 +108,7 @@ export class App {
   else if (action === 'diagnostics-export') { void this.exportDiagnostics(); }
   else if (action === 'settings-back') { this.screen = this.settingsReturn; this.render(); }
   else if (action === 'save-retry') this.store.write();
-  else if (action === 'sound') { this.store.data.settings.sfx = this.store.data.settings.sfx ? 0 : .5; this.scene.audio.sfx = this.store.data.settings.sfx; this.store.write(); this.syncSound(); }
+  else if (action === 'sound') { this.store.data.settings.sfx = this.store.data.settings.sfx ? 0 : DEFAULT_SFX_VOLUME; this.scene.audio.sfx = this.store.data.settings.sfx; this.store.write(); this.syncSound(); }
   this.syncRecords();
  }
  private onSlider(event: Event) { if ((event.target as HTMLElement).id === 'diagnostics-note') { this.diagnostics.note = (event.target as HTMLTextAreaElement).value.slice(0, 200); return; } const input = event.target as HTMLInputElement; const key = input.dataset.volume as 'music' | 'sfx' | undefined; if (!key) return; this.scene.audio.unlock(); const value = Number(input.value) / 100; this.store.data.settings[key] = value; this.scene.audio[key] = value; this.store.write(); const label = this.overlay.querySelector(`#volume-${key}`); if (label) label.textContent = `${input.value}%`; this.syncSound(); }
@@ -155,7 +155,6 @@ export class App {
   if (state.status !== this.previousStatus) {
    this.previousStatus = state.status; this.scene.controls.reset();
    if (state.status === 'gameover' || state.status === 'victory') {
-    if (state.status === 'gameover') this.scene.audio.defeat();
     this.lastResult = this.sim!.result();
     this.newRecord = state.elapsed > this.store.data.bestTime;
     this.store.settle(this.lastResult);

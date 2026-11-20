@@ -2,7 +2,7 @@ import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATT
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind } from './encounters';
-import type { HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Pickup, Effect, PassiveId, RunResult, SkillShot } from './types';
+import type { CombatSound, Hazard, HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Pickup, Effect, PassiveId, RunResult, SkillId, SkillShot } from './types';
 let runCounter = 0;
 export function createRun(hero: HeroId, save: SaveData, rank = 0): RunState {
  const config = HEROES[hero], maxHp = Math.round(config.hp * (1 + save.upgrades.hp * PERMANENT.hp.step));
@@ -12,6 +12,7 @@ export function createRun(hero: HeroId, save: SaveData, rank = 0): RunState {
 }
 export class GameSimulation {
  readonly state: RunState;
+ onSound?: (cue: CombatSound) => void;
  private regularSpawns = 0; private sideSpawns = 0;
  private healDrops = 0;
  private nextShamanAt = 0;
@@ -41,6 +42,7 @@ export class GameSimulation {
   if (s.status !== 'running' || s.timeStopRemaining > 0 || s.timeStopCharges <= 0) return false;
   s.timeStopCharges--;
   s.timeStopRemaining = TIME_STOP.duration;
+  this.onSound?.('timeStop');
   return true;
  }
  update(seconds: number, direction: Vec = { x: 0, y: 0 }) {
@@ -99,6 +101,7 @@ export class GameSimulation {
    if (this.skillTimers[id] <= 0 && this.castSkill(id, baseRank, finalRank)) {
     const rankHaste = 1 + (baseRank - 1) * (skill.hastePerLevel ?? B.skillHasteStep);
     this.skillTimers[id] = skill.cooldown / this.haste / rankHaste / (finalRank ? ATTACK_SKILL_UPGRADE.haste : 1);
+    if (!this.hasWon()) this.onSound?.(id);
    }
   }
   if (this.hasWon()) return;
@@ -190,17 +193,22 @@ export class GameSimulation {
    } else if (isBoss(e.kind)) {
     if (e.phase === 'chase' && e.timer <= 0) {
      e.phase = 'warn'; e.timer = BOSS_PATTERN.windup; e.aim = dir;
+     this.onSound?.('grormWarn');
      if (!e.paired && distance(e, p) > FIRST_GRORM.volleyRange) {
       for (const spread of [-.28, 0, .28]) this.shoot(e, p, 'enemy', e.damage * FIRST_GRORM.volleyDamage, FIRST_GRORM.volleySpeed, 1, spread);
+      this.onSound?.('grormVolley');
      }
     }
-    else if (e.phase === 'warn') { speed = 0; if (e.timer <= 0) { e.phase = 'dash'; e.timer = BOSS_PATTERN.dashDuration; } }
+    else if (e.phase === 'warn') {
+     speed = 0;
+     if (e.timer <= 0) { e.phase = 'dash'; e.timer = BOSS_PATTERN.dashDuration; this.onSound?.('grormDash'); }
+    }
     else if (e.phase === 'dash') {
      dir = e.aim; speed = BOSS_PATTERN.dashSpeed;
      if (e.timer <= 0) {
       const pattern = e.paired ? PAIRED_GRORM : BOSS_PATTERN;
       e.phase = 'recover'; e.timer = pattern.recover;
-      this.addHazard(e, pattern.slamRadius, BOSS_PATTERN.slamDelay, e.damage * BOSS_PATTERN.slamDamage, 'enemy', 'slam');
+      this.addHazard(e, pattern.slamRadius, BOSS_PATTERN.slamDelay, e.damage * BOSS_PATTERN.slamDamage, 'enemy', 'slam', 'grormSlam');
      }
     }
     else if (e.phase === 'recover') { speed = 0; if (e.timer <= 0) { e.phase = 'chase'; e.timer = BOSS_PATTERN.chase; } }
@@ -224,6 +232,7 @@ export class GameSimulation {
   if (e.phase === 'warn') {
    if (e.timer <= 0) {
     for (let i = -2; i <= 2; i++) this.shoot(e, { x: e.x + e.aim.x, y: e.y + e.aim.y }, 'enemy', e.damage * .72, enraged ? 205 : 170, 1, i * .19);
+    this.onSound?.('wardenFan');
     e.phase = 'chase'; e.timer = enraged ? 1.55 : 2.05;
    }
    return 0;
@@ -233,12 +242,14 @@ export class GameSimulation {
    e.wardenAttack = attack + 1;
    e.timer = enraged ? 2.1 : 2.7;
    if (attack === 0) {
-    this.addHazard(player, 51, 1.15, e.damage * 1.25, 'enemy', 'slam');
+    this.onSound?.('wardenRoots');
+    this.addHazard(player, 51, 1.15, e.damage * 1.25, 'enemy', 'slam', 'wardenSlam');
     const offset = player.x < W.width / 2 ? 85 : -85;
-    this.addHazard({ x: player.x + offset, y: player.y - 38 }, 43, 1.52, e.damage, 'enemy', 'slam');
-    if (enraged) this.addHazard({ x: player.x + offset / 2, y: player.y + 89 }, 39, 1.76, e.damage, 'enemy', 'slam');
+    this.addHazard({ x: player.x + offset, y: player.y - 38 }, 43, 1.52, e.damage, 'enemy', 'slam', 'wardenSlam');
+    if (enraged) this.addHazard({ x: player.x + offset / 2, y: player.y + 89 }, 39, 1.76, e.damage, 'enemy', 'slam', 'wardenSlam');
    } else if (attack === 1) {
     e.phase = 'warn'; e.timer = .74; e.aim = unit(e, player);
+    this.onSound?.('wardenAim');
     return 0;
    } else {
     const count = enraged ? 14 : 10;
@@ -246,7 +257,8 @@ export class GameSimulation {
      const angle = e.seed + i * 2 * Math.PI / count;
      this.shoot(e, { x: e.x + Math.cos(angle), y: e.y + Math.sin(angle) }, 'enemy', e.damage * .67, enraged ? 154 : 128, 1);
     }
-    if (enraged) this.addHazard(player, 41, 1.18, e.damage, 'enemy', 'slam');
+    this.onSound?.('wardenRing');
+    if (enraged) this.addHazard(player, 41, 1.18, e.damage, 'enemy', 'slam', 'wardenSlam');
    }
   }
   return enraged ? .95 : .80;
@@ -341,7 +353,7 @@ export class GameSimulation {
   s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius: kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' ? 6 : 4, damage, kind, life: 3.5, pierce, hit, target, pierceScale, skillShot, blastRadius });
   return true;
  }
- private castSkill(id: string, level: number, finalRank: boolean): boolean {
+ private castSkill(id: SkillId, level: number, finalRank: boolean): boolean {
   const s = this.state, p = s.player, cfg = SKILLS[id], target = this.nearest(p, 500);
   const damage = this.power * cfg.damage * (1 + (level - 1) * B.skillDamageStep) * (finalRank ? ATTACK_SKILL_UPGRADE.damage : 1);
   const radius = cfg.radius + (level - 1) * (cfg.radiusPerLevel ?? B.skillRadiusStep);
@@ -432,7 +444,7 @@ export class GameSimulation {
    const style = id === 'multishot' ? 'volley' : id;
    for (let i = 0; i < count; i++) this.shoot(p, target, id === 'blade' ? 'blade' : 'arrow', damage, id === 'pierce' ? 490 : 350, id === 'multishot' ? 1 : 5 + level, (i - (count - 1) / 2) * .2, undefined, 1, undefined, style);
   } else if (id === 'rain') {
-   this.addHazard(this.densest(target), radius, .65, damage, 'player', 'rain');
+   this.addHazard(this.densest(target), radius, .65, damage, 'player', 'rain', 'rainImpact');
   } else if (id === 'fire') {
    this.effect('fire', target, 0xff6b36, 25, .44);
    this.damageEnemy(target, damage);
@@ -483,6 +495,7 @@ export class GameSimulation {
     const offX = startX + t * dx - e.x, offY = startY + t * dy - e.y;
     if (offX * offX + offY * offY >= radius * radius) continue;
     if (shot.blastRadius !== undefined) {
+     this.onSound?.('blastImpact');
      this.aoe({ x: e.x, y: e.y }, shot.blastRadius, shot.damage, 'blast', 0xcf5828);
      shot.life = 0;
      break;
@@ -492,15 +505,23 @@ export class GameSimulation {
   }
   s.projectiles = s.projectiles.filter(p => p.life > 0 && p.x > -50 && p.x < W.width + 50 && p.y > -60 && p.y < W.height + 60);
  }
- private addHazard(center: Vec, radius: number, delay: number, damage: number, owner: 'player' | 'enemy', kind: 'rain' | 'slam') {
-  if (this.state.hazards.length < W.maxHazards) this.state.hazards.push({ id: ++this.serial, x: center.x, y: center.y, radius, delay, life: delay + .45, damage, owner, kind, fired: false, windup: delay });
+ private addHazard(center: Vec, radius: number, delay: number, damage: number, owner: Hazard['owner'], kind: Hazard['kind'], impactSound?: CombatSound) {
+  if (this.state.hazards.length < W.maxHazards) this.state.hazards.push({ id: ++this.serial, x: center.x, y: center.y, radius, delay, life: delay + .45, damage, owner, kind, fired: false, windup: delay, impactSound });
  }
  private updateHazards(dt: number, frozen: boolean) {
   for (const h of this.state.hazards) {
    if (this.state.player.hp <= 0) break;
    if (frozen && h.owner === 'enemy') continue;
    h.delay -= dt; h.life -= dt;
-   if (h.delay <= 0 && !h.fired) { h.fired = true; if (h.owner === 'player') this.aoe(h, h.radius, h.damage, 'ring', 0xdcecc3); else { this.effect('ring', h, 0xee936d, h.radius, .4); if (distance(h, this.state.player) < h.radius) this.damagePlayer(h.damage); } }
+   if (h.delay <= 0 && !h.fired) {
+    h.fired = true;
+    if (h.impactSound) this.onSound?.(h.impactSound);
+    if (h.owner === 'player') this.aoe(h, h.radius, h.damage, 'ring', 0xdcecc3);
+    else {
+     this.effect('ring', h, 0xee936d, h.radius, .4);
+     if (distance(h, this.state.player) < h.radius) this.damagePlayer(h.damage);
+    }
+   }
   }
   this.state.hazards = this.state.hazards.filter(h => h.life > 0);
  }
@@ -525,8 +546,11 @@ export class GameSimulation {
   if (isBoss(enemy.kind)) this.effect('boss-death', enemy, 0xffd68a, enemy.kind === 'warden' ? 220 : 150, enemy.kind === 'warden' ? 1.6 : 1.1);
   else this.effect('death', enemy, 0xadd48a, enemy.radius, .4);
   if (enemy.kind === 'warden') {
-   this.goldRaw += CAMPAIGN.clearGold * (1 + s.rank * .5); s.gold = Math.floor(this.goldRaw); s.status = 'victory'; s.timeStopRemaining = 0; s.choices = []; s.projectiles = []; s.hazards = []; this.pendingChoices = 0; return;
+   this.goldRaw += CAMPAIGN.clearGold * (1 + s.rank * .5); s.gold = Math.floor(this.goldRaw); s.status = 'victory'; s.timeStopRemaining = 0; s.choices = []; s.projectiles = []; s.hazards = []; this.pendingChoices = 0;
+   this.onSound?.('victory');
+   return;
   }
+  if (enemy.kind === 'boss') this.onSound?.('grormDefeat');
   this.dropPickup(enemy);
   this.gainXp(ENEMIES[enemy.kind].xp * (enemy.rewardScale ?? 1) * (enemy.elite ? 2 : 1));
  }
@@ -574,9 +598,9 @@ export class GameSimulation {
  }
  damagePlayer(amount: number) {
   const s = this.state, p = s.player; if (p.invincible > 0 || s.status !== 'running') return;
-  p.invincible = W.invincibility; if (p.shield > 0) { p.shield--; this.effect('ring', p, 0xf6dc92, 38, .4); return; }
+  p.invincible = W.invincibility; if (p.shield > 0) { p.shield--; this.effect('ring', p, 0xf6dc92, 38, .4); this.onSound?.('shieldBlock'); return; }
   p.hp = Math.max(0, p.hp - amount); this.effect('hit', p, 0xf2937e, 27, .25);
-  if (p.hp <= 0) s.status = 'gameover';
+  if (p.hp <= 0) { s.status = 'gameover'; this.onSound?.('defeat'); }
  }
  gainXp(amount: number) {
   const s = this.state; s.xp += amount;

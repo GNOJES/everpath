@@ -8,7 +8,7 @@ afterEach(()=>vi.unstubAllGlobals());
 it('pauses music in the pause menu and plays at 30% during a level-up', () => {
  vi.stubGlobal('AudioContext', Context);
  const a = new GameAudio();
- expect([a.music, a.sfx]).toEqual([1, 1]);
+ expect([a.music, a.sfx]).toEqual([1, .7]);
  a.unlock();
  a.music = .8;
  a.syncMusic('running');
@@ -18,7 +18,7 @@ it('pauses music in the pause menu and plays at 30% during a level-up', () => {
   a.syncMusic(status);
   expect(duck.gain.value).toBe(level);
   expect(track.gain.value).toBe(.8);
-  expect(effects.gain.value).toBe(1.6);
+  expect(effects.gain.value).toBeCloseTo(1.12);
  }
  a.syncMusic('running');
  expect(duck.gain.value).toBe(1);

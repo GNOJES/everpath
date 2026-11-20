@@ -53,8 +53,8 @@ it('reallocates one rank at a time without creating gold across saves', () => {
  expect(store.data.settledRuns).toEqual(['legacy-run']);
 });
 
-it('defaults both volume channels to 100% and keeps saved volume choices', () => {
- expect(parseSave(null).settings).toEqual({music:1,sfx:1});
+it('defaults music to 100% and effects to 70% while reading saved volume choices', () => {
+ expect(parseSave(null).settings).toEqual({music:1,sfx:.7});
  const saved = JSON.stringify({version:1,settings:{music:0,sfx:.25}});
  expect(parseSave(saved).settings).toEqual({music:0,sfx:.25});
 });

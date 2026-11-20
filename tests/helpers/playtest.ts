@@ -21,7 +21,7 @@ export function chooseAbility(state: RunState, build: Build): string {
   if (id.startsWith('skill:')) {
    const key = id.slice(6), level = state.skills[key] ?? 0;
    const focus = build === 'weapon-light' && skillBuildFocus[state.hero].includes(key) ? 25 : 0;
-   return (build === 'skills' || build === 'weapon-light' ? 100 : 85) + focus + (level === BALANCE.skillMax ? 18 : 0) - level * 12 + skills.indexOf(key) * .01;
+   return (build === 'skills' || build === 'weapon-light' ? 100 : 85) + focus + (level === BALANCE.skillMax ? 18 : 0) - level * 12 + skills.findIndex(skill => skill === key) * .01;
   }
   return ({ 'passive:power': 65, 'passive:haste': 60, 'passive:vitality': 45, 'passive:speed': 40 } as Record<string, number>)[id] ?? 0;
  };

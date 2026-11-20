@@ -1,6 +1,7 @@
-import type {HeroId, RunState} from './types';
+import type { CombatSound, HeroId, RunState } from './types';
+import { DEFAULT_SFX_VOLUME } from './config';
+import { COMBAT_SOUNDS } from './combat-sounds';
 
-const note = (midi: number) => 440 * 2 ** ((midi - 69) / 12);
 const volume=(v:number)=>Number.isFinite(v)?Math.max(0,Math.min(1,v)):0;
 type MusicTrack = 'battle' | 'warden';
 export class GameAudio {
@@ -13,7 +14,10 @@ export class GameAudio {
  private musicStarted = 0;
  private musicLevel = 0;
  private suspended = false;
- private musicVolume=1;private sfxVolume=1;private lastFx=-Infinity;private lastAttack=-Infinity;private voices=new Set<OscillatorNode>();
+ private musicVolume=1;private sfxVolume=DEFAULT_SFX_VOLUME;private lastFx=-Infinity;private lastAttack=-Infinity;
+ private voices = new Set<AudioScheduledSourceNode>();
+ private lastCues = new Map<CombatSound, number>();
+ private noiseBuffer?: AudioBuffer;
  get music(){return this.musicVolume;}set music(v:number){this.musicVolume=volume(v);if(this.musicBus)this.musicBus.gain.setTargetAtTime(this.musicVolume,this.context!.currentTime,.015);}
  get sfx(){return this.sfxVolume;}set sfx(v:number){this.sfxVolume=volume(v);if(this.sfxBus)this.sfxBus.gain.setTargetAtTime(this.sfxVolume * 1.6,this.context!.currentTime,.015);}
  unlock(){try{
@@ -29,8 +33,7 @@ export class GameAudio {
  suspend(){
   if (this.suspended) return;
   this.suspended = true;
-  for (const voice of this.voices) { try { voice.stop(); voice.disconnect(); } catch {} }
-  this.voices.clear();
+  this.stopVoices();
   this.stopMusic();
   void this.context?.suspend().catch(()=>{});
  }
@@ -39,11 +42,49 @@ export class GameAudio {
   this.suspended = false;
   void this.context?.resume().then(()=>this.startMusic()).catch(()=>{});
  }
- private tone(frequency:number,duration:number,level:number,type:OscillatorType='sine',delay=0){
-  const c=this.context;if(this.suspended||!c||c.state!=='running'||this.voices.size>=24||this.sfxVolume<=0)return;
-  const o=c.createOscillator(),g=c.createGain(),at=c.currentTime+delay;o.type=type;o.frequency.value=frequency;
-  g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(level,at+.012);g.gain.exponentialRampToValueAtTime(.0001,at+duration);
-  o.connect(g);g.connect(this.sfxBus!);this.voices.add(o);o.onended=()=>{this.voices.delete(o);o.disconnect();g.disconnect();};o.start(at);o.stop(at+duration+.02);
+ private stopVoices() {
+  for (const voice of this.voices) { try { voice.stop(); voice.disconnect(); } catch {} }
+  this.voices.clear();
+ }
+ private canPlay(context: AudioContext | undefined): context is AudioContext {
+  return !!context && !this.suspended && context.state === 'running' && this.sfxVolume > 0;
+ }
+ private playVoice(c: AudioContext, source: AudioScheduledSourceNode, at: number, duration: number, level: number, filter?: BiquadFilterNode) {
+  const envelope = c.createGain();
+  envelope.gain.setValueAtTime(.0001, at);
+  envelope.gain.exponentialRampToValueAtTime(level, at + .012);
+  envelope.gain.exponentialRampToValueAtTime(.0001, at + duration);
+  if (filter) { source.connect(filter); filter.connect(envelope); }
+  else source.connect(envelope);
+  envelope.connect(this.sfxBus!);
+  this.voices.add(source);
+  source.onended = () => { this.voices.delete(source); source.disconnect(); filter?.disconnect(); envelope.disconnect(); };
+  source.start(at);
+  source.stop(at + duration + .02);
+ }
+ private tone(frequency:number,duration:number,level:number,type:OscillatorType='sine',delay=0,endPitch=frequency){
+  const c=this.context;if(!this.canPlay(c)||this.voices.size>=24)return;
+  const source=c.createOscillator(),at=c.currentTime+delay;
+  source.type=type;
+  source.frequency.setValueAtTime(frequency, at);
+  if (endPitch !== frequency) source.frequency.exponentialRampToValueAtTime(endPitch, at + duration * .8);
+  this.playVoice(c, source, at, duration, level);
+ }
+ private noise(center: number, duration: number, level: number, delay = 0) {
+  const c=this.context;if(!this.canPlay(c)||this.voices.size>=24)return;
+  if (!this.noiseBuffer) {
+   this.noiseBuffer = c.createBuffer(1, Math.ceil(c.sampleRate / 2), c.sampleRate);
+   const samples = this.noiseBuffer.getChannelData(0);
+   let seed = 317;
+   for (let i = 0; i < samples.length; i++) {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    samples[i] = seed / 2147483648 - 1;
+   }
+  }
+  const source = c.createBufferSource(), filter = c.createBiquadFilter();
+  source.buffer = this.noiseBuffer;
+  filter.type = 'bandpass'; filter.frequency.value = center; filter.Q.value = .65;
+  this.playVoice(c, source, c.currentTime + delay, duration, level, filter);
  }
  click(){this.tone(523,.09,.06,'triangle');}
  hit(){const now=performance.now();if(now-this.lastFx<85)return;this.lastFx=now;this.tone(215,.06,.025,'triangle');}
@@ -51,12 +92,16 @@ export class GameAudio {
  attack(hero:HeroId){const now=performance.now();if(now-this.lastAttack<140)return;this.lastAttack=now;this.tone(hero==='mage'?880:hero==='archer'?660:260,.07,.018,'triangle');}
  levelUp(){[523,659,784].forEach((f,i)=>this.tone(f,.28,.065,'triangle',i*.07));}
  boss(){[164,155,130].forEach((f,i)=>this.tone(f,.38,.075,'triangle',i*.18));}
- victory(){[523,659,784,1046].forEach((f,i)=>this.tone(f,.45,.075,'triangle',i*.15));}
- defeat(){[330,261,196].forEach((f,i)=>this.tone(f,.4,.06,'triangle',i*.2));}
- bossDefeated(final: boolean) {
-  this.tone(55, .48, .28, 'sine');
-  const fanfare = final ? [62, 65, 69, 74, 77, 81] : [62, 69, 74];
-  fanfare.forEach((pitch, i) => this.tone(note(pitch), .52, .13, 'triangle', i * .085));
+ playCue(cue: CombatSound) {
+  if (!this.canPlay(this.context)) return;
+  const terminal = cue === 'defeat' || cue === 'victory';
+  const now = this.context.currentTime;
+  if (!terminal && now - (this.lastCues.get(cue) ?? -Infinity) < .07) return;
+  this.lastCues.set(cue, now);
+  if (terminal) this.stopVoices();
+  const {tones, noise} = COMBAT_SOUNDS[cue];
+  for (const [pitch, end, seconds, gain, wave, delay] of tones) this.tone(pitch, seconds, gain, wave, delay, end);
+  if (noise) this.noise(...noise);
  }
  private loadSoundtrack(track: MusicTrack) {
   const context = this.context;

@@ -11,6 +11,8 @@ import type { RunState } from './types';
 
 const heroScale = .74;
 const heroFootOrigin = 61 / 64;
+// The three sprites share a 64 px frame and their boot silhouettes center near x=30.
+const heroFootOffsetX = (30 - 32) * heroScale;
 
 class ImagePool {
  private images: Phaser.GameObjects.Image[] = [];
@@ -42,7 +44,16 @@ export class ForestScene extends Phaser.Scene {
   this.controls = new PlayerInput(this.game.canvas, () => this.onPause?.(), event => this.onInputObservation?.(event));
   this.events.once('shutdown', () => this.controls.destroy()); this.onReady?.();
  }
- setRun(sim?: GameSimulation) { this.simulation = sim; this.controls?.reset(); this.lastEffect = 0; this.endFxTime = 0; this.announcedBosses.clear(); this.lastShotSound = 0; }
+ setRun(sim?: GameSimulation) {
+  if (this.simulation) this.simulation.onSound = undefined;
+  this.simulation = sim;
+  if (sim) sim.onSound = cue => this.audio.playCue(cue);
+  this.controls?.reset();
+  this.lastEffect = 0;
+  this.endFxTime = 0;
+  this.announcedBosses.clear();
+  this.lastShotSound = 0;
+ }
  update(_time: number, delta: number) {
   const dt = Math.min(delta / 1000, .05); const sim = this.simulation; if (!sim || sim.state.status === 'running') this.clock += dt;
   if (sim) { const direction = this.controls.direction(); if (sim.state.status === 'running') this.onInputFrame?.(performance.now()); sim.update(dt, direction); } else this.titleScroll += dt * 9;
@@ -59,15 +70,30 @@ export class ForestScene extends Phaser.Scene {
   this.hero.setTexture(s?.hero ?? 'warrior').setTint(defeated ? 0xd7b3a5 : s?.evolved ? 0xffe9a8 : 0xffffff);
   this.hero.setPosition(p.x, p.y + bob + fall * 5).setDepth(100 + p.y).setFlipX(facingLeft)
    .setAngle((facingLeft ? -1 : 1) * 82 * fall).setAlpha(!defeated && p.invincible > 0 && Math.sin(this.clock * 40) > 0 ? .4 : 1);
-  this.shadow(p.x + (facingLeft ? -1 : 1) * fall * 12, p.y + 7, 18 + fall * 8, 7);
-  this.companions.forEach((image, i) => { image.setVisible(!s); if (!s) { image.y = 530 + i * 12 + Math.sin(this.clock * 2 + i) * .8; image.setDepth(100 + image.y); this.shadow(image.x, image.y + 7, 15, 6); } });
+  this.heroShadow(this.hero, p.y, fall);
+  this.companions.forEach((image, i) => {
+   image.setVisible(!s);
+   if (s) return;
+   const groundY = 530 + i * 12;
+   image.y = groundY + Math.sin(this.clock * 2 + i) * .8;
+   image.setDepth(100 + image.y);
+   this.heroShadow(image, groundY);
+  });
   this.renderWardenFall(s);
   if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderPickups(s); this.renderEffects(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (Math.min(s.skills.frost, BALANCE.skillMax) - 1) * BALANCE.skillRadiusStep); } }
   else { this.actors.trim(0); this.shots.trim(0); for (const label of this.labels) label.setVisible(false); }
   // Small drifting spores are bounded and deterministic, rather than particle emitters.
   for (let i = 0; i < 17; i++) { const x = ((i * 107 + Math.sin(this.clock * .6 + i) * 18) % 430 + 430) % 430, y = (i * 61 + this.clock * (6 + i % 4)) % 768; this.fx.fillStyle(0xf5dca0, .15 + (Math.sin(this.clock * 1.3 + i) + 1) * .15); this.fx.fillRect(x, y, 2, 2); }
-  if (s?.status === 'running') { for (const e of s.enemies) if (isBoss(e.kind) && !this.announcedBosses.has(e.id)) { this.announcedBosses.add(e.id); this.audio.boss(); } const shot = s.projectiles.find(p => p.kind !== 'enemy' && p.id > this.lastShotSound); if (shot) { this.lastShotSound = Math.max(...s.projectiles.map(p => p.id)); this.audio.attack(s.hero); } }
+  if (s?.status === 'running') {
+   for (const e of s.enemies) if (isBoss(e.kind) && !this.announcedBosses.has(e.id)) { this.announcedBosses.add(e.id); this.audio.boss(); }
+   const newestBasicShot = s.projectiles.reduce((latest, shot) => shot.kind === 'enemy' || shot.skillShot ? latest : Math.max(latest, shot.id), this.lastShotSound);
+   if (newestBasicShot > this.lastShotSound) { this.lastShotSound = newestBasicShot; this.audio.attack(s.hero); }
+  }
   this.renderJoystick(s); this.audio.syncMusic(s?.status, s?.finalSpawned); this.onFrame?.(s, this.endFxTime);
+ }
+ private heroShadow(image: Phaser.GameObjects.Image, groundY: number, fall = 0) {
+  const direction = image.flipX ? -1 : 1;
+  this.shadow(image.x + direction * (heroFootOffsetX + fall * 12), groundY + 1 + fall * 4, 10 + fall * 12, 4 + fall * 2);
  }
  private shadow(x: number, y: number, w: number, h: number) { this.shadows.fillStyle(0x34475d, .26); this.shadows.fillEllipse(x, y, w * 2, h * 2); }
  private renderEnemies(s: RunState) {
@@ -198,7 +224,6 @@ export class ForestScene extends Phaser.Scene {
    if (remaining <= 0) continue;
    const f = remaining / e.duration, progress = 1 - f, g = this.fx;
    if (e.kind === 'boss-death') {
-    if (e.id > this.lastEffect) this.audio.bossDefeated(s.status === 'victory');
     const radius = e.radius * (1 - f * f);
     g.fillStyle(e.color, f * f * .25).fillCircle(e.x, e.y, radius);
     g.lineStyle(3 + 6 * f, 0xffe5af, f * .9).strokeCircle(e.x, e.y, radius);
@@ -216,7 +241,9 @@ export class ForestScene extends Phaser.Scene {
     continue;
    }
    if (e.kind === 'text') { if (labelIndex >= 32) continue; let label = this.labels[labelIndex++]; if (!label) { label = this.add.text(0, 0, '', { fontFamily: 'monospace', fontSize: '17px', color: '#fff0cd', stroke: '#27372c', strokeThickness: 3, fontStyle: 'bold' }).setOrigin(.5).setDepth(2100); this.labels.push(label); } label.setText(e.text ?? '').setPosition(e.x, e.y - progress * 27).setAlpha(Math.min(1, f * 2)).setVisible(true); continue; }
-   if (e.id > this.lastEffect && e.kind === 'hit') { if (e.color === 0xf2937e) this.audio.hurt(); else this.audio.hit(); }
+   if (e.id > this.lastEffect && e.kind === 'hit' && s.status !== 'gameover' && s.status !== 'victory') {
+    if (e.color === 0xf2937e) this.audio.hurt(); else this.audio.hit();
+   }
    if (e.id > this.lastEffect && e.kind === 'slash' && s.status === 'running') this.audio.attack(s.hero);
    if (renderSkillEffect(g, e, f)) continue;
    g.lineStyle(2, e.color, f);

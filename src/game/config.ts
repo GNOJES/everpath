@@ -1,4 +1,5 @@
 import type { HeroConfig, HeroId, EnemyKind, SkillConfig, PermanentId, PassiveId } from './types';
+export const DEFAULT_SFX_VOLUME = .7;
 export const WORLD = { width: 432, height: 768, scrollSpeed: 28, playerRadius: 12, minY: 38, margin: 22, joystickRadius: 48, joystickDeadzone: 7, invincibility: .2, maxEnemies: 100, maxProjectiles: 180, maxEffects: 60, maxHazards: 12 };
 export const BALANCE = { bossAt: 180, bossEvery: 180, firstSpawn: 0, spawnInterval: .73, minSpawnInterval: .23, spawnRateRamp: .0042, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .08, weaponDamageStep: .13, weaponHasteStep: .08, weaponRangeStep: .09, eliteAfter: 80, goldPerKill: .75, bossGold: 40, bossXp: 40, enemyHpGrowth: .0044, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
 export const HEROES: Record<HeroId, HeroConfig> = {
