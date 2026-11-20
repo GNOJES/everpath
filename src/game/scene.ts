@@ -1,12 +1,16 @@
 import Phaser from 'phaser';
-import { createArt } from './art';
+import { createArt, HERO_SPRITES } from './art';
 import { WORLD as W, BALANCE, BOSS_PATTERN, HEROES, ENEMIES, SKILLS, isBoss } from './config';
 import { PlayerInput } from './input';
 import { GameSimulation } from './simulation';
 import { GameAudio } from './audio';
 import { clamp } from './math';
+import { renderSkillEffect, renderSkillShot } from './skill-effects';
 import type { InputObservation } from '../diagnostics/types';
 import type { RunState } from './types';
+
+const heroScale = .74;
+const heroFootOrigin = 61 / 64;
 
 class ImagePool {
  private images: Phaser.GameObjects.Image[] = [];
@@ -23,15 +27,18 @@ export class ForestScene extends Phaser.Scene {
  private hero!: Phaser.GameObjects.Image; private fallenWarden!: Phaser.GameObjects.Image; private companions: Phaser.GameObjects.Image[] = []; private scenery: { image: Phaser.GameObjects.Image; y: number; x: number }[] = [];
  private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private endFxTime = 0;
  constructor() { super('forest'); }
+ preload() {
+  for (const [id, url] of Object.entries(HERO_SPRITES)) this.load.image(id, url);
+ }
  create() {
   createArt(this); this.ground = this.add.tileSprite(216, 384, 432, 768, 'terrain').setDepth(-10);
   this.shadows = this.add.graphics().setDepth(5); this.fx = this.add.graphics().setDepth(2000); this.joystick = this.add.graphics().setDepth(3000);
   for (let i = 0; i < 24; i++) { const row = Math.floor(i / 2), left = i % 2 === 0; const x = left ? 8 + Math.sin(i * 41) * 28 : 417 + Math.sin(i * 17) * 25; const y = row * 102 - 120; const image = this.add.image(x, y, i % 4 === 0 ? 'pine' : 'tree').setOrigin(.5, 1).setScale(i % 4 === 0 ? 1.25 : 1.35); this.scenery.push({ image, x, y }); }
   for (let i = 0; i < 22; i++) { const x = i % 2 ? 323 + (i * 17 % 59) : 48 + (i * 17 % 58), y = i * 56; const key = ['bush', 'rock', 'bush', 'mushroom', 'stump'][i % 5]; const image = this.add.image(x, y, key).setOrigin(.5, 1).setScale(1.7); this.scenery.push({ image, x, y }); }
   for (const [x, y] of [[133, 480], [299, 1010]]) { const image = this.add.image(x, y, 'lantern').setOrigin(.5, 1).setScale(1.8); this.scenery.push({ image, x, y }); }
-  this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.add.image(216, 515, 'warrior').setScale(2.15).setOrigin(.5, .84);
+  this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.add.image(216, 515, 'warrior').setScale(heroScale).setOrigin(.5, heroFootOrigin);
   this.fallenWarden = this.add.image(0, 0, 'warden').setOrigin(.5, .8).setVisible(false);
-  this.companions = [this.add.image(174, 559, 'archer'), this.add.image(263, 548, 'mage')]; this.companions.forEach(image => image.setScale(2.05).setOrigin(.5, .84));
+  this.companions = [this.add.image(174, 559, 'archer'), this.add.image(263, 548, 'mage')]; this.companions.forEach(image => image.setScale(heroScale).setOrigin(.5, heroFootOrigin));
   this.controls = new PlayerInput(this.game.canvas, () => this.onPause?.(), event => this.onInputObservation?.(event));
   this.events.once('shutdown', () => this.controls.destroy()); this.onReady?.();
  }
@@ -118,8 +125,13 @@ export class ForestScene extends Phaser.Scene {
   s.projectiles.forEach((shot, i) => {
    const image = this.shots.at(i, shot.kind);
    const angle = Math.atan2(shot.vy, shot.vx);
-   image.setPosition(shot.x, shot.y).setDepth(1600).setRotation(angle).setScale(shot.kind === 'blade' ? 1.8 : 1.45);
+   image.setPosition(shot.x, shot.y).setDepth(1600).setRotation(angle).setScale(shot.kind === 'blade' ? 1.8 : 1.45).clearTint();
    if (shot.kind === 'enemy') return;
+   if (shot.skillShot) {
+    image.setTint(shot.skillShot === 'blade' ? 0xa8ffea : 0xffd281);
+    renderSkillShot(this.fx, shot, angle);
+    return;
+   }
    const length = shot.kind === 'arrow' ? 29 : 19;
    const color = shot.kind === 'magic' ? 0x795dff : shot.kind === 'blade' ? 0x1badb7 : 0xe85e33;
    const dx = Math.cos(angle), dy = Math.sin(angle);
@@ -206,12 +218,13 @@ export class ForestScene extends Phaser.Scene {
    if (e.kind === 'text') { if (labelIndex >= 32) continue; let label = this.labels[labelIndex++]; if (!label) { label = this.add.text(0, 0, '', { fontFamily: 'monospace', fontSize: '17px', color: '#fff0cd', stroke: '#27372c', strokeThickness: 3, fontStyle: 'bold' }).setOrigin(.5).setDepth(2100); this.labels.push(label); } label.setText(e.text ?? '').setPosition(e.x, e.y - progress * 27).setAlpha(Math.min(1, f * 2)).setVisible(true); continue; }
    if (e.id > this.lastEffect && e.kind === 'hit') { if (e.color === 0xf2937e) this.audio.hurt(); else this.audio.hit(); }
    if (e.id > this.lastEffect && e.kind === 'slash' && s.status === 'running') this.audio.attack(s.hero);
+   if (renderSkillEffect(g, e, f)) continue;
    g.lineStyle(2, e.color, f);
    if (e.kind === 'slash') {
     const span = e.halfAngle ?? Math.PI / 4;
     const radius = e.radius * (.85 + progress * .15);
     const segments = 18;
-    const inner = (angle: number) => radius - 14 * Math.max(0, 1 - Math.abs(angle - e.angle) / span) * f;
+    const inner = (angle: number) => radius - 10 * Math.max(0, 1 - Math.abs(angle - e.angle) / span) * f;
     g.fillStyle(e.color, f * .82);
     for (let i = 0; i < segments; i++) {
      const a = e.angle - span + i / segments * span * 2;

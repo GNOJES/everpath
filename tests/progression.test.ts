@@ -20,3 +20,19 @@ it('offers a recovery choice at critical HP rather than leaving survival entirel
  expect(rollUpgrades(run, () => 0).map(x => x.id)).toContain('passive:vitality');
  const picks = rollUpgrades(run, () => 0); expect(new Set(picks.map(x => x.id)).size).toBe(picks.length);
 });
+
+it.each([
+ ['warrior', 'lunge', 'quake', 'sunder'],
+ ['archer', 'ricochet', 'blastArrow', 'deadeye'],
+ ['mage', 'gravity', 'prism', 'runeCross'],
+] as const)('unlocks three additional %s skills through run levels', (hero, early, middle, late) => {
+ const run = createRun(hero, parseSave(null));
+ for (const [level, expected] of [[3, []], [4, [early]], [6, [early, middle]], [8, [early, middle, late]]] as const) {
+  run.level = level;
+  const options = availableUpgrades(run).filter(option => [early, middle, late].some(id => option.id === `skill:${id}`));
+  expect(options.map(option => option.id)).toEqual(expected.map(id => `skill:${id}`));
+  const rolled = rollUpgrades(run, () => 0);
+  expect(rolled).toHaveLength(expected.length ? 4 : 3);
+  if (expected.length) expect(rolled.at(-1)?.id).toBe(`skill:${expected.at(-1)}`);
+ }
+});

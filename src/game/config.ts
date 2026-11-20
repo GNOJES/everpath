@@ -2,9 +2,9 @@ import type { HeroConfig, HeroId, EnemyKind, SkillConfig, PermanentId, PassiveId
 export const WORLD = { width: 432, height: 768, scrollSpeed: 28, playerRadius: 12, minY: 38, margin: 22, joystickRadius: 48, joystickDeadzone: 7, invincibility: .8, maxEnemies: 100, maxProjectiles: 180, maxEffects: 60, maxHazards: 12 };
 export const BALANCE = { bossAt: 180, bossEvery: 180, firstSpawn: 0, spawnInterval: .73, minSpawnInterval: .23, spawnRateRamp: .0042, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .08, weaponDamageStep: .13, weaponHasteStep: .08, weaponRangeStep: .09, eliteAfter: 80, goldPerKill: .75, bossGold: 40, bossXp: 40, enemyHpGrowth: .0044, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, healOnLevel: .08, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
 export const HEROES: Record<HeroId, HeroConfig> = {
- warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '좁고 강한 검격으로 적을 밀고, 범위 안의 탄환을 지웁니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격으로 일반 적을 밀어냅니다. 범위 안 탄환을 지우며 5레벨부터 최대 두 개를 막습니다.', icon: 'sword', color: '#efae35', hp: 160, speed: 149, damage: 4, cooldown: .59, range: 100, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield', 'bash'], bars: [5, 3, 3] },
- archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '빠르고 약한 화살로 거리를 유지합니다. 활을 강화하면 적을 관통합니다.', weapon: '바람의 활', upgradeDescription: '1레벨은 적 하나에 명중합니다. 2레벨부터 관통합니다. 3·5레벨에서 화살 각도가 추가되며 같은 적에게는 한 번만 명중합니다.', icon: 'bow', color: '#f47153', hp: 134, speed: 190, damage: 4.8, cooldown: .42, range: 310, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain', 'snare'], bars: [2, 5, 4] },
- mage: { id: 'mage', name: '엘라', title: 'THE ARCANIST', role: '마법사', description: '유도탄으로 견제하고, 재사용 시간이 긴 강력한 주문으로 적을 제압합니다.', weapon: '별빛 지팡이', upgradeDescription: '단일 유도탄. 레벨이 오르면 피해·사거리·공격 속도가 증가합니다.', icon: 'staff', color: '#7583e8', hp: 147, speed: 153, damage: 7, cooldown: .51, range: 290, projectileSpeed: 350, skills: ['chain', 'fire', 'frost', 'meteor'], bars: [2, 3, 5] },
+ warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '좁고 강한 검격으로 적을 밀고, 범위 안의 탄환을 지웁니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격으로 일반 적을 밀어냅니다. 범위 안 탄환을 지우며 5레벨부터 최대 두 개를 막습니다.', icon: 'sword', color: '#efae35', hp: 160, speed: 149, damage: 4, cooldown: .59, range: 100, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield', 'bash', 'lunge', 'quake', 'sunder'], bars: [5, 3, 3] },
+ archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '빠르고 약한 화살로 거리를 유지합니다. 활을 강화하면 적을 관통합니다.', weapon: '바람의 활', upgradeDescription: '1레벨은 적 하나에 명중합니다. 2레벨부터 관통합니다. 3·5레벨에서 화살 각도가 추가되며 같은 적에게는 한 번만 명중합니다.', icon: 'bow', color: '#f47153', hp: 134, speed: 190, damage: 4.8, cooldown: .42, range: 310, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain', 'snare', 'ricochet', 'blastArrow', 'deadeye'], bars: [2, 5, 4] },
+ mage: { id: 'mage', name: '엘라', title: 'THE ARCANIST', role: '마법사', description: '유도탄으로 견제하고, 재사용 시간이 긴 강력한 주문으로 적을 제압합니다.', weapon: '별빛 지팡이', upgradeDescription: '단일 유도탄. 레벨이 오르면 피해·사거리·공격 속도가 증가합니다.', icon: 'staff', color: '#7583e8', hp: 147, speed: 153, damage: 7, cooldown: .51, range: 290, projectileSpeed: 350, skills: ['chain', 'fire', 'frost', 'meteor', 'gravity', 'prism', 'runeCross'], bars: [2, 3, 5] },
 };
 export const SKILLS: Record<string, SkillConfig> = {
  whirl: { name: '휩쓸기', subtitle: 'WHIRLWIND', description: '전방에 넓은 검격을 가합니다. 강화하면 부채꼴과 피해가 증가합니다.', icon: 'whirl', color: '#dfc183', cooldown: 5, damage: 1.6, radius: 115, count: 1 },
@@ -19,6 +19,15 @@ export const SKILLS: Record<string, SkillConfig> = {
  snare: { name: '덫 화살', subtitle: 'SNARE', description: '가까운 적을 맞히고 주변 일반 적을 3초 동안 느리게 합니다.', icon: 'bow', color: '#81bdaa', cooldown: 5.2, damage: 2.1, radius: 270, count: 1 },
  meteor: { name: '별똥별', subtitle: 'FALLING STAR', description: '사거리 안에서 체력이 가장 많은 적 하나를 집중 타격합니다.', icon: 'flame', color: '#fdba72', cooldown: 9.5, damage: 22, radius: 295, count: 1 },
  frost: { name: '냉기 오라', subtitle: 'WINTERVEIL', description: '주변 적을 지속해서 늦추고, 일정 주기로 가까운 적들을 냉기로 타격합니다.', icon: 'snow', color: '#a6dcd9', cooldown: 4.8, damage: 6, radius: 110, count: 1 },
+ lunge: { name: '새벽 찌르기', subtitle: 'DAWN THRUST', description: '전방의 좁고 긴 직선에 있는 적들을 꿰뚫습니다.', icon: 'sword', color: '#ffda88', cooldown: 4.8, damage: 3.1, radius: 158, count: 1, unlockLevel: 4 },
+ quake: { name: '지면 강타', subtitle: 'GROUND BREAK', description: '발밑을 내리쳐 둘러싼 적들에게 피해를 줍니다.', icon: 'mountain', color: '#df9862', cooldown: 5.4, hastePerLevel: .3, damage: 4.5, radius: 98, count: 1, unlockLevel: 6 },
+ sunder: { name: '갑주 가르기', subtitle: 'SUNDER', description: '가까운 적 중 남은 체력이 가장 높은 적 하나를 강하게 벱니다.', icon: 'sword', color: '#f19a63', cooldown: 5.15, hastePerLevel: .34, damage: 16, radius: 171, count: 1, unlockLevel: 8 },
+ ricochet: { name: '도탄 화살', subtitle: 'RICOCHET', description: '근처 적들 사이에서 화살이 튕깁니다. 같은 적은 한 번만 맞습니다.', icon: 'volley', color: '#ffaf63', cooldown: 3.9, hastePerLevel: .3, damage: 3.6, radius: 310, count: 4, unlockLevel: 4 },
+ blastArrow: { name: '폭발 화살', subtitle: 'BLAST ARROW', description: '적에게 맞으면 터져 주변 적들에게 피해를 주고 잠시 느리게 합니다.', icon: 'flame', color: '#ffa970', cooldown: 4.1, hastePerLevel: .82, damage: 6.2, radius: 74, radiusPerLevel: 41, count: 1, unlockLevel: 6 },
+ deadeye: { name: '매의 눈', subtitle: 'DEADEYE', description: '보스를 우선 겨냥합니다. 보스가 없으면 사거리 안에서 가장 먼 적을 맞힙니다.', icon: 'compass', color: '#ffdf95', cooldown: 4.5, hastePerLevel: .42, damage: 15, radius: 370, count: 1, unlockLevel: 8 },
+ gravity: { name: '중력장', subtitle: 'GRAVITY WELL', description: '대상 주변에 피해를 주고 일반 적들을 가운데로 끌어당깁니다.', icon: 'whirl', color: '#c0abff', cooldown: 8.25, damage: 2.45, radius: 76, count: 1, unlockLevel: 4 },
+ prism: { name: '프리즘 광선', subtitle: 'PRISM', description: '가까운 적 최대 셋에게 각각 광선을 쏩니다. 강화하면 대상이 늘어납니다.', icon: 'staff', color: '#b6f4f5', cooldown: 8.6, damage: 4.5, radius: 300, count: 3, unlockLevel: 6 },
+ runeCross: { name: '십자 룬', subtitle: 'CROSS RUNE', description: '대상을 중심으로 십자형 룬을 폭발시킵니다.', icon: 'plus', color: '#f5beff', cooldown: 10, damage: 6.7, radius: 96, count: 1, unlockLevel: 8 },
 };
 export const ENEMIES: Record<EnemyKind, { hp: number; speed: number; damage: number; radius: number; xp: number; name: string }> = {
  slime: { hp: 16, speed: 27, damage: 9, radius: 13, xp: 2, name: '이끼 슬라임' },
@@ -58,6 +67,6 @@ export const EVOLUTIONS = {
 };
 export const WARRIOR_WEAPON_STEPS = [2.15, 2.40, 2.50, 2.62, 2.75] as const;
 export const warriorSweepAngle = (level: number, evolved: boolean) =>
- (35 + (level - 1) * 4 + (evolved ? 5 : 0)) * Math.PI / 180;
+ (26 + (level - 1) * 3 + (evolved ? 5 : 0)) * Math.PI / 180;
 
 export const isBoss = (kind: EnemyKind) => kind === 'boss' || kind === 'warden';

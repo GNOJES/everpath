@@ -1,5 +1,10 @@
 import type Phaser from 'phaser';
-export const artUrls: Record<string, string> = {};
+import warrior from './sprites/warrior.png';
+import archer from './sprites/archer.png';
+import mage from './sprites/mage.png';
+
+export const HERO_SPRITES = { warrior, archer, mage };
+export const artUrls: Record<string, string> = { ...HERO_SPRITES };
 type Draw = (ctx: CanvasRenderingContext2D, w: number, h: number) => void;
 function canvas(w: number, h: number, draw: Draw) { const c = document.createElement('canvas'); c.width = w; c.height = h; const ctx = c.getContext('2d')!; ctx.imageSmoothingEnabled = false; draw(ctx, w, h); return c; }
 const rect = (c: CanvasRenderingContext2D, color: string, x: number, y: number, w: number, h: number) => { c.fillStyle = color; c.fillRect(Math.round(x), Math.round(y), w, h); };
@@ -7,37 +12,8 @@ function random(seed: number) { let n = seed; return () => { n = (n * 1664525 + 
 function pixelSprite(map: string[], colors: Record<string, string>) { return canvas(Math.max(...map.map(r => r.length)), map.length, ctx => { map.forEach((row, y) => [...row].forEach((key, x) => { if (colors[key]) rect(ctx, colors[key], x, y, 1, 1); })); }); }
 // A limited ink-and-pigment palette keeps silhouettes readable on the bright field.
 const palette = { o: '#202943', d: '#344c72', a: '#4e8ac4', b: '#a4daef', l: '#f9f5db', s: '#efb586', h: '#81513c', r: '#bc3540', R: '#fc6650', g: '#286d69', G: '#82c8a3', p: '#5549ab', P: '#aca0ff', c: '#44d6f4', y: '#ffd367', w: '#fff7ee' };
-const heroPalette = {
- warrior: { ...palette, r: '#d47125', R: '#ffe077' },
- archer: { ...palette, g: '#a33844', G: '#f67150', h: '#643b55' },
- mage: { ...palette, d: '#4d4d9d', p: '#5243b1', P: '#a68eff' },
-};
-const heroMaps = {
- warrior: [
-  '       ooo      ', '      orRo      ', '    oooRrooo    ', '   oabbbbbbao   ',
-  '   obllllllbo   ', '   obddddddbo l ', '   odssssssdo ll',
-  '   osowsswoso bl', '    osshhssobbl ', '     ooooo obo  ',
-  '    oaRRaao h   ', '   oadaaadaoh   ', '    odddddo     ',
-  '    odooddo     ', '    ooo ooo     ',
- ],
- archer: [
-  '       ooo      ', '      ogGgoo    ', '    oGGGGgggo   ', '   oGGGgGGgggo  ',
-  '   oGssssssGgo  ', '   ogowsswsggo h', '    osshhssgo hh',
-  '     oooooo    h', '    ogGGGgo    h', '   osghhGso    h',
-  '    ogGGgo    hh', '    odoodo   h  ', '    ooo oo      ',
-  '                ', '                ',
- ],
- mage: [
-  '        oo      ', '       oPo      ', '      oPPpo  c  ', '     opPPpo cwc ',
-  '   oopPPppoo c  ', '  oPPPPPPPPPo h ', '   odssssdo   h ',
-  '    owsswo    h ', '    osshso    h ', '     oooo     h ',
-  '    opPPpo   sh ', '   oppyPppoooh  ', '   oppPPPppo    ',
-  '   ooo  oooo    ', '                ',
- ],
-};
 export function createArt(scene: Phaser.Scene) {
  const add = (key: string, source: HTMLCanvasElement) => { if (!scene.textures.exists(key)) scene.textures.addCanvas(key, source); artUrls[key] = source.toDataURL(); };
- for (const key of Object.keys(heroMaps) as (keyof typeof heroMaps)[]) add(key, pixelSprite(heroMaps[key], heroPalette[key]));
  add('slime', pixelSprite(['      ggggg     ', '    ggGGGGGgg   ', '   gGGGGGllGGg  ', '  gGGGGGGGlGGGg ', ' gGGGGGGGGGGGGGg', ' gGGdoGGGGdoGGGg', ' gGGooGGGGooGGGg', ' gGGGGGGGGGGGGGg', '  ggGGGddGGGggg ', '   ggggggggggg  '], { ...palette, g: '#226d83', G: '#55d0c4' }));
  add('goblin', pixelSprite(['       rrr      ', '      rrRrr     ', '  go ogggggo og ', '  gGogGGGGGogGg ', '   gGGlGGGlGGg  ', '    gGoGGoGg    ', '     gGssGg     ', '     ohhhho     ', '   oghGhGhgo  a ', '   osghhggso aa ', '   osohhhoso ah ', '    ogggggo  h  ', '     ohhho      ', '    ogo ogo     ', '   ohho ohho    ', '   oooo oooo    '], palette));
  add('skeleton', pixelSprite(['      ooooo     ', '     obbbbbo    ', '     obllbbo    ', '     boddobo    ', '     obbdbbo    ', '      obbbo     ', '      oddo   h  ', '    obbbbbo  hh ', '    osdbdso  h h', '    obbbbo   h h', '     obdbo   h h', '     obbbo   hh ', '     obdbo   h  ', '    obo obo     ', '    obo obo     ', '   obbo obbo    ', '   oooo oooo    '], palette));

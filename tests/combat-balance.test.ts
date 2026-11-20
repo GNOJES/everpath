@@ -74,18 +74,53 @@ it('gives the archer the lowest base single-target DPS', () => {
  expect(dps('mage')).toBeLessThan(dps('warrior'));
 });
 
-it.each([[1, false, 70], [5, true, 112]])('limits sword level %i to the advertised frontal cone', (weaponLevel, evolved, degrees) => {
+it.each([[1, false, 52], [5, true, 86]])('limits sword level %i to the advertised frontal cone', (weaponLevel, evolved, degrees) => {
  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
  const p = sim.state.player;
  sim.state.weaponLevel = weaponLevel;
  sim.state.evolved = evolved;
  const front = sim.spawnEnemy('brute', p.x, p.y - 55)!;
  const rear = sim.spawnEnemy('brute', p.x, p.y + 62)!;
- for (const enemy of [front, rear]) enemy.speed = 0;
+ const flank = sim.spawnEnemy('brute', p.x + 54, p.y - 86)!;
+ for (const enemy of [front, rear, flank]) enemy.speed = 0;
  frames(sim, .15);
  expect(front.hp).toBeLessThan(front.maxHp);
  expect(front.y).toBeLessThan(p.y - 65);
  expect(rear.hp).toBe(rear.maxHp);
+ if (weaponLevel === 1) expect(flank.hp).toBe(flank.maxHp);
  const slash = sim.state.effects.find(effect => effect.kind === 'slash');
  expect((slash?.halfAngle ?? 0) * 360 / Math.PI).toBeCloseTo(degrees);
+});
+
+it.each([
+ ['warrior', 'lunge', 'lance'], ['warrior', 'quake', 'quake'], ['warrior', 'sunder', 'sunder'],
+ ['archer', 'ricochet', 'ricochet'], ['archer', 'blastArrow', 'blast'], ['archer', 'deadeye', 'deadeye'],
+ ['mage', 'gravity', 'gravity'], ['mage', 'prism', 'prism'], ['mage', 'runeCross', 'runeCross'],
+] as const)('%s %s damages an enemy and emits its own effect', (hero, skill, effect) => {
+ const sim = new GameSimulation(hero, parseSave(null), () => .5);
+ const p = sim.state.player;
+ const target = sim.spawnEnemy('brute', p.x, p.y - 42)!;
+ target.hp = target.maxHp = 1000;
+ sim.state.skills[skill] = 1;
+ sim.state.timeStopRemaining = 1;
+ sim.update(.05);
+ if (skill === 'blastArrow') sim.update(.05);
+ expect(target.hp).toBeLessThan(1000);
+ expect(sim.state.effects.some(entry => entry.kind === effect)).toBe(true);
+});
+
+it('damages and slows the impact target and nearby enemies once', () => {
+ const sim = new GameSimulation('archer', parseSave(null), () => .5);
+ const { player } = sim.state;
+ const target = sim.spawnEnemy('brute', player.x, player.y - 35)!;
+ const nearby = sim.spawnEnemy('brute', player.x + 44, player.y - 35)!;
+ const distant = sim.spawnEnemy('brute', player.x + 106, player.y - 35)!;
+ sim.state.skills.blastArrow = 1;
+ sim.state.timeStopRemaining = 1;
+ sim.update(.05);
+ expect(target.hp).toBeLessThan(target.maxHp);
+ expect(nearby.hp).toBeCloseTo(target.hp);
+ expect(distant.hp).toBe(distant.maxHp);
+ expect(nearby.slowedUntil).toBeGreaterThan(sim.state.elapsed);
+ expect(distant.slowedUntil).toBeUndefined();
 });

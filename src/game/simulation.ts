@@ -2,7 +2,7 @@ import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATT
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind } from './encounters';
-import type { HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Pickup, Effect, PassiveId, RunResult } from './types';
+import type { HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Pickup, Effect, PassiveId, RunResult, SkillShot } from './types';
 let runCounter = 0;
 export function createRun(hero: HeroId, save: SaveData, rank = 0): RunState {
  const config = HEROES[hero], maxHp = Math.round(config.hp * (1 + save.upgrades.hp * PERMANENT.hp.step));
@@ -254,8 +254,8 @@ export class GameSimulation {
   const dir = unit(origin, point);
   return (dir.x === 0 && dir.y === 0) || dir.x * Math.cos(angle) + dir.y * Math.sin(angle) >= Math.cos(halfAngle);
  }
- private slash(origin: Vec, radius: number, angle: number, halfAngle: number, damage: number, color: number, knockback = 0) {
-  this.effect('slash', origin, color, radius, .24, angle, undefined, undefined, halfAngle);
+ private slash(origin: Vec, radius: number, angle: number, halfAngle: number, damage: number, color: number, knockback = 0, style: 'slash' | 'whirl' | 'guard' = 'slash') {
+  this.effect(style, origin, color, radius, style === 'slash' ? .24 : .42, angle, undefined, undefined, halfAngle);
   for (const enemy of [...this.state.enemies]) {
    if (distance(origin, enemy) <= radius + enemy.radius && this.inSweep(origin, enemy, angle, halfAngle)) {
     this.damageEnemy(enemy, damage);
@@ -297,44 +297,100 @@ export class GameSimulation {
   }
   return true;
  }
- private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number, pierceScale = 1, hit = new Set<number>()) {
-  const s = this.state; if (s.projectiles.length >= W.maxProjectiles) return;
+ private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number, pierceScale = 1, hit = new Set<number>(), skillShot?: SkillShot, blastRadius?: number) {
+  const s = this.state; if (s.projectiles.length >= W.maxProjectiles) return false;
   const a = Math.atan2(to.y - from.y, to.x - from.x) + spread;
-  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius: kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' ? 6 : 4, damage, kind, life: 3.5, pierce, hit, target, pierceScale });
+  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius: kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' ? 6 : 4, damage, kind, life: 3.5, pierce, hit, target, pierceScale, skillShot, blastRadius });
+  return true;
  }
  private castSkill(id: string, level: number): boolean {
-  const s = this.state, p = s.player, cfg = SKILLS[id], target = this.nearest(p, 500), damage = this.power * cfg.damage * (1 + (level - 1) * B.skillDamageStep), radius = cfg.radius + (level - 1) * B.skillRadiusStep;
-  if (id === 'shield') { p.shield = 1; this.effect('ring', p, 0xf4d998, 36, .5); return true; }
+  const s = this.state, p = s.player, cfg = SKILLS[id], target = this.nearest(p, 500), damage = this.power * cfg.damage * (1 + (level - 1) * B.skillDamageStep), radius = cfg.radius + (level - 1) * (cfg.radiusPerLevel ?? B.skillRadiusStep);
+  if (id === 'shield') { p.shield = 1; this.effect('guard', p, 0xf4d998, 36, .5); return true; }
   if (id === 'frost') {
    const chilled = this.nearest(p, radius, new Set<number>(), true);
    if (!chilled) return false;
-   this.aoe(p, radius, damage, 'ring', 0x4be0f2);
+   this.aoe(p, radius, damage, 'frost', 0x4be0f2);
    return true;
   }
   if (!target) return false;
-  if (id === 'snare') {
+  if (id === 'lunge') {
+   const close = this.nearest(p, radius, new Set<number>(), true);
+   if (!close) return false;
+   const aim = unit(p, close), width = 12 + (level - 1) * 2;
+   const direction = aim.x || aim.y ? aim : { x: Math.cos(p.facing), y: Math.sin(p.facing) };
+   const end = { x: p.x + direction.x * radius, y: p.y + direction.y * radius };
+   for (const enemy of s.enemies) {
+    const along = clamp((enemy.x - p.x) * direction.x + (enemy.y - p.y) * direction.y, 0, radius);
+    if (Math.hypot(enemy.x - p.x - direction.x * along, enemy.y - p.y - direction.y * along) < width + enemy.radius) this.damageEnemy(enemy, damage);
+   }
+   this.effect('lance', p, 0xffbf53, width, .43, 0, undefined, end);
+  } else if (id === 'quake') {
+   if (!this.nearest(p, radius, new Set<number>(), true)) return false;
+   this.aoe(p, radius, damage, 'quake', 0xbe6839);
+  } else if (id === 'sunder' || id === 'meteor' || id === 'deadeye') {
+   const inReach = s.enemies.filter(enemy => enemy.hp > 0 && distance(p, enemy) <= radius + enemy.radius);
+   const marked = inReach.reduce<Enemy | undefined>((best, enemy) => {
+    const priority = (candidate: Enemy) => id === 'deadeye'
+     ? distance(p, candidate) + (isBoss(candidate.kind) ? radius * 2 : 0)
+     : candidate.hp;
+    return !best || priority(enemy) > priority(best) ? enemy : best;
+   }, undefined);
+   if (!marked) return false;
+   if (id === 'deadeye') this.effect('deadeye', p, 0xffdf75, 12, .46, 0, undefined, marked);
+   else this.effect(id, marked, id === 'meteor' ? 0xff964e : 0xaf4c21, id === 'meteor' ? 46 : 31, .55);
+   this.damageEnemy(marked, damage);
+  } else if (id === 'ricochet' || id === 'prism') {
+   const hit = new Set<number>();
+   let origin: Vec = p;
+   for (let i = 0; i < cfg.count + level - 1; i++) {
+    const marked = this.nearest(origin, id === 'ricochet' && i > 0 ? 104 : radius, hit);
+    if (!marked) return hit.size > 0;
+    hit.add(marked.id);
+    this.effect(id, origin, id === 'ricochet' ? 0xff9543 : 0x6651fa, 12, .4, i, undefined, marked);
+    this.damageEnemy(marked, damage * (id === 'ricochet' ? .9 ** i : 1));
+    if (id === 'ricochet') origin = marked;
+   }
+  } else if (id === 'blastArrow') {
+   const marked = this.nearest(p, HEROES.archer.range);
+   return !!marked && this.shoot(p, marked, 'arrow', damage, 520, 1, 0, undefined, 1, undefined, 'blast', radius);
+  } else if (id === 'gravity') {
+   const center = { x: target.x, y: target.y };
+   for (const enemy of s.enemies) {
+    const separation = distance(center, enemy);
+    if (enemy.hp <= 0 || separation >= radius + enemy.radius) continue;
+    this.damageEnemy(enemy, damage);
+    if (enemy.hp > 0 && !isBoss(enemy.kind) && !enemy.entryTarget && s.timeStopRemaining <= 0) {
+     const pull = unit(enemy, center), travel = Math.min(36, separation * .55);
+     enemy.x += pull.x * travel;
+     enemy.y += pull.y * travel;
+    }
+   }
+   this.effect('gravity', center, 0x6a41b9, radius, .62);
+  } else if (id === 'runeCross') {
+   const width = 14 + (level - 1) * 3;
+   for (const enemy of s.enemies) {
+    const dx = Math.abs(enemy.x - target.x), dy = Math.abs(enemy.y - target.y);
+    if (Math.max(dx, dy) <= radius + enemy.radius && Math.min(dx, dy) <= width + enemy.radius) this.damageEnemy(enemy, damage);
+   }
+   this.effect('runeCross', target, 0xa34bc9, radius, .53, 0, undefined, undefined, width);
+  } else if (id === 'snare') {
    const marked = this.nearest(p, radius);
    if (!marked) return false;
    for (const enemy of s.enemies) {
     if (!isBoss(enemy.kind) && enemy.hp > 0 && distance(marked, enemy) <= 62) enemy.slowedUntil = s.elapsed + 3;
    }
-   this.effect('ring', marked, 0x82d8aa, 62, .42);
-   this.damageEnemy(marked, damage);
-  } else if (id === 'meteor') {
-   const marked = s.enemies.reduce<Enemy | undefined>((best, enemy) =>
-    enemy.hp > (best?.hp ?? 0) && distance(p, enemy) <= radius + enemy.radius ? enemy : best, undefined);
-   if (!marked) return false;
-   this.effect('fire', marked, 0xff964e, 46, .55);
+   this.effect('snare', marked, 0x23795f, 62, .57);
    this.damageEnemy(marked, damage);
   } else if (id === 'whirl' || id === 'bash') {
    const close = this.nearest(p, radius, new Set<number>(), true);
    if (!close) return false;
    const angle = Math.atan2(close.y - p.y, close.x - p.x);
-   this.slash(p, radius, angle, (64 + (level - 1) * 5) * Math.PI / 180, damage, 0xffa447, id === 'bash' ? 45 : 0);
+   this.slash(p, radius, angle, (64 + (level - 1) * 5) * Math.PI / 180, damage, id === 'bash' ? 0xd89835 : 0xc86536, id === 'bash' ? 45 : 0, id === 'bash' ? 'guard' : 'whirl');
   }
   else if (id === 'blade' || id === 'multishot' || id === 'pierce') {
    const count = id === 'multishot' ? cfg.count + (level - 1) * 2 : id === 'blade' ? level : 1;
-   for (let i = 0; i < count; i++) this.shoot(p, target, id === 'blade' ? 'blade' : 'arrow', damage, id === 'pierce' ? 490 : 350, id === 'multishot' ? 1 : 5 + level, (i - (count - 1) / 2) * .2);
+   const style = id === 'multishot' ? 'volley' : id;
+   for (let i = 0; i < count; i++) this.shoot(p, target, id === 'blade' ? 'blade' : 'arrow', damage, id === 'pierce' ? 490 : 350, id === 'multishot' ? 1 : 5 + level, (i - (count - 1) / 2) * .2, undefined, 1, undefined, style);
   } else if (id === 'rain') {
    this.addHazard(this.densest(target), radius, .65, damage, 'player', 'rain');
   } else if (id === 'fire') {
@@ -351,7 +407,15 @@ export class GameSimulation {
   for (const e of this.state.enemies.filter(e => e.hp > 0).slice(0, 35)) { let n = 0; for (const other of this.state.enemies) if (other.hp > 0 && distance(e, other) < 80) n++; if (n > count) { best = e; count = n; } }
   return { x: best.x, y: best.y };
  }
- private aoe(center: Vec, radius: number, damage: number, effect: Effect['kind'], color: number) { this.effect(effect, center, color, radius, .45); for (const e of [...this.state.enemies]) if (e.hp > 0 && distance(center, e) < radius + e.radius) this.damageEnemy(e, damage); }
+ private aoe(center: Vec, radius: number, damage: number, effect: Effect['kind'], color: number) {
+  const s = this.state;
+  this.effect(effect, center, color, radius, .45);
+  for (const e of s.enemies) {
+   if (e.hp <= 0 || distance(center, e) >= radius + e.radius) continue;
+   this.damageEnemy(e, damage);
+   if (effect === 'blast' && e.hp > 0 && !isBoss(e.kind)) e.slowedUntil = Math.max(e.slowedUntil ?? 0, s.elapsed + 2.4);
+  }
+ }
  private moveProjectiles(dt: number, frozen: boolean) {
   const s = this.state;
   for (const shot of s.projectiles) {
@@ -377,7 +441,13 @@ export class GameSimulation {
     if (Math.abs(e.x - startX) >= radius + Math.abs(dx) || Math.abs(e.y - startY) >= radius + Math.abs(dy)) continue;
     const t = lengthSquared ? clamp(((e.x - startX) * dx + (e.y - startY) * dy) / lengthSquared, 0, 1) : 0;
     const offX = startX + t * dx - e.x, offY = startY + t * dy - e.y;
-    if (offX * offX + offY * offY < radius * radius) { shot.hit.add(e.id); this.damageEnemy(e, shot.damage); shot.damage *= shot.pierceScale ?? 1; if (shot.kind === 'magic') this.effect('crystal', shot, 0xad8dff, 20, .24); shot.pierce--; if (shot.pierce <= 0) shot.life = 0; }
+    if (offX * offX + offY * offY >= radius * radius) continue;
+    if (shot.blastRadius !== undefined) {
+     this.aoe({ x: e.x, y: e.y }, shot.blastRadius, shot.damage, 'blast', 0xcf5828);
+     shot.life = 0;
+     break;
+    }
+    shot.hit.add(e.id); this.damageEnemy(e, shot.damage); shot.damage *= shot.pierceScale ?? 1; if (shot.kind === 'magic') this.effect('crystal', shot, 0xad8dff, 20, .24); shot.pierce--; if (shot.pierce <= 0) shot.life = 0;
    }
   }
   s.projectiles = s.projectiles.filter(p => p.life > 0 && p.x > -50 && p.x < W.width + 50 && p.y > -60 && p.y < W.height + 60);
