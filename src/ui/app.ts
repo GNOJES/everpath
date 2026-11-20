@@ -1,6 +1,5 @@
 import { backupLimit, decodeBackup, encodeBackup } from '../game/backup';
 import { exportBackupFile } from '../platform/backup-file';
-import { enterMobileFullscreen } from '../platform/mobile-web';
 import type { SaveData } from '../game/types';
 import Phaser from 'phaser';
 import { ForestScene } from '../game/scene';
@@ -43,13 +42,20 @@ export class App {
    if (input.id === 'backup-file' && input.files?.[0]) void this.readBackup(input.files[0]);
   });
   element.addEventListener('input', event => this.onSlider(event));
-  window.addEventListener('blur', () => this.autoPause()); window.addEventListener('resize', () => this.autoPause()); document.addEventListener('visibilitychange', () => { if (document.hidden) this.autoPause(); });
+  window.addEventListener('blur', () => this.suspendInBackground());
+  window.addEventListener('focus', () => this.resumeUpgradeMusic());
+  window.addEventListener('resize', () => this.autoPause());
+  document.addEventListener('visibilitychange', () => {
+   if (document.hidden) this.suspendInBackground();
+   else this.resumeUpgradeMusic();
+  });
   this.scene.onReady = () => { this.render(); this.syncRecords(); };
   this.scene.onPause = () => this.togglePause(); this.scene.onFrame = (state, endFxTime) => this.onFrame(state, endFxTime);
   this.scene.onInputObservation = event => this.diagnostics.observeInput(event); this.scene.onInputFrame = at => this.diagnostics.consumeInput(at); this.diagnostics.onChange = () => this.updateDiagnostics();
   this.game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game-canvas', width: WORLD.width, height: WORLD.height, backgroundColor: '#233d2e', pixelArt: true, roundPixels: true, antialias: false, scene: this.scene, scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }, render: { pixelArt: true, antialias: false, roundPixels: true }, audio: { noAudio: true }, banner: false });
   this.scene.audio.music = this.store.data.settings.music; this.scene.audio.sfx = this.store.data.settings.sfx;
-  window.addEventListener('pagehide', () => this.store.write());
+  window.addEventListener('pagehide', () => { this.suspendInBackground(); this.store.write(); });
+  window.addEventListener('pageshow', () => this.resumeUpgradeMusic());
   // Kept as an owned field so lifecycle is explicit when embedding this app later.
   void this.game;
  }
@@ -57,7 +63,7 @@ export class App {
   if (this.backupBusy) return;
   const button = (event.target as Element).closest<HTMLButtonElement>('[data-action]'); if (!button || button.disabled) return;
   this.scene.audio.unlock(); this.scene.audio.click(); const action = button.dataset.action!;
-  if (action === 'embark') { enterMobileFullscreen(); this.screen = 'select'; this.render(); }
+  if (action === 'embark') { this.screen = 'select'; this.render(); }
   else if (action === 'hero') { const id = button.dataset.hero as HeroId; if (!Object.hasOwn(HEROES, id)) return; this.hero = id; this.store.data.lastHero = id; this.store.write(); this.render(); }
   else if (action === 'start') this.startRun();
   else if (action === 'retry') {
@@ -109,8 +115,8 @@ export class App {
  private startRun() {
   this.store.data.lastHero = this.hero; this.store.write(); this.sim = new GameSimulation(this.hero, this.store.data, Math.random, this.rank); this.scene.setRun(this.sim); this.screen = 'run'; this.previousStatus = 'running'; this.render();
  }
- suspendForNative() { this.diagnostics.setForeground(false, 'native'); this.autoPause(); this.store.write(); this.scene.audio.suspend(); }
- resumeForNative() { this.diagnostics.setForeground(true, 'native'); if (!this.store.persistent) this.store.write(); }
+ suspendForNative() { this.diagnostics.setForeground(false, 'native'); this.suspendInBackground(); this.store.write(); }
+ resumeForNative() { this.diagnostics.setForeground(true, 'native'); if (!this.store.persistent) this.store.write(); this.resumeUpgradeMusic(); }
  handleNativeBack(): boolean {
   if (this.backupBusy) return true;
   this.scene.controls?.reset();
@@ -128,8 +134,17 @@ export class App {
   this.render(); this.syncRecords(); return true;
  }
  private autoPause() { this.scene.controls?.reset(); if (this.screen === 'run' && this.sim?.state.status === 'running') { this.sim.pause(); this.render(); } }
+ private suspendInBackground() { this.autoPause(); this.scene.audio.suspend(); }
+ private resumeUpgradeMusic() {
+  if (!document.hidden && this.screen === 'run' && this.sim?.state.status === 'upgrade') this.scene.audio.resume();
+ }
  private togglePause() {
-  if (this.screen !== 'run' || !this.sim) return; const status = this.sim.state.status; if (status === 'running') this.sim.pause(); else if (status === 'paused') this.sim.resume(); else return; this.scene.controls.reset(); this.previousStatus = this.sim.state.status; this.render();
+  if (this.screen !== 'run' || !this.sim) return;
+  const status = this.sim.state.status;
+  if (status === 'running') this.sim.pause();
+  else if (status === 'paused') { this.scene.audio.resume(); this.sim.resume(); }
+  else return;
+  this.scene.controls.reset(); this.previousStatus = this.sim.state.status; this.render();
  }
  private syncDiagnosticContext(state = this.sim?.state) {
   if (this.diagnostics.enabled) this.diagnostics.setContext({ screen: this.screen, running: this.screen === 'run' && state?.status === 'running', hero: state?.hero, runId: state?.runId, elapsed: state?.elapsed, level: state?.level, hp: state?.player.hp, enemies: state?.enemies.length ?? 0, projectiles: state?.projectiles.length ?? 0, effects: state?.effects.length ?? 0, input: this.scene.controls?.snapshot() });

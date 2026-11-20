@@ -104,7 +104,7 @@ test('mobile screen edge remains usable during a long drag', async ({ browser })
  await context.close();
 });
 
-test('mobile launch requests fullscreen and blocks pull-to-refresh at the scroll boundary', async ({ browser }) => {
+test('mobile launch retains browser layout and blocks pull-to-refresh at the scroll boundary', async ({ browser }) => {
  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
  try {
   const page = await context.newPage();
@@ -116,11 +116,11 @@ test('mobile launch requests fullscreen and blocks pull-to-refresh at the scroll
    };
   });
   await page.goto('/');
-  const manifest = await page.request.get('/manifest.webmanifest');
-  expect(await manifest.json()).toMatchObject({ start_url: '/', display: 'standalone' });
   expect(await page.locator('html').evaluate(el => getComputedStyle(el).overscrollBehaviorY)).toBe('none');
+  await expect(page.locator('link[rel="manifest"]')).toHaveCount(0);
   await page.getByRole('button', { name: '모험 시작' }).tap();
-  await expect(page.locator('html')).toHaveAttribute('data-test-fullscreen', 'requested');
+  await expect(page.locator('.screen-select')).toBeVisible();
+  await expect(page.locator('html')).not.toHaveAttribute('data-test-fullscreen', 'requested');
   const gestures = await page.locator('.menu-panel').evaluate(panel => {
    panel.style.height = '180px';
    const child = document.createElement('div');

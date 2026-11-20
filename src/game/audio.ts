@@ -26,9 +26,21 @@ export class GameAudio {
   this.loadSoundtrack('battle');
   this.loadSoundtrack('warden');
  }catch{/* Sound remains optional if audio is unavailable. */}}
- suspend(){this.suspended = true;for(const voice of this.voices){try{voice.stop();voice.disconnect();}catch{}}this.voices.clear();this.syncMusic(undefined, this.track === 'warden');void this.context?.suspend().catch(()=>{});}
+ suspend(){
+  if (this.suspended) return;
+  this.suspended = true;
+  for (const voice of this.voices) { try { voice.stop(); voice.disconnect(); } catch {} }
+  this.voices.clear();
+  this.stopMusic();
+  void this.context?.suspend().catch(()=>{});
+ }
+ resume(){
+  if (!this.suspended) return;
+  this.suspended = false;
+  void this.context?.resume().then(()=>this.startMusic()).catch(()=>{});
+ }
  private tone(frequency:number,duration:number,level:number,type:OscillatorType='sine',delay=0){
-  const c=this.context;if(!c||c.state!=='running'||this.voices.size>=24||this.sfxVolume<=0)return;
+  const c=this.context;if(this.suspended||!c||c.state!=='running'||this.voices.size>=24||this.sfxVolume<=0)return;
   const o=c.createOscillator(),g=c.createGain(),at=c.currentTime+delay;o.type=type;o.frequency.value=frequency;
   g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(level,at+.012);g.gain.exponentialRampToValueAtTime(.0001,at+duration);
   o.connect(g);g.connect(this.sfxBus!);this.voices.add(o);o.onended=()=>{this.voices.delete(o);o.disconnect();g.disconnect();};o.start(at);o.stop(at+duration+.02);
@@ -76,11 +88,11 @@ export class GameAudio {
   if (!context || !source) return;
   this.musicOffset += Math.max(0, context.currentTime - this.musicStarted);
   source.onended = () => source.disconnect();
-  source.stop(context.currentTime + .035);
+  source.stop();
   this.musicSource = undefined;
  }
  syncMusic(status?: RunState['status'], finalBoss = false) {
-  const level = status === 'running' ? 1 : status === 'paused' || status === 'upgrade' ? .5 : 0;
+  const level = status === 'running' ? 1 : status === 'upgrade' ? .3 : 0;
   const desiredTrack = finalBoss ? 'warden' : 'battle';
   if (this.track !== desiredTrack) {
    this.stopMusic();

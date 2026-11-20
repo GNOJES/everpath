@@ -5,7 +5,7 @@ class Gain {gain=new Param();connect(){}disconnect(){}}
 class Osc {frequency=new Param();type='sine';onended?:()=>void;stopped=false;connect(){}disconnect(){}start(){}stop(){this.stopped=true;}}
 class Context {static last:Context;state='running';currentTime=0;destination={};gains:Gain[]=[];voices:Osc[]=[];constructor(){Context.last=this;}createDynamicsCompressor(){return {threshold:new Param(),knee:new Param(),ratio:new Param(),attack:new Param(),release:new Param(),connect(){}};}createGain(){const g=new Gain();this.gains.push(g);return g;}createOscillator(){const o=new Osc();this.voices.push(o);return o;}resume(){this.state='running';return Promise.resolve();}suspend(){this.state='suspended';return Promise.resolve();}}
 afterEach(()=>vi.unstubAllGlobals());
-it('ducks only the music on pause and upgrade, and leaves volume settings alone', () => {
+it('pauses music in the pause menu and plays at 30% during a level-up', () => {
  vi.stubGlobal('AudioContext', Context);
  const a = new GameAudio();
  expect([a.music, a.sfx]).toEqual([1, 1]);
@@ -14,9 +14,9 @@ it('ducks only the music on pause and upgrade, and leaves volume settings alone'
  a.syncMusic('running');
  const [, track, effects, duck] = Context.last.gains;
  expect(duck.gain.value).toBe(1);
- for (const status of ['paused', 'upgrade'] as const) {
+ for (const [status, level] of [['paused', 0], ['upgrade', .3]] as const) {
   a.syncMusic(status);
-  expect(duck.gain.value).toBe(.5);
+  expect(duck.gain.value).toBe(level);
   expect(track.gain.value).toBe(.8);
   expect(effects.gain.value).toBe(1.6);
  }

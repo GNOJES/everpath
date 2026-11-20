@@ -1,14 +1,3 @@
-import { Capacitor } from '@capacitor/core';
-
-export function enterMobileFullscreen() {
- const standalone = window.matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches
-  || (navigator as Navigator & { standalone?: boolean }).standalone;
- if (Capacitor.isNativePlatform() || standalone || !window.matchMedia('(pointer: coarse)').matches
-  || !document.fullscreenEnabled || document.fullscreenElement) return;
-
- void document.documentElement.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
-}
-
 function canScrollTowardTop(target: Element) {
  for (let element: Element | null = target; element; element = element.parentElement) {
   if (element.scrollTop <= 0) continue;
