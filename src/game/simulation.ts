@@ -343,7 +343,7 @@ export class GameSimulation {
   const killGold = enemy.kind === 'warden' ? B.bossGold : enemy.kind === 'boss' ? 0 : B.goldPerKill * (enemy.elite ? 3 : 1);
   this.goldRaw += killGold * (1 + this.save.upgrades.gold * PERMANENT.gold.step);
   s.gold = Math.floor(this.goldRaw);
-  if (isBoss(enemy.kind)) this.effect('boss-death', enemy, 0xffd68a, enemy.kind === 'warden' ? 220 : 150, 1.1);
+  if (isBoss(enemy.kind)) this.effect('boss-death', enemy, 0xffd68a, enemy.kind === 'warden' ? 220 : 150, enemy.kind === 'warden' ? 1.6 : 1.1);
   else this.effect('death', enemy, 0xadd48a, enemy.radius, .4);
   if (enemy.kind === 'warden') {
    this.goldRaw += CAMPAIGN.clearGold * (1 + s.rank * .5); s.gold = Math.floor(this.goldRaw); s.status = 'victory'; s.timeStopRemaining = 0; s.choices = []; s.projectiles = []; s.hazards = []; this.pendingChoices = 0; return;

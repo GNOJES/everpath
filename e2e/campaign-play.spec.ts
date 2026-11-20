@@ -34,7 +34,7 @@ for (const hero of ['mage']) test(`${hero}: normal-HP grown mobile touch ten-min
   if (s.elapsed >= (lastCapture + 1) * 180) { lastCapture++; await page.screenshot({ path: `test-results/${hero}-${lastCapture * 3}min-mobile.png` }); }
  }
  if (down) await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
- await page.clock.runFor(1200); // Finish the victory animation on the accelerated clock.
+ await page.clock.runFor(1800); // Finish the victory animation on the accelerated clock.
  const end = (await read())!; const summary = { ...end, seed: 42, meta: 'All four permanent ranks10 fixture, normal HP, no combat edits', input: 'Native CDP touch, 200ms steering, real App/Phaser, accelerated browser clock', realSeconds: Math.round((Date.now() - started) / 1000), errors };
  mkdirSync('docs/playtests', { recursive: true });
  writeFileSync(`docs/playtests/browser-${runTag}-${hero}.json`, JSON.stringify(summary, null, 2));

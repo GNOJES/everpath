@@ -207,3 +207,38 @@ body{background:#e5eef1}
 .overlay.defeat-scene{justify-content:flex-start;align-items:center;padding-top:26%;background:radial-gradient(ellipse at center,transparent 38%,#3d192a80 100%)}
 .defeat-banner{display:flex;align-items:center;gap:8px;padding:9px 15px;border:1px solid #dfaa9b;border-radius:10px;background:#322437ef;color:#fff4e5;font-size:clamp(14px,4.4cqw,20px);box-shadow:0 4px 0 #231b2a6b}
 .defeat-banner>.icon{width:18px;height:18px;color:#f6bcaa}
+
+.overlay.victory-scene{justify-content:flex-end;align-items:center;padding:0 12px 15%;background:radial-gradient(ellipse at center,transparent 49%,#593d2280 100%)}
+.overlay.victory-banner-high{justify-content:flex-start;padding:17% 12px 0}
+.victory-banner{display:flex;align-items:center;gap:12px;padding:9px 18px;border:2px solid #f2c870;border-radius:10px;color:#fff9ea;background:#29223a;box-shadow:0 4px 0 #231a2c,0 0 23px #e8b76566;text-align:left}
+.victory-banner>.icon{width:30px;height:30px;color:#ffd884;flex:none}
+.victory-banner div{display:grid;gap:2px}
+.victory-banner span{color:#f4d895;font-size:11px;font-weight:750}
+.victory-banner strong{font-size:clamp(19px,6cqw,29px);line-height:1.08}
+
+.screen-run .upgrade-panel{width:min(94%,440px);max-height:calc(100% - 12px);padding:10px;gap:8px;text-align:left}
+.upgrade-heading{display:flex;width:100%;align-items:center;justify-content:space-between;gap:6px}
+.overlay .upgrade-heading h2{margin:0;font-size:clamp(18px,5.8cqw,27px);line-height:1.15;color:#203057}
+.upgrade-heading>span{color:#264f9d;background:#e4eeff;border:1px solid #aebfdf;border-radius:5px;padding:2px 6px;font-size:12px;font-weight:800}
+.upgrade-choices{gap:6px}
+.upgrade-card{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:start;width:100%;min-height:0;gap:7px;padding:7px 8px;border:1px solid #9baed0;border-radius:8px;background:#f5f8ff;color:#203057;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.upgrade-card:hover{background:#eaf1ff;border-color:#6884b8}
+.upgrade-card:active{background:#dce8ff;border-color:#365fb2;box-shadow:inset 0 0 0 1px #365fb2}
+.upgrade-card:focus-visible{outline:2px solid #315bea;outline-offset:2px}
+.upgrade-card>.skill-icon{width:30px;height:30px;border-radius:6px;border-color:#a7b9dc;color:#254b91;background:#e3edff}
+.upgrade-card>.skill-icon>.icon{width:18px;height:18px}
+.upgrade-copy{gap:3px}
+.upgrade-card-heading{display:flex;align-items:center;justify-content:space-between;gap:4px;min-width:0}
+.upgrade-card .upgrade-name{display:block;color:#203057!important;font-size:clamp(13px,4.3cqw,17px);font-weight:850;line-height:1.16;word-break:keep-all}
+.upgrade-transition{flex:none;white-space:nowrap;border-radius:5px;padding:2px 5px;background:#dce8ff;color:#213d76;font-size:clamp(11px,3.7cqw,15px);font-weight:700;font-variant-numeric:tabular-nums}
+.upgrade-transition b{color:#173fa6;font-weight:900}
+.upgrade-card .upgrade-description{margin:0;color:#3e4e6d;font-size:clamp(11px,3.5cqw,14px);line-height:1.24;word-break:keep-all;overflow-wrap:anywhere}
+.upgrade-levels{margin:1px 0 0;gap:3px}
+.upgrade-levels i{width:15px;height:4px;border-radius:2px;background:#cbd8ec}
+.upgrade-levels>.lit{background:#6382bd}
+.upgrade-levels>.next{background:#244fbe;opacity:1}
+@media(max-height:500px){
+ .screen-run .upgrade-panel{padding:8px;gap:5px}
+ .upgrade-choices{gap:4px}
+ .upgrade-card{padding:5px 7px}
+}

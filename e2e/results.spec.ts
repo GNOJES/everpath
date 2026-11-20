@@ -57,8 +57,19 @@ test('bosses descend into the field with their own bars before the final result'
  await expect(page.locator('.result-panel')).toHaveCount(0);
  await expect(page.locator('canvas')).toBeVisible();
  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('everpath.save.v1')!).history[0].cleared)).toBe(true);
- await page.screenshot({ path: 'test-results/warden-victory-effect.png' });
+ await expect(page.getByRole('status')).toContainText('모르바 격파');
+ await expect(page.locator('#campaign-goal')).toHaveText('원정 완료');
  await page.clock.runFor(1000);
+ await expect(page.locator('.victory-banner')).toBeVisible();
+ await expect(page.locator('.result-panel')).toHaveCount(0);
+ const fallen = await page.evaluate(() => {
+  const { scene } = (window as unknown as { bossTest: { scene: { fallenWarden: { visible: boolean; angle: number } } } }).bossTest;
+  return { visible: scene.fallenWarden.visible, angle: Math.abs(scene.fallenWarden.angle) };
+ });
+ expect(fallen.visible).toBe(true);
+ expect(fallen.angle).toBeGreaterThan(70);
+ await page.screenshot({ path: 'test-results/warden-victory-effect.png' });
+ await page.clock.runFor(530);
  await expect(page.locator('.result-panel')).toContainText('뿌리의 군주를 쓰러뜨렸습니다');
  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('everpath.save.v1')!).history.length)).toBe(1);
 });

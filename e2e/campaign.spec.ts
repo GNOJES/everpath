@@ -96,3 +96,51 @@ test('buys three watch charges and uses a touch charge that refills next run', a
   await expect(watch).toHaveText('3');
  } finally { await context.close(); }
 });
+
+test('skill upgrades fit a short phone and remain legible while pressed', async ({ page }) => {
+ await page.setViewportSize({width:320,height:480});
+ await page.route('**/skill-choice-test', route => route.fulfill({
+  contentType:'text/html',
+  body:'<meta name="viewport" content="width=device-width"><div id="app"></div><script type="module">import "/src/style.css"; import {App} from "/src/ui/app.ts"; window.skillTest = new App(document.querySelector("#app"));</script>',
+ }));
+ await page.goto('/skill-choice-test');
+ await page.getByRole('button', {name:'모험 시작'}).click();
+ await page.getByRole('button', {name:'숲으로 떠나기'}).click();
+ await page.evaluate(async () => {
+  const {sim} = (window as unknown as {skillTest:{sim:import('../src/game/simulation').GameSimulation}}).skillTest;
+  const {availableUpgrades} = await import('../src/game/progression');
+  sim.state.skills.shield = 1;
+  sim.state.choices = availableUpgrades(sim.state).filter(choice => ['weapon','skill:shield','passive:vitality'].includes(choice.id));
+  sim.state.status = 'upgrade';
+ });
+ const panel = page.locator('.upgrade-panel');
+ await expect(panel.locator('.upgrade-card')).toHaveCount(3);
+ const shield = panel.locator('[data-id="skill:shield"]');
+ await expect(shield.locator('.upgrade-transition')).toHaveText('1 → 2');
+ const size = await panel.evaluate(el => ({
+  panel:el.scrollHeight - el.clientHeight,
+  page:document.documentElement.scrollHeight - innerHeight,
+ }));
+ expect(size.panel).toBeLessThanOrEqual(1);
+ expect(size.page).toBeLessThanOrEqual(1);
+ const bounds = (await shield.boundingBox())!;
+ await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+ await page.mouse.down();
+ try {
+  const palette = await shield.evaluate(button => ({
+   background:getComputedStyle(button).backgroundColor,
+   title:getComputedStyle(button.querySelector('.upgrade-name')!).color,
+   description:getComputedStyle(button.querySelector('.upgrade-description')!).color,
+  }));
+  const luminance = (color: string) => {
+   const values = color.match(/[\d.]+/g)!.slice(0,3).map(value => Number(value) / 255);
+   return values.map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
+    .reduce((sum, value, index) => sum + value * [.2126,.7152,.0722][index],0);
+  };
+  for (const text of [palette.title,palette.description]) {
+   const values = [luminance(text),luminance(palette.background)].sort((a,b) => a-b);
+   expect((values[1] + .05) / (values[0] + .05)).toBeGreaterThanOrEqual(4.5);
+  }
+  await page.screenshot({path:'test-results/skill-upgrade-pressed-small.png'});
+ } finally { await page.mouse.up(); }
+});

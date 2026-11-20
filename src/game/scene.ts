@@ -20,7 +20,7 @@ export class ForestScene extends Phaser.Scene {
  private announcedBosses = new Set<number>(); private lastShotSound = 0;
  private ground!: Phaser.GameObjects.TileSprite; private actors!: ImagePool; private shots!: ImagePool;
  private shadows!: Phaser.GameObjects.Graphics; private fx!: Phaser.GameObjects.Graphics; private joystick!: Phaser.GameObjects.Graphics;
- private hero!: Phaser.GameObjects.Image; private companions: Phaser.GameObjects.Image[] = []; private scenery: { image: Phaser.GameObjects.Image; y: number; x: number }[] = [];
+ private hero!: Phaser.GameObjects.Image; private fallenWarden!: Phaser.GameObjects.Image; private companions: Phaser.GameObjects.Image[] = []; private scenery: { image: Phaser.GameObjects.Image; y: number; x: number }[] = [];
  private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private endFxTime = 0;
  constructor() { super('forest'); }
  create() {
@@ -30,6 +30,7 @@ export class ForestScene extends Phaser.Scene {
   for (let i = 0; i < 22; i++) { const x = i % 2 ? 323 + (i * 17 % 59) : 48 + (i * 17 % 58), y = i * 56; const key = ['bush', 'rock', 'bush', 'mushroom', 'stump'][i % 5]; const image = this.add.image(x, y, key).setOrigin(.5, 1).setScale(1.7); this.scenery.push({ image, x, y }); }
   for (const [x, y] of [[133, 480], [299, 1010]]) { const image = this.add.image(x, y, 'lantern').setOrigin(.5, 1).setScale(1.8); this.scenery.push({ image, x, y }); }
   this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.add.image(216, 515, 'warrior').setScale(2.4).setOrigin(.5, .8);
+  this.fallenWarden = this.add.image(0, 0, 'warden').setOrigin(.5, .8).setVisible(false);
   this.companions = [this.add.image(174, 559, 'archer'), this.add.image(263, 548, 'mage')]; this.companions.forEach(image => image.setScale(2.25).setOrigin(.5, .8));
   this.controls = new PlayerInput(this.game.canvas, () => this.onPause?.(), event => this.onInputObservation?.(event));
   this.events.once('shutdown', () => this.controls.destroy()); this.onReady?.();
@@ -53,6 +54,7 @@ export class ForestScene extends Phaser.Scene {
    .setAngle((facingLeft ? -1 : 1) * 82 * fall).setAlpha(!defeated && p.invincible > 0 && Math.sin(this.clock * 40) > 0 ? .4 : 1);
   this.shadow(p.x + (facingLeft ? -1 : 1) * fall * 12, p.y + 7, 18 + fall * 8, 7);
   this.companions.forEach((image, i) => { image.setVisible(!s); if (!s) { image.y = 530 + i * 12 + Math.sin(this.clock * 2 + i) * .8; image.setDepth(100 + image.y); this.shadow(image.x, image.y + 7, 15, 6); } });
+  this.renderWardenFall(s);
   if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderPickups(s); this.renderEffects(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (s.skills.frost - 1) * BALANCE.skillRadiusStep); } }
   else { this.actors.trim(0); this.shots.trim(0); for (const label of this.labels) label.setVisible(false); }
   // Small drifting spores are bounded and deterministic, rather than particle emitters.
@@ -80,6 +82,18 @@ export class ForestScene extends Phaser.Scene {
     this.fx.lineStyle(1, 0xffd6a6, .7).lineBetween(e.x, e.y, end.x, end.y);
    }
   }); this.actors.trim(living.length);
+ }
+ private renderWardenFall(s?: RunState) {
+  const impact = s?.status === 'victory' ? s.effects.filter(effect => effect.kind === 'boss-death').at(-1) : undefined;
+  this.fallenWarden.setVisible(impact !== undefined);
+  if (!impact) return;
+  const progress = clamp(this.endFxTime / .7, 0, 1);
+  const drop = progress * progress;
+  const direction = impact.x > W.width / 2 ? -1 : 1;
+  this.fallenWarden.setPosition(impact.x + direction * drop * 23, impact.y + drop * 15)
+   .setDepth(99 + impact.y).setScale(2.9 - drop * .42).setAngle(direction * 83 * drop)
+   .setTint(progress < .14 ? 0xffecbc : 0xd1a6a1).setAlpha(1 - .28 * drop);
+  this.shadow(impact.x + direction * drop * 23, impact.y + 5, 34 + drop * 17, 12);
  }
  private renderBossHealth(boss: RunState['enemies'][number]) {
   // Same origin and scale as the sprite; the bar enters the field with its boss.
@@ -173,6 +187,11 @@ export class ForestScene extends Phaser.Scene {
      const angle = i * 2.399, travel = radius * (.4 + i % 7 / 10);
      const x = e.x + Math.cos(angle) * travel, y = e.y + Math.sin(angle) * travel - 30 * progress;
      g.fillStyle(i % 2 ? e.color : 0xfff6d7, f).fillRect(x, y, 3 + i % 4, 4 + i % 5);
+    }
+    if (s.status === 'victory') {
+     const settling = clamp(1 - progress * 1.1, 0, 1);
+     const shock = e.radius * (.36 + progress * .84);
+     g.lineStyle(2.5, 0xffe5a0, settling * .72).strokeEllipse(e.x, e.y + 11, shock * 2, shock * .62);
     }
     continue;
    }
