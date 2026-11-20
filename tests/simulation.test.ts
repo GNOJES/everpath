@@ -109,3 +109,28 @@ for (const hero of ['warrior', 'archer', 'mage'] as const) it(`gives ${hero} sin
   expect(enemy.hp).toBeGreaterThan(0);
  }
 });
+
+it('does not recover health from earning a level or selecting an unrelated upgrade', () => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => 0);
+ const { player } = sim.state;
+ sim.damagePlayer(40);
+ const wounded = player.hp;
+ sim.gainXp(sim.state.xpNext);
+ expect(sim.state.level).toBe(2);
+ expect(player.hp).toBe(wounded);
+ expect(sim.chooseUpgrade('weapon')).toBe(true);
+ expect(player.hp).toBe(wounded);
+});
+
+it('takes another hit after the shortened damage immunity window', () => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ const { player } = sim.state;
+ sim.damagePlayer(10);
+ expect(player.invincible).toBe(.2);
+ for (let i = 0; i < 3; i++) sim.update(.05);
+ sim.damagePlayer(10);
+ expect(player.hp).toBe(player.maxHp - 10);
+ sim.update(.05);
+ sim.damagePlayer(10);
+ expect(player.hp).toBe(player.maxHp - 20);
+});

@@ -53,7 +53,8 @@ export class GameSimulation {
  }
  private advance(dt: number, direction: Vec, frozen: boolean) {
   const s = this.state, p = s.player;
-  p.invincible = Math.max(0, p.invincible - dt);
+  const invincibilityRemaining = p.invincible - dt;
+  p.invincible = invincibilityRemaining > 1e-9 ? invincibilityRemaining : 0;
   const input = normalize(direction.x, direction.y); p.x = clamp(p.x + input.x * p.speed * dt, W.margin, W.width - W.margin); p.y = clamp(p.y + input.y * p.speed * dt, W.minY, W.height - W.margin);
   if (input.x || input.y) p.facing = Math.atan2(input.y, input.x);
   if (!frozen) {
@@ -579,7 +580,7 @@ export class GameSimulation {
  }
  gainXp(amount: number) {
   const s = this.state; s.xp += amount;
-  while (s.xp >= s.xpNext) { s.xp -= s.xpNext; s.level++; s.xpNext = Math.round(s.xpNext * B.xpGrowth + B.xpIncrement); this.pendingChoices++; s.player.hp = Math.min(s.player.maxHp, s.player.hp + s.player.maxHp * B.healOnLevel); }
+  while (s.xp >= s.xpNext) { s.xp -= s.xpNext; s.level++; s.xpNext = Math.round(s.xpNext * B.xpGrowth + B.xpIncrement); this.pendingChoices++; }
   if (this.pendingChoices > 0 && s.status === 'running') this.nextChoice();
  }
  private nextChoice() {
