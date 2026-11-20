@@ -1,19 +1,28 @@
 import { GameSimulation } from '../../src/game/simulation';
 import { parseSave } from '../../src/game/save';
-import { HEROES, WORLD } from '../../src/game/config';
+import { BALANCE, HEROES, WORLD } from '../../src/game/config';
 import { distance, normalize } from '../../src/game/math';
 import type { Enemy, HeroId, RunState, Vec, SaveData } from '../../src/game/types';
 export function seededRandom(seed: number) { return () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; }
 export type Policy = 'idle' | 'circuit' | 'reactive' | 'high-camp' | 'mid-camp';
-export type Build = 'balanced' | 'weapon' | 'skills';
+export type Build = 'balanced' | 'weapon' | 'skills' | 'weapon-light';
+const skillBuildFocus: Record<HeroId, readonly string[]> = {
+ warrior: ['blade', 'sunder'],
+ archer: ['rain', 'blastArrow'],
+ mage: ['frost', 'meteor'],
+};
 export function chooseAbility(state: RunState, build: Build): string {
  const skills = HEROES[state.hero].skills;
  const score = (id: string) => {
   const hp = state.player.hp / state.player.maxHp;
   if (id === 'passive:vitality' && hp < .45) return 120;
   if (id === 'evolve') return 200;
-  if (id === 'weapon') return build === 'weapon' ? 110 : 70;
-  if (id.startsWith('skill:')) { const level = state.skills[id.slice(6)] ?? 0; return (build === 'skills' ? 100 : 85) - level * 12 + skills.indexOf(id.slice(6)) * .01; }
+  if (id === 'weapon') return build === 'weapon-light' ? -1 : build === 'weapon' ? 110 : 70;
+  if (id.startsWith('skill:')) {
+   const key = id.slice(6), level = state.skills[key] ?? 0;
+   const focus = build === 'weapon-light' && skillBuildFocus[state.hero].includes(key) ? 25 : 0;
+   return (build === 'skills' || build === 'weapon-light' ? 100 : 85) + focus + (level === BALANCE.skillMax ? 18 : 0) - level * 12 + skills.indexOf(key) * .01;
+  }
   return ({ 'passive:power': 65, 'passive:haste': 60, 'passive:vitality': 45, 'passive:speed': 40 } as Record<string, number>)[id] ?? 0;
  };
  return [...state.choices].sort((a, b) => score(b.id) - score(a.id))[0].id;
@@ -73,5 +82,5 @@ export function playTrial(hero: HeroId, seed: number, policy: Policy, build: Bui
   if (Math.floor(s.elapsed / 60) > checkpoints.length) checkpoints.push({ seconds: Math.round(s.elapsed), hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), kills: s.kills, level: s.level, bosses: s.bosses, enemies: s.enemies.length, skills: { ...s.skills } });
  }
  const s = sim.state;
- return { hero, seed, policy, build, duration, meta, gold: s.gold, evolved: s.evolved, survived: Math.round(s.elapsed * 10) / 10, status: s.status, firstKill: Math.round(firstKill * 10) / 10, firstLevel: Math.round(firstLevel * 10) / 10, sixMinuteBossKills: [...pair].filter(enemy => enemy.hp <= 0).length, kills: s.kills, bosses: s.bosses, level: s.level, hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), hpLost: Math.round(hpLost), hits, maxEnemies, maxShots, upgrades, checkpoints };
+ return { hero, seed, policy, build, duration, meta, gold: s.gold, evolved: s.evolved, weaponLevel: s.weaponLevel, maxSkillRank: Math.max(0, ...Object.values(s.skills)), survived: Math.round(s.elapsed * 10) / 10, status: s.status, firstKill: Math.round(firstKill * 10) / 10, firstLevel: Math.round(firstLevel * 10) / 10, sixMinuteBossKills: [...pair].filter(enemy => enemy.hp <= 0).length, kills: s.kills, bosses: s.bosses, level: s.level, hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), hpLost: Math.round(hpLost), hits, maxEnemies, maxShots, upgrades, checkpoints };
 }

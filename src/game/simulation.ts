@@ -1,4 +1,4 @@
-import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, FIRST_GRORM, WARRIOR_CONTACT_DAMAGE, ARCHER_CONTACT_DAMAGE, MAGE_CONTACT_DAMAGE, MAGE_ARROW_DAMAGE, CAMPAIGN, PICKUPS, TIME_STOP, WARDEN_MAGIC_ARMOR, EVOLUTIONS, WARRIOR_WEAPON_STEPS, warriorSweepAngle, isBoss } from './config';
+import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, FIRST_GRORM, WARRIOR_CONTACT_DAMAGE, ARCHER_CONTACT_DAMAGE, MAGE_CONTACT_DAMAGE, MAGE_ARROW_DAMAGE, CAMPAIGN, PICKUPS, TIME_STOP, WARDEN_MAGIC_ARMOR, EVOLUTIONS, WARRIOR_WEAPON_STEPS, WARRIOR_PARRY, ATTACK_SKILL_UPGRADE, warriorSweepAngle, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind } from './encounters';
@@ -15,6 +15,7 @@ export class GameSimulation {
  private regularSpawns = 0; private sideSpawns = 0;
  private healDrops = 0;
  private nextShamanAt = 0;
+ private parryTimer = 0;
  private serial = 0; private spawnTimer = B.firstSpawn; private attackTimer = .1; private skillTimers: Record<string, number> = {}; private pendingChoices = 0; private goldRaw = 0;
  constructor(hero: HeroId, private save: SaveData, private random: () => number = Math.random, rank = 0) { this.save = structuredClone(save); this.state = createRun(hero, this.save, Math.floor(clamp(rank, 0, save.challengeUnlocked))); }
  private hasWon() { return this.state.status === 'victory'; }
@@ -79,11 +80,25 @@ export class GameSimulation {
    this.moveEnemies(dt); if (p.hp <= 0) return;
   }
   this.collectPickups();
-  this.attackTimer -= dt; if (this.attackTimer <= 0) { if (this.basicAttack()) this.attackTimer = HEROES[s.hero].cooldown / this.weaponHaste; }
+  this.attackTimer -= dt;
+  this.parryTimer -= dt;
+  if (this.attackTimer <= 0) {
+   if (this.basicAttack()) this.attackTimer = HEROES[s.hero].cooldown / this.weaponHaste;
+  } else if (!frozen && s.hero === 'warrior' && this.parryTimer <= 0) {
+   this.parryProjectile(dt);
+  }
   if (this.hasWon()) return;
   for (const id of HEROES[s.hero].skills) {
-   if (!s.skills[id]) continue; this.skillTimers[id] = (this.skillTimers[id] ?? 0) - dt;
-   if (this.skillTimers[id] <= 0 && this.castSkill(id, s.skills[id])) this.skillTimers[id] = SKILLS[id].cooldown / this.haste / (1 + (s.skills[id] - 1) * (SKILLS[id].hastePerLevel ?? B.skillHasteStep));
+   const level = s.skills[id];
+   if (!level) continue;
+   this.skillTimers[id] = (this.skillTimers[id] ?? 0) - dt;
+   const skill = SKILLS[id];
+   const baseRank = Math.min(level, B.skillMax);
+   const finalRank = level === ATTACK_SKILL_UPGRADE.rank;
+   if (this.skillTimers[id] <= 0 && this.castSkill(id, baseRank, finalRank)) {
+    const rankHaste = 1 + (baseRank - 1) * (skill.hastePerLevel ?? B.skillHasteStep);
+    this.skillTimers[id] = skill.cooldown / this.haste / rankHaste / (finalRank ? ATTACK_SKILL_UPGRADE.haste : 1);
+   }
   }
   if (this.hasWon()) return;
   this.moveProjectiles(dt, frozen); if (this.hasWon()) return; if (p.hp <= 0) return; this.updateHazards(dt, frozen);
@@ -153,7 +168,7 @@ export class GameSimulation {
    if (!bossEntering) e.timer -= dt;
    let dir = unit(e, p), speed = e.speed;
    if (!isBoss(e.kind) && (e.slowedUntil ?? 0) > s.elapsed) speed *= .52;
-   if (s.skills.frost && distance(e, p) < SKILLS.frost.radius + (s.skills.frost - 1) * B.skillRadiusStep + e.radius) speed *= .76 - .075 * Math.min(3, s.skills.frost);
+   if (s.skills.frost && distance(e, p) < SKILLS.frost.radius + (Math.min(s.skills.frost, B.skillMax) - 1) * B.skillRadiusStep + e.radius) speed *= .76 - .075 * Math.min(3, s.skills.frost);
    if (e.entryTarget) {
     const step = (bossEntering ? 140 : speed * 1.75) * dt;
     const remaining = distance(e, e.entryTarget);
@@ -267,21 +282,43 @@ export class GameSimulation {
    }
   }
  }
+ private swordThreats(lookahead?: number) {
+  const { player, projectiles } = this.state;
+  const range = this.range;
+  return projectiles.filter(shot => {
+   if (shot.kind !== 'enemy' || shot.life <= 0 || distance(player, shot) > range + shot.radius) return false;
+   if (lookahead === undefined) return true;
+   const dx = player.x - shot.x, dy = player.y - shot.y;
+   const speedSquared = shot.vx * shot.vx + shot.vy * shot.vy;
+   if (speedSquared === 0) return false;
+   const closest = clamp((dx * shot.vx + dy * shot.vy) / speedSquared, 0, Math.min(lookahead, shot.life));
+   return Math.hypot(dx - shot.vx * closest, dy - shot.vy * closest) <= W.playerRadius + shot.radius;
+  }).sort((a, b) => distance(player, a) - distance(player, b));
+ }
+ private swingSword(aim: Vec, threats: Projectile[]) {
+  const { player, weaponLevel, evolved } = this.state;
+  const angle = player.facing = Math.atan2(aim.y - player.y, aim.x - player.x);
+  const halfAngle = warriorSweepAngle(weaponLevel, evolved);
+  for (const blocked of threats.filter(shot => this.inSweep(player, shot, angle, halfAngle)).slice(0, weaponLevel >= 5 ? 2 : 1)) {
+   blocked.life = 0;
+   this.effect('crystal', blocked, 0xffd982, 17, .24);
+   this.parryTimer = WARRIOR_PARRY.cooldown;
+  }
+  this.slash(player, this.range, angle, halfAngle, this.damage, 0xffd067, 15);
+ }
+ private parryProjectile(dt: number) {
+  const threats = this.swordThreats(Math.min(this.attackTimer + dt, WARRIOR_PARRY.lookahead));
+  if (!threats.length || this.nearest(this.state.player, this.range, new Set<number>(), true)) return;
+  this.swingSword(threats[0], threats);
+ }
  private basicAttack(): boolean {
   const s = this.state, p = s.player;
   const target = this.nearest(p, this.range, new Set<number>(), s.hero === 'warrior');
   if (s.hero === 'warrior') {
-   const threats = s.projectiles.filter(shot => shot.kind === 'enemy' && shot.life > 0 && distance(p, shot) <= this.range + shot.radius);
-   threats.sort((a, b) => distance(p, a) - distance(p, b));
+   const threats = this.swordThreats();
    const aim = target ?? threats[0];
    if (!aim) return false;
-   const angle = p.facing = Math.atan2(aim.y - p.y, aim.x - p.x);
-   const halfAngle = warriorSweepAngle(s.weaponLevel, s.evolved);
-   for (const blocked of threats.filter(shot => this.inSweep(p, shot, angle, halfAngle)).slice(0, s.weaponLevel >= 5 ? 2 : 1)) {
-    blocked.life = 0;
-    this.effect('crystal', blocked, 0xffd982, 17, .24);
-   }
-   this.slash(p, this.range, angle, halfAngle, this.damage, 0xffd067, 15);
+   this.swingSword(aim, threats);
   } else {
    if (!target) return false;
    const angle = p.facing = Math.atan2(target.y - p.y, target.x - p.x);
@@ -303,8 +340,10 @@ export class GameSimulation {
   s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius: kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' ? 6 : 4, damage, kind, life: 3.5, pierce, hit, target, pierceScale, skillShot, blastRadius });
   return true;
  }
- private castSkill(id: string, level: number): boolean {
-  const s = this.state, p = s.player, cfg = SKILLS[id], target = this.nearest(p, 500), damage = this.power * cfg.damage * (1 + (level - 1) * B.skillDamageStep), radius = cfg.radius + (level - 1) * (cfg.radiusPerLevel ?? B.skillRadiusStep);
+ private castSkill(id: string, level: number, finalRank: boolean): boolean {
+  const s = this.state, p = s.player, cfg = SKILLS[id], target = this.nearest(p, 500);
+  const damage = this.power * cfg.damage * (1 + (level - 1) * B.skillDamageStep) * (finalRank ? ATTACK_SKILL_UPGRADE.damage : 1);
+  const radius = cfg.radius + (level - 1) * (cfg.radiusPerLevel ?? B.skillRadiusStep);
   if (id === 'shield') { p.shield = 1; this.effect('guard', p, 0xf4d998, 36, .5); return true; }
   if (id === 'frost') {
    const chilled = this.nearest(p, radius, new Set<number>(), true);

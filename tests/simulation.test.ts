@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { BALANCE, HEROES } from '../src/game/config';
+import { HEROES, SKILLS, skillRankLimit } from '../src/game/config';
 import { GameSimulation } from '../src/game/simulation';
 import { parseSave } from '../src/game/save';
 import { directionFromDrag } from '../src/game/math';
@@ -33,7 +33,7 @@ describe('combat and run lifecycle', () => {
   expect(sim.state.status).toBe('running'); expect(sim.state.level).toBeGreaterThan(2);
  });
  it('handles no remaining upgrades without blocking play', () => {
-  const sim = new GameSimulation('warrior', parseSave(null)); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.skills = Object.fromEntries(HEROES.warrior.skills.map(id => [id, BALANCE.skillMax])); sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 }; sim.gainXp(100); expect(sim.state.status).toBe('running');
+  const sim = new GameSimulation('warrior', parseSave(null)); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.skills = Object.fromEntries(HEROES.warrior.skills.map(id => [id, skillRankLimit(SKILLS[id])])); sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 }; sim.gainXp(100); expect(sim.state.status).toBe('running');
  });
  it('spawns a boss at 3 minutes without stopping the scroll, stays bounded over a long run', () => {
   const sim = new GameSimulation('warrior', parseSave(null), () => .4); sim.state.player.hp = sim.state.player.maxHp = 100000;
@@ -84,7 +84,7 @@ describe('skills, bosses and bounded encounters', () => {
 describe('endless run endurance', () => {
  it('keeps actors, projectiles, hazards and effects bounded through ten minutes', () => {
   const sim = new GameSimulation('mage', parseSave(null), () => .37); sim.state.player.hp = sim.state.player.maxHp = 1e7;
-  sim.state.skills = Object.fromEntries(HEROES.mage.skills.map(id => [id, BALANCE.skillMax])); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 };
+  sim.state.skills = Object.fromEntries(HEROES.mage.skills.map(id => [id, skillRankLimit(SKILLS[id])])); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 };
   for (let i = 0; i < 12000; i++) { sim.update(.05, { x: Math.sin(i / 60), y: Math.cos(i / 80) });
    if (sim.state.enemies.length > 100 || sim.state.projectiles.length > 180 || sim.state.effects.length > 60 || sim.state.hazards.length > 12) throw new Error('entity limit exceeded');
   }

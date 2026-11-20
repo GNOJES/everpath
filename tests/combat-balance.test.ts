@@ -124,3 +124,35 @@ it('damages and slows the impact target and nearby enemies once', () => {
  expect(nearby.slowedUntil).toBeGreaterThan(sim.state.elapsed);
  expect(distant.slowedUntil).toBeUndefined();
 });
+
+it('parries an imminent shot without a melee target during basic attack recovery', () => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ const { player } = sim.state;
+ const target = sim.spawnEnemy('slime', player.x, player.y - 60)!;
+ target.hp = 1;
+ frames(sim, .15);
+ expect(target.hp).toBeLessThanOrEqual(0);
+ const arrow = { id: 901, x: player.x + 32, y: player.y, kind: 'enemy' as const, vx: -360, vy: 0, pierce: 1, damage: 25, radius: 4, life: 1, hit: new Set<number>() };
+ const outgoing = { ...arrow, id:902, vx:360 };
+ sim.state.projectiles.push(arrow, outgoing);
+ sim.update(.05);
+ expect(sim.state.projectiles).not.toContain(arrow);
+ expect(sim.state.projectiles).toContain(outgoing);
+ expect(outgoing.life).toBeGreaterThan(0);
+ expect(player.hp).toBe(player.maxHp);
+ expect(sim.state.effects.filter(effect => effect.kind === 'slash')).toHaveLength(2);
+});
+
+it('rank-four damage improves only the selected offensive skill', () => {
+ const cast = (rank: number) => {
+  const sim = new GameSimulation('mage', parseSave(null), () => .5);
+  sim.state.skills.fire = rank;
+  const target = sim.spawnEnemy('brute', 216, 450)!;
+  target.hp = 10000;
+  sim.update(.05);
+  return { dealt: 10000 - target.hp, weaponDamage: sim.damage };
+ };
+ const base = cast(3), mastered = cast(4);
+ expect(mastered.dealt).toBeGreaterThan(base.dealt);
+ expect(mastered.weaponDamage).toBe(base.weaponDamage);
+});

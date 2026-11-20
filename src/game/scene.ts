@@ -62,7 +62,7 @@ export class ForestScene extends Phaser.Scene {
   this.shadow(p.x + (facingLeft ? -1 : 1) * fall * 12, p.y + 7, 18 + fall * 8, 7);
   this.companions.forEach((image, i) => { image.setVisible(!s); if (!s) { image.y = 530 + i * 12 + Math.sin(this.clock * 2 + i) * .8; image.setDepth(100 + image.y); this.shadow(image.x, image.y + 7, 15, 6); } });
   this.renderWardenFall(s);
-  if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderPickups(s); this.renderEffects(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (s.skills.frost - 1) * BALANCE.skillRadiusStep); } }
+  if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderPickups(s); this.renderEffects(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (Math.min(s.skills.frost, BALANCE.skillMax) - 1) * BALANCE.skillRadiusStep); } }
   else { this.actors.trim(0); this.shots.trim(0); for (const label of this.labels) label.setVisible(false); }
   // Small drifting spores are bounded and deterministic, rather than particle emitters.
   for (let i = 0; i < 17; i++) { const x = ((i * 107 + Math.sin(this.clock * .6 + i) * 18) % 430 + 430) % 430, y = (i * 61 + this.clock * (6 + i % 4)) % 768; this.fx.fillStyle(0xf5dca0, .15 + (Math.sin(this.clock * 1.3 + i) + 1) * .15); this.fx.fillRect(x, y, 2, 2); }

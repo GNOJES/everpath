@@ -2,7 +2,7 @@ import type { HeroConfig, HeroId, EnemyKind, SkillConfig, PermanentId, PassiveId
 export const WORLD = { width: 432, height: 768, scrollSpeed: 28, playerRadius: 12, minY: 38, margin: 22, joystickRadius: 48, joystickDeadzone: 7, invincibility: .8, maxEnemies: 100, maxProjectiles: 180, maxEffects: 60, maxHazards: 12 };
 export const BALANCE = { bossAt: 180, bossEvery: 180, firstSpawn: 0, spawnInterval: .73, minSpawnInterval: .23, spawnRateRamp: .0042, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .08, weaponDamageStep: .13, weaponHasteStep: .08, weaponRangeStep: .09, eliteAfter: 80, goldPerKill: .75, bossGold: 40, bossXp: 40, enemyHpGrowth: .0044, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, healOnLevel: .08, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
 export const HEROES: Record<HeroId, HeroConfig> = {
- warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '좁고 강한 검격으로 적을 밀고, 범위 안의 탄환을 지웁니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격으로 일반 적을 밀어냅니다. 범위 안 탄환을 지우며 5레벨부터 최대 두 개를 막습니다.', icon: 'sword', color: '#efae35', hp: 160, speed: 149, damage: 4, cooldown: .59, range: 100, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield', 'bash', 'lunge', 'quake', 'sunder'], bars: [5, 3, 3] },
+ warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '새벽의 검으로 적을 밀고, 다가오는 탄환을 자동으로 쳐냅니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격으로 일반 적을 밀어냅니다. 범위 안 탄환을 지우며 5레벨부터 최대 두 개를 막습니다.', icon: 'sword', color: '#efae35', hp: 160, speed: 149, damage: 4, cooldown: .59, range: 100, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield', 'bash', 'lunge', 'quake', 'sunder'], bars: [5, 3, 3] },
  archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '빠르고 약한 화살로 거리를 유지합니다. 활을 강화하면 적을 관통합니다.', weapon: '바람의 활', upgradeDescription: '1레벨은 적 하나에 명중합니다. 2레벨부터 관통합니다. 3·5레벨에서 화살 각도가 추가되며 같은 적에게는 한 번만 명중합니다.', icon: 'bow', color: '#f47153', hp: 134, speed: 190, damage: 4.8, cooldown: .42, range: 310, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain', 'snare', 'ricochet', 'blastArrow', 'deadeye'], bars: [2, 5, 4] },
  mage: { id: 'mage', name: '엘라', title: 'THE ARCANIST', role: '마법사', description: '유도탄으로 견제하고, 재사용 시간이 긴 강력한 주문으로 적을 제압합니다.', weapon: '별빛 지팡이', upgradeDescription: '단일 유도탄. 레벨이 오르면 피해·사거리·공격 속도가 증가합니다.', icon: 'staff', color: '#7583e8', hp: 147, speed: 153, damage: 7, cooldown: .51, range: 290, projectileSpeed: 350, skills: ['chain', 'fire', 'frost', 'meteor', 'gravity', 'prism', 'runeCross'], bars: [2, 3, 5] },
 };
@@ -66,6 +66,12 @@ export const EVOLUTIONS = {
  mage: { name: '천체의 지팡이', passive: 'power' as const, damageMultiplier: 1.25, description: '단일 유도탄 피해 +25%, 공격 주기 단축.' },
 };
 export const WARRIOR_WEAPON_STEPS = [2.15, 2.40, 2.50, 2.62, 2.75] as const;
+export const WARRIOR_PARRY = { cooldown: .65, lookahead: .2 };
+export const ATTACK_SKILL_UPGRADE = {
+ rank: BALANCE.skillMax + 1, damage: 1.32, haste: 1.18,
+ description: '이 스킬의 피해 +32%, 발동 빈도 +18%.',
+};
+export const skillRankLimit = (skill: SkillConfig) => skill.damage > 0 ? ATTACK_SKILL_UPGRADE.rank : BALANCE.skillMax;
 export const warriorSweepAngle = (level: number, evolved: boolean) =>
  (26 + (level - 1) * 3 + (evolved ? 5 : 0)) * Math.PI / 180;
 

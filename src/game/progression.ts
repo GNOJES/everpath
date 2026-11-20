@@ -1,11 +1,16 @@
-import { BALANCE, HEROES, PASSIVES, SKILLS, EVOLUTIONS } from './config';
+import { BALANCE, HEROES, PASSIVES, SKILLS, EVOLUTIONS, ATTACK_SKILL_UPGRADE, skillRankLimit } from './config';
 import type { RunState, Upgrade, PassiveId } from './types';
 export function availableUpgrades(run: RunState): Upgrade[] {
  const hero = HEROES[run.hero], options: Upgrade[] = [];
  const evolution = EVOLUTIONS[run.hero];
  if (!run.evolved && run.weaponLevel >= BALANCE.weaponMax && run.passives[evolution.passive] >= 2) options.push({ id: 'evolve', name: evolution.name, subtitle: 'WEAPON EVOLUTION', description: evolution.description, icon: hero.icon, level: 0, max: 1, color: hero.color });
  if (run.weaponLevel < BALANCE.weaponMax) options.push({ id: 'weapon', name: hero.weapon, subtitle: 'WEAPON UPGRADE', description: hero.upgradeDescription, icon: hero.icon, level: run.weaponLevel, max: BALANCE.weaponMax, color: hero.color });
- for (const id of hero.skills) { const skill = SKILLS[id], level = run.skills[id] ?? 0; if (run.level >= (skill.unlockLevel ?? 1) && level < BALANCE.skillMax) options.push({ id: `skill:${id}`, ...skill, level, max: BALANCE.skillMax }); }
+ for (const id of hero.skills) {
+  const skill = SKILLS[id], level = run.skills[id] ?? 0, max = skillRankLimit(skill);
+  if (run.level < (skill.unlockLevel ?? 1) || level >= max) continue;
+  const description = level === BALANCE.skillMax ? ATTACK_SKILL_UPGRADE.description : skill.description;
+  options.push({ id: `skill:${id}`, ...skill, level, max, description });
+ }
  for (const id of Object.keys(PASSIVES) as PassiveId[]) if (run.passives[id] < BALANCE.passiveMax) options.push({ id: `passive:${id}`, ...PASSIVES[id], level: run.passives[id], max: BALANCE.passiveMax, color: '#c7c2a0' });
  return options;
 }
@@ -18,12 +23,15 @@ export function rollUpgrades(run: RunState, random: () => number): Upgrade[] {
   if (recovery >= 0) result.push(...pool.splice(recovery, 1));
  }
  const unlockLevel = (option: Upgrade) => SKILLS[option.id.slice(6)]?.unlockLevel;
- const regular = pool.filter(option => !unlockLevel(option));
- const advanced = pool.filter(option => unlockLevel(option));
+ const isFinalSkillRank = (option: Upgrade) => option.id.startsWith('skill:') && option.level === BALANCE.skillMax;
+ const regular = pool.filter(option => !isFinalSkillRank(option) && !unlockLevel(option));
+ const advanced = pool.filter(option => !isFinalSkillRank(option) && unlockLevel(option));
+ const finalRanks = pool.filter(isFinalSkillRank);
  while (result.length < 3 && regular.length) result.push(...regular.splice(Math.min(regular.length - 1, Math.floor(random() * regular.length)), 1));
  // An unlock gets its own choice without crowding out the basic weapon or passives.
  const featured = advanced.find(option => unlockLevel(option) === run.level)
-  ?? (advanced.length && run.level >= 9 && run.level % 3 === 0 ? advanced[(run.level / 3 - 3) % advanced.length] : undefined);
+  ?? (advanced.length && run.level >= 9 && run.level % 3 === 0 ? advanced[(run.level / 3 - 3) % advanced.length] : undefined)
+  ?? (finalRanks.length ? finalRanks[run.level % finalRanks.length] : undefined);
  if (featured) result.push(featured);
  return result;
 }
