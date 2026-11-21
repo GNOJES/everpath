@@ -41,8 +41,13 @@ test('bosses descend into the field with their own bars before the final result'
  }, elapsed);
  await advanceTo(359.99);
  await page.clock.runFor(1680);
+ const mixed = await page.evaluate(() => {
+  const { sim } = (window as unknown as { bossTest: { sim: import('../src/game/simulation').GameSimulation } }).bossTest;
+  return sim.state.enemies.filter(enemy => enemy.middleWave === 360 && !enemy.entryTarget).map(enemy => enemy.kind);
+ });
+ expect(mixed).toEqual(['boss', 'briar']);
  await expect(page.locator('#hud #boss-fill, #hud #boss-hud')).toHaveCount(0);
- await page.screenshot({ path: 'test-results/grom-pair-health.png' });
+ await page.screenshot({ path: 'test-results/grorm-briar-health.png' });
  await advanceTo(599.99);
  await page.clock.runFor(1680);
  await expect(page.locator('#hud #boss-fill, #hud #boss-hud')).toHaveCount(0);

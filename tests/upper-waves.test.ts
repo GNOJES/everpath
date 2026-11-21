@@ -3,6 +3,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { GameSimulation } from '../src/game/simulation';
 import { parseSave } from '../src/game/save';
 import { WORLD } from '../src/game/config';
+import { spawnInterval } from '../src/game/encounters';
 import { playTrial } from './helpers/playtest';
 
 it('uses three upper entries with an exact 3:1:1 split across complete groups', () => {
@@ -26,13 +27,15 @@ it('spawns a side enemy immediately, then advances diagonally before chasing', (
  sim.state.player.y = 75;
  sim.update(.025);
  const initial = sim.state.spawned;
+ const due = sim.state.elapsed + spawnInterval(sim.state.elapsed);
  let side = sim.state.enemies.find(e => e.entryTarget);
  for (let i = 0; !side && i < 70; i++) {
   sim.update(.025);
   side = sim.state.enemies.find(e => e.entryTarget);
  }
  expect(sim.state.spawned).toBe(initial + 1);
- expect(sim.state.elapsed).toBeLessThan(1.2);
+ expect(sim.state.elapsed).toBeGreaterThanOrEqual(due);
+ expect(sim.state.elapsed).toBeLessThan(due + .025);
  expect(side).toBeDefined();
  const enemy = side!;
  const target = enemy.entryTarget!;

@@ -67,7 +67,7 @@ export function playTrial(hero: HeroId, seed: number, policy: Policy, build: Bui
  const save = saved ? structuredClone(saved) : parseSave(null); if (!saved) for (const key of ['attack', 'hp', 'speed', 'gold'] as const) save.upgrades[key] = meta;
  const sim = new GameSimulation(hero, save, seededRandom(seed)), pilot = new Pilot(policy);
  let direction = { x: 0, y: 0 }, firstKill = 0, firstLevel = 0, hpLost = 0, hits = 0, maxEnemies = 0, maxShots = 0; const checkpoints: Checkpoint[] = [], upgrades: { time: number; id: string }[] = [];
- const pair = new Set<Enemy>();
+ const middleBosses = new Set<Enemy>();
  const step = 1 / 30;
  for (let frame = 0; frame < duration * 30; frame++) {
   const s = sim.state; if (s.status === 'gameover' || s.status === 'victory') break;
@@ -75,12 +75,17 @@ export function playTrial(hero: HeroId, seed: number, policy: Policy, build: Bui
   if (frame % 3 === 0) direction = pilot.direction(s);
   const before = s.player.hp; sim.update(step, direction); if (s.player.hp < before) { hpLost += before - s.player.hp; hits++; }
   if (s.kills && !firstKill) firstKill = s.elapsed;
-  if (s.elapsed >= 360 && !s.finalSpawned) for (const enemy of s.enemies) {
-   if (enemy.paired) pair.add(enemy);
+  if (s.elapsed >= 120 && !s.finalSpawned) for (const enemy of s.enemies) {
+   if (enemy.middleWave !== undefined) middleBosses.add(enemy);
   }
   maxEnemies = Math.max(maxEnemies, s.enemies.length); maxShots = Math.max(maxShots, s.projectiles.length);
   if (Math.floor(s.elapsed / 60) > checkpoints.length) checkpoints.push({ seconds: Math.round(s.elapsed), hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), kills: s.kills, level: s.level, bosses: s.bosses, enemies: s.enemies.length, skills: { ...s.skills } });
  }
  const s = sim.state;
- return { hero, seed, policy, build, duration, meta, gold: s.gold, evolved: s.evolved, weaponLevel: s.weaponLevel, maxSkillRank: Math.max(0, ...Object.values(s.skills)), survived: Math.round(s.elapsed * 10) / 10, status: s.status, firstKill: Math.round(firstKill * 10) / 10, firstLevel: Math.round(firstLevel * 10) / 10, sixMinuteBossKills: [...pair].filter(enemy => enemy.hp <= 0).length, kills: s.kills, bosses: s.bosses, level: s.level, hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), hpLost: Math.round(hpLost), hits, maxEnemies, maxShots, upgrades, checkpoints };
+ const middleBossKills: Record<number, number> = {};
+ for (const enemy of middleBosses) {
+  const wave = enemy.middleWave;
+  if (enemy.hp <= 0 && wave !== undefined) middleBossKills[wave] = (middleBossKills[wave] ?? 0) + 1;
+ }
+ return { hero, seed, policy, build, duration, meta, gold: s.gold, evolved: s.evolved, weaponLevel: s.weaponLevel, maxSkillRank: Math.max(0, ...Object.values(s.skills)), survived: Math.round(s.elapsed * 10) / 10, status: s.status, firstKill: Math.round(firstKill * 10) / 10, firstLevel: Math.round(firstLevel * 10) / 10, middleBossKills, kills: s.kills, bosses: s.bosses, level: s.level, hp: Math.round(s.player.hp), maxHp: Math.round(s.player.maxHp), hpLost: Math.round(hpLost), hits, maxEnemies, maxShots, upgrades, checkpoints };
 }

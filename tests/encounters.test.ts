@@ -1,14 +1,27 @@
 import { it, expect } from 'vitest';
 import { GameSimulation } from '../src/game/simulation';
 import { parseSave } from '../src/game/save';
-import { spawnInterval } from '../src/game/encounters';
-it('increases spawn pressure smoothly across minute boundaries and caps it below five enemies per second', () => {
- expect(spawnInterval(0)).toBeLessThan(.85);
- for (const t of [65, 130, 180, 260, 300, 555]) { expect(Math.abs(spawnInterval(t + .01) - spawnInterval(t - .01))).toBeLessThan(.001); }
- expect(1 / spawnInterval(300)).toBeGreaterThan(2); expect(spawnInterval(590)).toBeGreaterThan(spawnInterval(555) * 2);
- expect(1 / spawnInterval(600)).toBeLessThan(1);
- expect(Math.abs(spawnInterval(600.01) - spawnInterval(599.99))).toBeLessThan(.003);
- expect(spawnInterval(36000)).toBeGreaterThanOrEqual(.2);
+import { chooseEnemyKind, spawnInterval } from '../src/game/encounters';
+it('uses fewer arrivals early and tapers smoothly into sparse final-boss reinforcements', () => {
+ expect(spawnInterval(0)).toBeGreaterThan(.85);
+ expect(spawnInterval(300)).toBeLessThan(spawnInterval(0));
+ for (const t of [65, 120, 240, 360, 480, 555]) expect(Math.abs(spawnInterval(t + .01) - spawnInterval(t - .01))).toBeLessThan(.001);
+ expect(spawnInterval(580)).toBeGreaterThan(spawnInterval(555));
+ expect(spawnInterval(590)).toBeGreaterThan(spawnInterval(580));
+ expect(spawnInterval(599.999)).toBeCloseTo(7.5, 1);
+ expect(spawnInterval(600)).toBe(7.5);
+ expect(spawnInterval(670)).toBe(7.5);
+});
+
+it('gives single-target builds time to level before fast enemies build up', () => {
+ expect(spawnInterval(0)).toBeGreaterThan(1.3);
+ expect(chooseEnemyKind(49.99, () => .95)).toBe('goblin');
+ expect(chooseEnemyKind(50, () => .95)).toBe('bat');
+ expect(chooseEnemyKind(94.99, () => .95)).toBe('bat');
+ const sim = new GameSimulation('mage', parseSave(null), () => .5);
+ for (let i = 0; i < 4; i++) sim.damageEnemy(sim.spawnEnemy('slime', 216, 280)!, 99);
+ expect(sim.state.level).toBe(2);
+ expect(sim.state.status).toBe('upgrade');
 });
 
 it('spaces out late shaman arrivals and keeps only one active', () => {

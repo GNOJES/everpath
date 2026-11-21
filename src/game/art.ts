@@ -14,6 +14,33 @@ function pixelSprite(map: string[], colors: Record<string, string>) { return can
 const palette = { o: '#202943', d: '#344c72', a: '#4e8ac4', b: '#a4daef', l: '#f9f5db', s: '#efb586', h: '#81513c', r: '#bc3540', R: '#fc6650', g: '#286d69', G: '#82c8a3', p: '#5549ab', P: '#aca0ff', c: '#44d6f4', y: '#ffd367', w: '#fff7ee' };
 export function createArt(scene: Phaser.Scene) {
  const add = (key: string, source: HTMLCanvasElement) => { if (!scene.textures.exists(key)) scene.textures.addCanvas(key, source); artUrls[key] = source.toDataURL(); };
+ const heroColors = { o: '#342640', d: '#814c43', s: '#eb9867', S: '#ffcc91' };
+ add('field-warrior', pixelSprite([
+  '      oooo', '     oyyyyoo', '    oyyYYyyyo', '  oyyyYYYYyyoo', ' oyyooYYYyYyyo',
+  ' ooooyyYyYYYyo      o', '    oyYYyYYyoo     olo', '   oyyyoyooo      ollo',
+  '   ooybSSSbSo    ollLo', '    obSSoSSoo    ollLo', '    odSSSSSo    ollLo',
+  '    oodSSdo     ollo', '   obbboooobo  ollo', '  obbbBLbBBBo ollo',
+  '  obyLBByBBbooyo', '  oyyBBoLBbooYyo', '   oyobBBobooyo', '    oobbbyboo',
+  '     obobybo', '     obo obo', '    obbo obbo', '    oooo oooo',
+ ], { ...heroColors, y: '#df883c', Y: '#ffd86f', b: '#4a4b73', B: '#7184ab', L: '#dce9de', l: '#a6bdd2' }));
+ add('field-archer', pixelSprite([
+  '     oooo', '    ogGGgoo', '   ogGggGGgo', '  ogGoorrRGgo', ' oggooRRRRGGgo',
+  '  oooRRRdRRRGgo', '    odRdSdRRGGo   oo', '   odRSoSSdoGgo  oygo',
+  '   odRSSSoSodgo  oyGgo', '    odSSSSSogo  oy o',
+  '   ogodSSdogoo  oY o', '  oggGGoooGgggo oY o', '  oggGYgYggggsooY o',
+  '  oggGggGGggosooY o', '   ogggYYgggo   oY o', '   oogyyYggoo   oy o',
+  '    oggggggo     oyo', '     obbybbo      oo', '     obo obo', '     obo obo',
+  '    odbo obdo', '    oooo oooo',
+ ], { ...heroColors, g: '#557749', G: '#95ac5d', r: '#a74c34', R: '#e77e47', b: '#54445b', y: '#ad6b3e', Y: '#e7b26b' }));
+ add('field-mage', pixelSprite([
+  '      oooo', '     opPPpo', '    opPPPppo', '    opPPpYOo', '    opPPpYyoo',
+  '   opPPppYyppo', ' ooppPPPPPPpPpo', 'oppPPPPPPPPPPppo',
+  ' opPPoobbbobppoo   o', '  oooobSSSbooo    oco', '    obSoSSobo    ocCo',
+  '    obSSSSSbo   oCCcco', '    obbdSSdoo    ocCo', '    opPoooopPo   oco',
+  '   opPPpYpPPpo    so', '   opPPpyPPppso   so', '  oppPPYPppopso   so',
+  '  oppPPpPPppo ooooso', '   oppPpPPpo      so', '    obpo pbo      so',
+  '    obbo obbo', '    oooo oooo',
+ ], { ...heroColors, p: '#7851a7', P: '#ad79d0', b: '#4d416e', c: '#4c9890', C: '#a4e9cd', y: '#b87355', Y: '#efb866', O: '#ffc773' }));
  add('slime', pixelSprite(['      ggggg     ', '    ggGGGGGgg   ', '   gGGGGGllGGg  ', '  gGGGGGGGlGGGg ', ' gGGGGGGGGGGGGGg', ' gGGdoGGGGdoGGGg', ' gGGooGGGGooGGGg', ' gGGGGGGGGGGGGGg', '  ggGGGddGGGggg ', '   ggggggggggg  '], { ...palette, g: '#226d83', G: '#55d0c4' }));
  add('goblin', pixelSprite(['       rrr      ', '      rrRrr     ', '  go ogggggo og ', '  gGogGGGGGogGg ', '   gGGlGGGlGGg  ', '    gGoGGoGg    ', '     gGssGg     ', '     ohhhho     ', '   oghGhGhgo  a ', '   osghhggso aa ', '   osohhhoso ah ', '    ogggggo  h  ', '     ohhho      ', '    ogo ogo     ', '   ohho ohho    ', '   oooo oooo    '], palette));
  add('skeleton', pixelSprite(['      ooooo     ', '     obbbbbo    ', '     obllbbo    ', '     boddobo    ', '     obbdbbo    ', '      obbbo     ', '      oddo   h  ', '    obbbbbo  hh ', '    osdbdso  h h', '    obbbbo   h h', '     obdbo   h h', '     obbbo   hh ', '     obdbo   h  ', '    obo obo     ', '    obo obo     ', '   obbo obbo    ', '   oooo oooo    '], palette));
@@ -22,6 +49,13 @@ export function createArt(scene: Phaser.Scene) {
  add('brute', pixelSprite(['  a   a   a  ', ' aadddddaa   ', ' addlllllda  ', ' adlldldlda  ', '  ddllllld   ', ' dddddddddd  ', 'aaddddddddaa ', 'aalllldlllaa ', '  dddddddd   ', '  ddd  ddd   ', '  ooo  ooo   '], { ...palette, a: '#82998a', d: '#485764', l: '#beceaa' }));
  add('shaman', pixelSprite(['     ppp     ', '    pPPpp    ', '   pPPPppp   ', '  pPllPllpp  ', '   pPPPPpp   ', '    ppppp    ', '  pPPPPPPpp  ', ' pPPPPPPPPpp ', ' pPPPPPPPPpp ', '  ppppppppp  ', '   oo  oo    '], { p: '#493c60', P: '#9474a4', l: '#bded9b', o: '#26352d' }));
  add('warden', pixelSprite([' a   a     a   a ', ' aa  aa   aa  aa ', '  aadddddddddaa  ', '   ddPPPPPPPdd   ', '  ddPPllPllPPdd  ', '   dPPPPPPPPPd   ', '    dPPPpPPPd    ', '   aaadddddaaa   ', ' aadddddddddddaa ', 'adddPPdddPPddddda', 'addPPPPdPPPPdddda', ' addddddddddddda ', '   ddddddddddd   ', '   dd  ddd  dd   ', '  aaa  aaa  aaa  '], { a: '#9a9c74', d: '#344a45', P: '#8b6e9b', p: '#bda0ba', l: '#f7d48f' }));
+ add('briar', pixelSprite([
+  '   h                h', '   hh     oooo     hh', '   hoh   oaAAao   hoh', '    hoh oAAaaAAo hoh',
+  '     oooaddddaooo', '    oggoaddddagoggo', '   ogGGoddccddoGGgo', '   ogGGodcLlcdoGGgo',
+  '    oggaadccdaaggo', '    oaasodddosaaao', '   oddaAaooooaaaddo', '  odddhAAahaaadddddo',
+  '  odoodAAaAAadooddo', '  oohhoddadddohhhoo', '   hh  oooooo  hh', '       oddddo',
+  '      oao  oao', '      odd  ddo', '     ohho  ohho', '     oooo  oooo',
+ ], { o: '#30284a', h: '#80534c', a: '#9775bd', A: '#d0aff0', d: '#564976', g: '#396260', G: '#78ad92', c: '#e99545', L: '#fff3ab', l: '#fcbd65', s: '#ae765d' }));
  add('arrow', canvas(19, 5, c => { rect(c, '#e5d7a3', 0, 2, 16, 1); rect(c, '#a6cdb7', 14, 1, 3, 3); rect(c, '#edf0cf', 17, 2, 2, 1); rect(c, '#cbd2b1', 0, 0, 4, 1); rect(c, '#cbd2b1', 0, 4, 4, 1); }));
  add('magic', canvas(13, 13, c => { rect(c, '#554875', 2, 2, 9, 9); rect(c, '#a89de0', 1, 4, 11, 5); rect(c, '#b5b1ee', 4, 1, 5, 11); rect(c, '#e0d9ff', 3, 3, 7, 7); rect(c, '#f4f0d4', 5, 4, 3, 4); }));
  add('blade', canvas(20, 13, c => { rect(c, '#a8e8da', 0, 5, 20, 3); rect(c, '#d5fff0', 3, 3, 13, 7); rect(c, '#efffe0', 7, 1, 4, 11); }));

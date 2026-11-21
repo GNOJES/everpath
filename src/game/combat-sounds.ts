@@ -39,6 +39,8 @@ export const COMBAT_SOUNDS: Record<CombatSound, SoundProfile> = {
  grormDash: { tones: [[117, 68, .21, .12, 'triangle']], noise: [1020, .26, .20] },
  grormSlam: { tones: [[96, 37, .26, .21, 'sine'], [214, 81, .14, .086, 'triangle']], noise: [410, .22, .23] },
  grormDefeat: { tones: [[104, 43, .26, .15, 'triangle'], [392, 392, .27, .08, 'triangle', .13], [523, 523, .38, .09, 'sine', .24]], noise: [360, .24, .13] },
+ briarWarn: { tones: [[133, 220, .33, .095, 'triangle'], [245, 288, .30, .065, 'sine', .14]], noise: [730, .31, .10] },
+ briarImpact: { tones: [[177, 52, .24, .11, 'triangle'], [77, 36, .28, .145, 'sine']], noise: [970, .18, .19] },
  wardenRoots: { tones: [[72, 111, .42, .105, 'sine'], [180, 263, .42, .077, 'triangle', .075]], noise: [590, .37, .155] },
  wardenAim: { tones: [[230, 556, .53, .105, 'triangle'], [100, 215, .55, .095, 'sine', .045]] },
  wardenFan: { tones: [[605, 118, .22, .12, 'triangle'], [238, 78, .27, .105, 'triangle', .05]], noise: [1580, .19, .19] },

@@ -55,28 +55,27 @@ describe('campaign boundary cases',()=>{
 });
 
 describe('boss entry waves', () => {
- it('sends one centered boss at three minutes and two staggered bosses at six', () => {
+ it('sends the requested four middle-boss waves from offscreen', () => {
   const sim = new GameSimulation('warrior', parseSave(null), () => .5);
-  sim.state.elapsed = 179.99;
-  sim.update(.025);
-  const first = sim.state.enemies.filter(e => e.kind === 'boss');
-  expect(first).toHaveLength(1);
-  expect(first[0]).toMatchObject({ x: 216, entryTarget: { x: 216, y: 162 } });
-  expect(first[0].y).toBeLessThan(0);
-  sim.damageEnemy(first[0], 1e9);
-  while (sim.state.choices[0]) sim.chooseUpgrade(sim.state.choices[0].id);
-  sim.state.elapsed = 359.99;
-  sim.update(.025);
-  const pair = sim.state.enemies.filter(e => e.kind === 'boss');
-  expect(pair.map(e => e.x)).toEqual([108, 324]);
-  expect(pair.every(e => e.y < 0)).toBe(true);
-  expect(pair[1].timer - pair[0].timer).toBeCloseTo(1.55);
-  const goldBefore = sim.state.gold;
-  const killsBefore = sim.state.bosses;
-  for (const boss of pair) sim.damageEnemy(boss, 1e9);
-  expect(sim.state.gold).toBe(goldBefore);
-  expect(sim.state.pickups.filter(item => item.kind === 'chest').map(item => item.gold)).toEqual([120, 85, 85]);
-  expect(sim.state.bosses - killsBefore).toBe(2);
+  const schedule = [
+   [120, ['boss']], [240, ['boss', 'boss']],
+   [360, ['boss', 'briar']], [480, ['boss', 'briar', 'boss', 'briar']],
+  ] as const;
+  for (const [elapsed, kinds] of schedule) {
+   sim.state.elapsed = elapsed - .01;
+   const previous = new Set(sim.state.enemies.map(enemy => enemy.id));
+   sim.update(.025);
+   const wave = sim.state.enemies.filter(enemy => !previous.has(enemy.id) && ['boss', 'briar'].includes(enemy.kind));
+   expect(wave.map(enemy => enemy.kind)).toEqual(kinds);
+   expect(wave.every(enemy => enemy.y < 0 && !!enemy.entryTarget)).toBe(true);
+   expect(new Set(wave.map(enemy => enemy.x)).size).toBe(kinds.length);
+   expect(new Set(wave.map(enemy => enemy.timer)).size).toBe(kinds.length);
+   const before = sim.state.bosses;
+   for (const enemy of wave) sim.damageEnemy(enemy, 1e9);
+   while (sim.state.choices[0]) sim.chooseUpgrade(sim.state.choices[0].id);
+   expect(sim.state.bosses - before).toBe(kinds.length);
+   expect(sim.state.pickups.filter(pickup => pickup.kind === 'chest').length).toBe(sim.state.bosses);
+  }
  });
 
  it('starts the final boss offscreen and skips contact damage during its visible entrance', () => {
@@ -101,6 +100,7 @@ it('keeps living enemies, shots and telegraphs as the Warden joins the field', (
  const sim = new GameSimulation('mage', parseSave(null), () => .5);
  const s = sim.state;
  s.elapsed = 599.99;
+ s.player.invincible = 999;
  const regular = sim.spawnEnemy('goblin', 35, 120)!;
  const shot = {id:4001, x:40, y:35, vx:0, vy:95, life:3, damage:5, radius:4, kind:'enemy' as const, pierce:1, hit:new Set<number>()};
  const zone = {id:4002, x:40, y:70, life:1, delay:.7, radius:25, damage:3, owner:'enemy' as const, kind:'slam' as const, fired:false};
@@ -114,6 +114,33 @@ it('keeps living enemies, shots and telegraphs as the Warden joins the field', (
  const spawned = s.spawned;
  for (let i = 0; i < 60; i++) sim.update(.025);
  expect(s.spawned).toBe(spawned);
+ for (let i = 0; i < 360; i++) sim.update(.025);
+ expect(s.spawned - spawned).toBe(1);
+ expect(s.enemies.some(enemy => enemy.reinforcement)).toBe(true);
+ for (let i = 0; i < 1200; i++) {
+  for (const enemy of s.enemies) {
+   if (enemy.reinforcement) { enemy.hp = 1e9; enemy.speed = 0; }
+  }
+  sim.update(.025);
+ }
+ expect(s.spawned - spawned).toBe(3);
+ expect(s.enemies.filter(enemy => enemy.reinforcement)).toHaveLength(3);
+});
+
+it('gives Briar staggered artillery and a recovery window without a dash', () => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ const boss = sim.spawnEnemy('briar', 90, 200)!;
+ boss.timer = 0;
+ const p = sim.state.player;
+ sim.update(.05);
+ expect(boss.phase).toBe('warn');
+ const zones = sim.state.hazards.filter(hazard => hazard.impactSound === 'briarImpact');
+ expect(zones).toHaveLength(2);
+ expect(zones[0]).toMatchObject({x:p.x, y:p.y});
+ expect(zones[0].delay).toBeLessThan(zones[1].delay);
+ for (let i = 0; i < 29; i++) sim.update(.05);
+ expect(boss.phase).toBe('recover');
+ expect(zones.every(zone => zone.fired)).toBe(true);
 });
 
 it('cycles through warning circles, a targeted fan and a radial volley in the Warden fight', () => {

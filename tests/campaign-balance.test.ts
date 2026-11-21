@@ -10,12 +10,12 @@ it('makes permanent progression improve normal-HP ten-minute boss outcomes',()=>
  expect(results.filter(r=>r.meta===0&&r.status==='victory')).toHaveLength(0);
  for(const hero of ['warrior','archer','mage']){
   const base=results.filter(r=>r.hero===hero&&r.meta===0),grown=results.filter(r=>r.hero===hero&&r.meta===20);
-  const firstClears = base.filter(r => r.bosses > r.sixMinuteBossKills).length;
-  expect(base.filter(r => r.survived >= 180).length, hero).toBeGreaterThanOrEqual(12);
+  const firstClears = base.filter(r => r.middleBossKills[120] === 1).length;
+  expect(base.filter(r => r.survived >= 120).length, hero).toBeGreaterThanOrEqual(12);
   expect(firstClears, hero).toBeGreaterThanOrEqual(4);
   expect(firstClears, hero).toBeLessThanOrEqual(15);
   expect(grown.filter(r=>r.status==='victory').length,hero).toBeGreaterThanOrEqual(3);
-  expect(grown.filter(r => r.sixMinuteBossKills === 2).length, hero).toBeGreaterThan(base.filter(r => r.sixMinuteBossKills === 2).length);
+  expect(grown.filter(r => r.middleBossKills[360] === 2).length, hero).toBeGreaterThan(base.filter(r => r.middleBossKills[360] === 2).length);
   expect(grown.reduce((n,r)=>n+r.survived,0),hero).toBeGreaterThan(base.reduce((n,r)=>n+r.survived,0));
  }
 },180000);

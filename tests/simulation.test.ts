@@ -35,9 +35,9 @@ describe('combat and run lifecycle', () => {
  it('handles no remaining upgrades without blocking play', () => {
   const sim = new GameSimulation('warrior', parseSave(null)); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.skills = Object.fromEntries(HEROES.warrior.skills.map(id => [id, skillRankLimit(SKILLS[id])])); sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 }; sim.gainXp(100); expect(sim.state.status).toBe('running');
  });
- it('spawns a boss at 3 minutes without stopping the scroll, stays bounded over a long run', () => {
+ it('spawns a boss at 2 minutes without stopping the scroll, stays bounded over a long run', () => {
   const sim = new GameSimulation('warrior', parseSave(null), () => .4); sim.state.player.hp = sim.state.player.maxHp = 100000;
-  tick(sim, 181); expect(sim.state.enemies.some(e => e.kind === 'boss')).toBe(true); const scroll = sim.state.scroll; tick(sim, 20); expect(sim.state.scroll).toBeGreaterThan(scroll); expect(sim.state.enemies.length).toBeLessThanOrEqual(100); expect(sim.state.projectiles.length).toBeLessThanOrEqual(180); expect(sim.state.effects.length).toBeLessThanOrEqual(60);
+  tick(sim, 121); expect(sim.state.enemies.some(e => e.kind === 'boss')).toBe(true); const scroll = sim.state.scroll; tick(sim, 20); expect(sim.state.scroll).toBeGreaterThan(scroll); expect(sim.state.enemies.length).toBeLessThanOrEqual(100); expect(sim.state.projectiles.length).toBeLessThanOrEqual(180); expect(sim.state.effects.length).toBeLessThanOrEqual(60);
  });
  it('applies permanent stats to all heroes and damage invulnerability', () => {
   const save = parseSave(null); save.upgrades = { attack: 2, hp: 2, speed: 2, gold: 2, timeStop: 0 };

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { createArt, HERO_SPRITES } from './art';
+import { createArt } from './art';
 import { WORLD as W, BALANCE, BOSS_PATTERN, HEROES, ENEMIES, SKILLS, isBoss } from './config';
 import { PlayerInput } from './input';
 import { GameSimulation } from './simulation';
@@ -9,10 +9,9 @@ import { renderSkillEffect, renderSkillShot } from './skill-effects';
 import type { InputObservation } from '../diagnostics/types';
 import type { RunState } from './types';
 
-const heroScale = .74;
-const heroFootOrigin = 61 / 64;
-// The three sprites share a 64 px frame and their boot silhouettes center near x=30.
-const heroFootOffsetX = (30 - 32) * heroScale;
+const heroScale = 2;
+// These trimmed silhouettes all share the same center line through the boots.
+const heroPivotX = 8.5;
 
 class ImagePool {
  private images: Phaser.GameObjects.Image[] = [];
@@ -29,18 +28,15 @@ export class ForestScene extends Phaser.Scene {
  private hero!: Phaser.GameObjects.Image; private fallenWarden!: Phaser.GameObjects.Image; private companions: Phaser.GameObjects.Image[] = []; private scenery: { image: Phaser.GameObjects.Image; y: number; x: number }[] = [];
  private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private endFxTime = 0;
  constructor() { super('forest'); }
- preload() {
-  for (const [id, url] of Object.entries(HERO_SPRITES)) this.load.image(id, url);
- }
  create() {
   createArt(this); this.ground = this.add.tileSprite(216, 384, 432, 768, 'terrain').setDepth(-10);
   this.shadows = this.add.graphics().setDepth(5); this.fx = this.add.graphics().setDepth(2000); this.joystick = this.add.graphics().setDepth(3000);
   for (let i = 0; i < 24; i++) { const row = Math.floor(i / 2), left = i % 2 === 0; const x = left ? 8 + Math.sin(i * 41) * 28 : 417 + Math.sin(i * 17) * 25; const y = row * 102 - 120; const image = this.add.image(x, y, i % 4 === 0 ? 'pine' : 'tree').setOrigin(.5, 1).setScale(i % 4 === 0 ? 1.25 : 1.35); this.scenery.push({ image, x, y }); }
   for (let i = 0; i < 22; i++) { const x = i % 2 ? 323 + (i * 17 % 59) : 48 + (i * 17 % 58), y = i * 56; const key = ['bush', 'rock', 'bush', 'mushroom', 'stump'][i % 5]; const image = this.add.image(x, y, key).setOrigin(.5, 1).setScale(1.7); this.scenery.push({ image, x, y }); }
   for (const [x, y] of [[133, 480], [299, 1010]]) { const image = this.add.image(x, y, 'lantern').setOrigin(.5, 1).setScale(1.8); this.scenery.push({ image, x, y }); }
-  this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.add.image(216, 515, 'warrior').setScale(heroScale).setOrigin(.5, heroFootOrigin);
+  this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.addFieldHero(216, 515, 'warrior');
   this.fallenWarden = this.add.image(0, 0, 'warden').setOrigin(.5, .8).setVisible(false);
-  this.companions = [this.add.image(174, 559, 'archer'), this.add.image(263, 548, 'mage')]; this.companions.forEach(image => image.setScale(heroScale).setOrigin(.5, heroFootOrigin));
+  this.companions = [this.addFieldHero(174, 559, 'archer'), this.addFieldHero(263, 548, 'mage')];
   this.controls = new PlayerInput(this.game.canvas, () => this.onPause?.(), event => this.onInputObservation?.(event));
   this.events.once('shutdown', () => this.controls.destroy()); this.onReady?.();
  }
@@ -67,8 +63,12 @@ export class ForestScene extends Phaser.Scene {
   const moving = s?.status === 'running' && Math.hypot(this.controls.direction().x, this.controls.direction().y) > .01;
   const fall = defeated ? 1 - Math.pow(1 - clamp(this.endFxTime / .36, 0, 1), 3) : 0;
   const bob = defeated ? 0 : moving ? Math.sin(this.clock * 18) * 1.5 : Math.sin(this.clock * 2) * .7;
-  this.hero.setTexture(s?.hero ?? 'warrior').setTint(defeated ? 0xd7b3a5 : s?.evolved ? 0xffe9a8 : 0xffffff);
-  this.hero.setPosition(p.x, p.y + bob + fall * 5).setDepth(100 + p.y).setFlipX(facingLeft)
+  const heroTexture = `field-${s?.hero ?? 'warrior'}`;
+  if (this.hero.texture.key !== heroTexture) {
+   this.hero.setTexture(heroTexture).setOrigin(heroPivotX / this.hero.width, 1);
+  }
+  this.hero.setTint(defeated ? 0xd7b3a5 : s?.evolved ? 0xffe9a8 : 0xffffff);
+  this.hero.setPosition(p.x, p.y + bob + fall * 5).setDepth(100 + p.y).setScale(facingLeft ? -heroScale : heroScale, heroScale)
    .setAngle((facingLeft ? -1 : 1) * 82 * fall).setAlpha(!defeated && p.invincible > 0 && Math.sin(this.clock * 40) > 0 ? .4 : 1);
   this.heroShadow(this.hero, p.y, fall);
   this.companions.forEach((image, i) => {
@@ -91,9 +91,13 @@ export class ForestScene extends Phaser.Scene {
   }
   this.renderJoystick(s); this.audio.syncMusic(s?.status, s?.finalSpawned); this.onFrame?.(s, this.endFxTime);
  }
+ private addFieldHero(x: number, y: number, hero: RunState['hero']) {
+  const image = this.add.image(x, y, `field-${hero}`);
+  return image.setScale(heroScale).setOrigin(heroPivotX / image.width, 1);
+ }
  private heroShadow(image: Phaser.GameObjects.Image, groundY: number, fall = 0) {
-  const direction = image.flipX ? -1 : 1;
-  this.shadow(image.x + direction * (heroFootOffsetX + fall * 12), groundY + 1 + fall * 4, 10 + fall * 12, 4 + fall * 2);
+  const direction = image.scaleX < 0 ? -1 : 1;
+  this.shadow(image.x + direction * fall * 12, groundY + 1 + fall * 4, 10 + fall * 12, 4 + fall * 2);
  }
  private shadow(x: number, y: number, w: number, h: number) { this.shadows.fillStyle(0x34475d, .26); this.shadows.fillEllipse(x, y, w * 2, h * 2); }
  private renderEnemies(s: RunState) {
@@ -106,6 +110,7 @@ export class ForestScene extends Phaser.Scene {
     this.fx.fillStyle(e.elite ? 0xe1b46b : 0xaec17d).fillRect(e.x - 13, e.y - 35, 26 * Math.max(0, e.hp / e.maxHp), 3);
    }
    if (e.kind === 'warden') this.fx.lineStyle(2, 0xd0a3e9, .6).strokeCircle(e.x, e.y - 12, e.radius + 12 + Math.sin(this.clock * 3) * 4);
+   if (e.kind === 'briar' && e.phase === 'warn') this.fx.lineStyle(2, 0xffcf91, .65).strokeEllipse(e.x, e.y - 3, e.radius * 2.2, e.radius);
    if (e.kind === 'warden' && e.phase === 'warn') {
     const angle = Math.atan2(e.aim.y, e.aim.x);
     const cone = [new Phaser.Math.Vector2(e.x, e.y), ...[-.41, .41].map(offset =>
@@ -144,7 +149,7 @@ export class ForestScene extends Phaser.Scene {
   const x = clamp(boss.x - width / 2, 3, W.width - width - 3);
   const fill = width * clamp(boss.hp / boss.maxHp, 0, 1);
   this.fx.fillStyle(0x222337, 1).fillRect(x - 2, y - 2, width + 4, 11);
-  this.fx.fillStyle(final ? 0xcaa1ff : 0xffab4f, 1).fillRect(x, y, fill, 7);
+  this.fx.fillStyle(final ? 0xcaa1ff : boss.kind === 'briar' ? 0x7ee5c6 : 0xffab4f, 1).fillRect(x, y, fill, 7);
   this.fx.fillStyle(0xffffff, .48).fillRect(x, y, fill, 2);
  }
  private renderShots(s: RunState) {
