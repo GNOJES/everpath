@@ -26,7 +26,7 @@ export class GameSimulation {
   const weaponScale = hero === 'warrior'
    ? WARRIOR_WEAPON_STEPS[weaponLevel - 1]
    : 1 + (weaponLevel - 1) * (hero === 'archer' ? .15 : B.weaponDamageStep);
-  return this.power * weaponScale * (evolved ? EVOLUTIONS[hero].damageMultiplier : 1);
+  return this.power * HEROES[hero].basicDamageScale * weaponScale * (evolved ? EVOLUTIONS[hero].damageMultiplier : 1);
  }
  get haste() { return 1 + this.state.passives.haste * B.hasteStep; }
  get weaponHaste() { return this.haste + (this.state.weaponLevel - 1) * B.weaponHasteStep + (this.state.evolved ? .25 : 0); }
@@ -592,7 +592,7 @@ export class GameSimulation {
   }
   if (isBoss(enemy.kind)) this.onSound?.('grormDefeat');
   this.dropPickup(enemy);
-  const openingXp = .58 * (1 - openingProgress(s.elapsed));
+  const openingXp = .78 * (1 - openingProgress(s.elapsed));
   const xpScale = isBoss(enemy.kind) ? (enemy.rewardScale ?? 1) : (B.regularXpScale + openingXp) * (enemy.elite ? 2 : 1);
   this.gainXp(Math.round(ENEMIES[enemy.kind].xp * xpScale));
  }

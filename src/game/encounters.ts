@@ -4,7 +4,7 @@ import type { EnemyKind } from './types';
 export const openingProgress = (seconds: number) => clamp(seconds / 120, 0, 1);
 // A continuous arrival rate avoids the old 65-second jumps in simultaneous spawns.
 export function spawnInterval(seconds: number): number {
- const openingPace = 1 + .42 * (1 - openingProgress(seconds));
+ const openingPace = 1 + .65 * (1 - openingProgress(seconds));
  const normal = Math.max(BALANCE.minSpawnInterval, 1 / (1 / BALANCE.spawnInterval + Math.max(0, seconds) * BALANCE.spawnRateRamp)) * openingPace;
  const approach = clamp((seconds - CAMPAIGN.approachAt) / (CAMPAIGN.finalAt - CAMPAIGN.approachAt), 0, 1);
  return 1 / ((1 - approach) / normal + approach / CAMPAIGN.reinforcementInterval);
@@ -21,7 +21,7 @@ export const FOREST_ENCOUNTERS: { from: number; mix: [EnemyKind, number][] }[] =
  { from: 22, mix: [['slime', .78], ['goblin', .22]] },
  { from: 50, mix: [['slime', .63], ['goblin', .25], ['bat', .12]] },
  { from: 95, mix: [['slime', .50], ['goblin', .27], ['bat', .13], ['skeleton', .10]] },
- { from: 120, mix: [['slime', .32], ['goblin', .28], ['bat', .2], ['skeleton', .2]] },
+ { from: 145, mix: [['slime', .32], ['goblin', .28], ['bat', .2], ['skeleton', .2]] },
  { from: 240, mix: [['goblin', .25], ['bat', .26], ['skeleton', .30], ['brute', .19]] },
  { from: 390, mix: [['goblin', .17], ['bat', .21], ['skeleton', .2], ['brute', .35], ['shaman', .07]] },
  { from: 510, mix: [['bat', .29], ['skeleton', .22], ['brute', .41], ['shaman', .08]] },

@@ -71,7 +71,13 @@ it.each([[1, 1], [2, 2], [3, 3]])('unlocks pierce with bow rank %i', (rank, hits
 it('gives the archer the lowest base single-target DPS', () => {
  const dps = (id: keyof typeof HEROES) => new GameSimulation(id, parseSave(null)).damage / HEROES[id].cooldown;
  expect(dps('archer')).toBeLessThan(dps('mage'));
- expect(dps('mage')).toBeLessThan(dps('warrior'));
+ expect(dps('archer')).toBeLessThan(dps('warrior'));
+});
+
+it('gives the close-range warrior the strongest starting hit', () => {
+ const damage = (id: keyof typeof HEROES) => new GameSimulation(id, parseSave(null)).damage;
+ expect(damage('warrior')).toBeGreaterThan(damage('mage'));
+ expect(damage('mage')).toBeGreaterThan(damage('archer'));
 });
 
 it.each([[1, false, 52], [5, true, 86]])('limits sword level %i to the advertised frontal cone', (weaponLevel, evolved, degrees) => {

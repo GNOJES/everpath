@@ -100,9 +100,26 @@ describe('fatal frame ordering', () => {
  });
 });
 
-for (const hero of ['warrior', 'archer', 'mage'] as const) it(`gives ${hero} single-digit starting damage without one-shotting the first enemies`, () => {
+for (const [hero, previousInterval] of [['warrior', .59], ['archer', .42], ['mage', .51]] as const) it(`slows ${hero}'s starting attack and leaves the first enemies alive after one hit`, () => {
  const sim = new GameSimulation(hero, parseSave(null), () => .5);
- expect(sim.damage).toBeLessThan(10);
+ sim.state.timeStopRemaining = 4;
+ const player = sim.state.player;
+ const slime = sim.spawnEnemy('slime', player.x, player.y - 50)!;
+ const hits: number[] = [];
+ const step = 1 / 120;
+ for (let frame = 1; frame <= 4 / step && hits.length < 2; frame++) {
+  const before = slime.hp;
+  sim.update(step);
+  if (slime.hp < before) {
+   if (!hits.length) expect(slime.hp).toBeGreaterThan(0);
+   hits.push(frame * step);
+  }
+ }
+ expect(hits).toHaveLength(2);
+ expect(hits[1] - hits[0]).toBeGreaterThanOrEqual(previousInterval * 2 - step);
+ expect(slime.hp).toBeLessThanOrEqual(0);
+
+ sim.state.timeStopRemaining = 0;
  for (const kind of ['slime','goblin','bat'] as const) {
   const enemy = sim.spawnEnemy(kind, 216, 160)!;
   sim.damageEnemy(enemy, sim.damage);
