@@ -9,7 +9,7 @@ export const HEROES: Record<HeroId, HeroConfig> = {
 };
 export const SKILLS: Record<string, SkillConfig> = {
  whirl: { name: '휩쓸기', subtitle: 'WHIRLWIND', description: '전방에 넓은 검격을 가합니다. 강화하면 부채꼴과 피해가 증가합니다.', icon: 'whirl', color: '#dfc183', cooldown: 5, damage: 1.6, radius: 115, count: 1 },
- blade: { name: '검기 발사', subtitle: 'DAWNBLADE', description: '적을 관통하는 검기를 발사합니다. 레벨마다 검기가 추가됩니다.', icon: 'sword', color: '#9fd9d0', cooldown: 4.4, damage: 1.65, radius: 12, count: 1 },
+ blade: { name: '검기 발사', subtitle: 'DAWNBLADE', description: '적을 관통하는 검기를 발사합니다. 레벨마다 검기가 추가됩니다.', icon: 'sword', color: '#9fd9d0', cooldown: 4.4, damage: 1.95, radius: 12, count: 1 },
  shield: { name: '수호의 방패', subtitle: 'OAKHEART', description: '피해를 한 번 막는 보호막. 레벨이 오르면 재충전이 빨라지며 중첩되지 않습니다.', icon: 'shield', color: '#e1c988', cooldown: 13, hastePerLevel: .65, damage: 0, radius: 28, count: 1 },
  multishot: { name: '다중 화살', subtitle: 'WIND VOLLEY', description: '적을 향해 부채꼴로 추가 화살을 발사합니다.', icon: 'volley', color: '#f4795f', cooldown: 2.6, damage: 2.0, radius: 7, count: 3 },
  pierce: { name: '관통 화살', subtitle: 'TRUEFLIGHT', description: '일직선의 적들을 꿰뚫는 강력한 화살을 발사합니다.', icon: 'arrow', color: '#f1cc82', cooldown: 3.65, damage: 4, radius: 9, count: 1 },
@@ -22,7 +22,7 @@ export const SKILLS: Record<string, SkillConfig> = {
  frost: { name: '냉기 오라', subtitle: 'WINTERVEIL', description: '주변 적을 지속해서 늦추고, 일정 주기로 가까운 적들을 냉기로 타격합니다.', icon: 'snow', color: '#a6dcd9', cooldown: 4.8, damage: 6, radius: 110, count: 1 },
  lunge: { name: '새벽 찌르기', subtitle: 'DAWN THRUST', description: '전방의 좁고 긴 직선에 있는 적들을 꿰뚫습니다.', icon: 'sword', color: '#ffda88', cooldown: 4.8, damage: 3.1, radius: 158, count: 1, unlockLevel: 4 },
  quake: { name: '지면 강타', subtitle: 'GROUND BREAK', description: '발밑을 내리쳐 둘러싼 적들에게 피해를 줍니다.', icon: 'mountain', color: '#df9862', cooldown: 5.4, hastePerLevel: .3, damage: 4.5, radius: 98, count: 1, unlockLevel: 6 },
- sunder: { name: '갑주 가르기', subtitle: 'SUNDER', description: '범위 안에서 체력이 가장 높은 적 하나를 강하게 벱니다. 갑주병·정예·보스에게 추가 피해를 줍니다.', icon: 'sword', color: '#f19a63', cooldown: 4.65, hastePerLevel: .42, damage: 18, radius: 200, count: 1, unlockLevel: 8 },
+ sunder: { name: '갑주 가르기', subtitle: 'SUNDER', description: '범위 안에서 체력이 가장 높은 적 하나를 강하게 벱니다. 갑주병·정예·보스에게 추가 피해를 줍니다.', icon: 'sword', color: '#f19a63', cooldown: 4.65, hastePerLevel: .42, damage: 21, radius: 200, count: 1, unlockLevel: 8 },
  ricochet: { name: '도탄 화살', subtitle: 'RICOCHET', description: '근처 적들 사이에서 화살이 튕깁니다. 같은 적은 한 번만 맞습니다.', icon: 'volley', color: '#ffaf63', cooldown: 3.9, hastePerLevel: .3, damage: 3.6, radius: 310, count: 4, unlockLevel: 4 },
  blastArrow: { name: '폭발 화살', subtitle: 'BLAST ARROW', description: '적에게 맞으면 터져 주변 적들에게 피해를 주고 잠시 느리게 합니다.', icon: 'flame', color: '#ffa970', cooldown: 4.1, hastePerLevel: .82, damage: 6.2, radius: 74, radiusPerLevel: 41, count: 1, unlockLevel: 6 },
  deadeye: { name: '매의 눈', subtitle: 'DEADEYE', description: '보스를 우선 겨냥하며 갑주병·정예·보스에게 추가 피해를 줍니다. 보스가 없으면 가장 먼 적을 맞힙니다.', icon: 'compass', color: '#ffdf95', cooldown: 4.5, hastePerLevel: .42, damage: 15, radius: 370, count: 1, unlockLevel: 8 },
@@ -67,7 +67,7 @@ export const EVOLUTIONS = {
  archer: { name: '폭풍의 활', passive: 'haste' as const, damageMultiplier: 1.15, description: '최대 5대상을 관통하며 피해가 15% 증가합니다.' },
  mage: { name: '천체의 지팡이', passive: 'power' as const, damageMultiplier: 1.25, description: '단일 유도탄 피해 +25%, 공격 주기 단축.' },
 };
-export const WARRIOR_WEAPON_STEPS = [2.15, 2.40, 2.50, 2.62, 2.75] as const;
+export const WARRIOR_WEAPON_STEPS = [2.15, 2.48, 2.65, 2.84, 3.05] as const;
 export const WARRIOR_PARRY = { cooldown: .65, lookahead: .2 };
 export const ATTACK_SKILL_UPGRADE = {
  rank: BALANCE.skillMax + 1, damage: 1.32, haste: 1.18,
