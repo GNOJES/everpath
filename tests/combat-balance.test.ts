@@ -24,6 +24,39 @@ describe('weapon and skill balance regressions', () => {
   // Level two is a 118px circle; this 13px-radius slime at 126px overlaps it.
   expect(run(2)).toBeLessThan(run(0));
  });
+ it('keeps frost damage secondary and leaves bosses free to move', () => {
+  const cast = (frost: number) => {
+   const sim = new GameSimulation('mage', parseSave(null), () => .5);
+   sim.state.skills.frost = frost;
+   const p = sim.state.player;
+   const boss = sim.spawnEnemy('briar', p.x, p.y - 125)!;
+   const slime = sim.spawnEnemy('slime', p.x + 60, p.y - 45)!;
+   const start = boss.y;
+   sim.update(.05);
+   return { bossMoved: boss.y - start, slimeDamage: slime.maxHp - slime.hp, chainDamage: sim.power * SKILLS.chain.damage };
+  };
+  const frost = cast(3);
+  expect(frost.bossMoved).toBeCloseTo(cast(0).bossMoved);
+  expect(frost.slimeDamage).toBeGreaterThan(0);
+  expect(frost.slimeDamage).toBeLessThan(frost.chainDamage / 4);
+ });
+ it('recasts a mastered lightning spell sooner only if the spell killed its target', () => {
+  const countCasts = (firstHp: number) => {
+   const sim = new GameSimulation('mage', parseSave(null), () => .5);
+   sim.state.skills.chain = 4;
+   sim.state.timeStopRemaining = 3;
+   const p = sim.state.player;
+   const first = sim.spawnEnemy('slime', p.x, p.y - 200)!;
+   first.hp = firstHp;
+   sim.spawnEnemy('slime', p.x + 30, p.y - 235);
+   let casts = 0;
+   sim.onSound = cue => { if (cue === 'chain') casts++; };
+   frames(sim, 1);
+   return casts;
+  };
+  expect(countCasts(15)).toBe(2);
+  expect(countCasts(1000)).toBe(1);
+ });
 });
 
 it('higher shield ranks improve recharge without stockpiling three fully blocked hits', () => {

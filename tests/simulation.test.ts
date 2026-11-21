@@ -32,8 +32,20 @@ describe('combat and run lifecycle', () => {
   while (sim.state.status === 'upgrade') sim.chooseUpgrade(sim.state.choices[0].id);
   expect(sim.state.status).toBe('running'); expect(sim.state.level).toBeGreaterThan(2);
  });
- it('handles no remaining upgrades without blocking play', () => {
-  const sim = new GameSimulation('warrior', parseSave(null)); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.skills = Object.fromEntries(HEROES.warrior.skills.map(id => [id, skillRankLimit(SKILLS[id])])); sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 }; sim.gainXp(100); expect(sim.state.status).toBe('running');
+ it('offers three repeatable rewards after normal upgrades are capped', () => {
+  const sim = new GameSimulation('warrior', parseSave(null)); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.skills = Object.fromEntries(HEROES.warrior.skills.map(id => [id, skillRankLimit(SKILLS[id])])); sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 };
+  sim.state.player.hp -= 20;
+  const player = { ...sim.state.player };
+  for (const reward of ['reserve:gold', 'reserve:hp', 'reserve:speed']) {
+   sim.gainXp(sim.state.xpNext);
+   expect(sim.state.choices).toHaveLength(3);
+   expect(sim.chooseUpgrade(reward)).toBe(true);
+   expect(sim.state.status).toBe('running');
+  }
+  expect(sim.state.gold).toBeGreaterThan(0);
+  expect(sim.state.player.maxHp).toBeGreaterThan(player.maxHp);
+  expect(sim.state.player.speed).toBeGreaterThan(player.speed);
+  expect(sim.state.player.hp).toBe(player.hp);
  });
  it('spawns a boss at 2 minutes without stopping the scroll, stays bounded over a long run', () => {
   const sim = new GameSimulation('warrior', parseSave(null), () => .4); sim.state.player.hp = sim.state.player.maxHp = 100000;
@@ -86,6 +98,7 @@ describe('endless run endurance', () => {
   const sim = new GameSimulation('mage', parseSave(null), () => .37); sim.state.player.hp = sim.state.player.maxHp = 1e7;
   sim.state.skills = Object.fromEntries(HEROES.mage.skills.map(id => [id, skillRankLimit(SKILLS[id])])); sim.state.weaponLevel = 5; sim.state.evolved = true; sim.state.passives = { power: 5, haste: 5, vitality: 5, speed: 5 };
   for (let i = 0; i < 12000; i++) { sim.update(.05, { x: Math.sin(i / 60), y: Math.cos(i / 80) });
+   if (sim.state.status === 'upgrade') sim.chooseUpgrade('reserve:gold');
    if (sim.state.enemies.length > 100 || sim.state.projectiles.length > 180 || sim.state.effects.length > 60 || sim.state.hazards.length > 12) throw new Error('entity limit exceeded');
   }
   expect(sim.state.elapsed).toBeCloseTo(600); expect(sim.state.status).toBe('running'); expect(sim.state.kills).toBeGreaterThan(500); expect(sim.state.bosses).toBeGreaterThan(0);

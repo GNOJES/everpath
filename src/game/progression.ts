@@ -1,5 +1,10 @@
 import { BALANCE, HEROES, PASSIVES, SKILLS, EVOLUTIONS, ATTACK_SKILL_UPGRADE, skillRankLimit } from './config';
 import type { RunState, Upgrade, PassiveId } from './types';
+const reserveChoices: Upgrade[] = [
+ { id: 'reserve:gold', name: '골드', subtitle: '', description: '원정 골드 +8', icon: 'coin', level: 0, max: 0, color: '#a36a28' },
+ { id: 'reserve:hp', name: '최대 체력', subtitle: '', description: '이번 원정의 최대 체력 +4', icon: 'heart', level: 0, max: 0, color: '#ae4b56' },
+ { id: 'reserve:speed', name: '이동 속도', subtitle: '', description: '이번 원정의 이동 속도 +3', icon: 'wind', level: 0, max: 0, color: '#53689d' },
+];
 export function availableUpgrades(run: RunState): Upgrade[] {
  const hero = HEROES[run.hero], options: Upgrade[] = [];
  const evolution = EVOLUTIONS[run.hero];
@@ -8,7 +13,10 @@ export function availableUpgrades(run: RunState): Upgrade[] {
  for (const id of hero.skills) {
   const skill = SKILLS[id], level = run.skills[id] ?? 0, max = skillRankLimit(skill);
   if (run.level < (skill.unlockLevel ?? 1) || level >= max) continue;
-  const description = level === BALANCE.skillMax ? ATTACK_SKILL_UPGRADE.description : skill.description;
+  let description = skill.description;
+  if (level === BALANCE.skillMax) description = id === 'chain'
+   ? '피해 +32%, 발동 빈도 +18%. 처치 시 다음 낙뢰 대기 시간 절반.'
+   : ATTACK_SKILL_UPGRADE.description;
   options.push({ id: `skill:${id}`, ...skill, level, max, description });
  }
  for (const id of Object.keys(PASSIVES) as PassiveId[]) if (run.passives[id] < BALANCE.passiveMax) options.push({ id: `passive:${id}`, ...PASSIVES[id], level: run.passives[id], max: BALANCE.passiveMax, color: '#c7c2a0' });
@@ -27,11 +35,12 @@ export function rollUpgrades(run: RunState, random: () => number): Upgrade[] {
  const regular = pool.filter(option => !isFinalSkillRank(option) && !unlockLevel(option));
  const advanced = pool.filter(option => !isFinalSkillRank(option) && unlockLevel(option));
  const finalRanks = pool.filter(isFinalSkillRank);
- while (result.length < 3 && regular.length) result.push(...regular.splice(Math.min(regular.length - 1, Math.floor(random() * regular.length)), 1));
- // An unlock gets its own choice without crowding out the basic weapon or passives.
  const featured = advanced.find(option => unlockLevel(option) === run.level)
   ?? (advanced.length && run.level >= 9 && run.level % 3 === 0 ? advanced[(run.level / 3 - 3) % advanced.length] : undefined)
   ?? (finalRanks.length ? finalRanks[run.level % finalRanks.length] : undefined);
  if (featured) result.push(featured);
- return result;
+ for (const candidates of [regular, advanced.filter(option => option !== featured), finalRanks.filter(option => option !== featured)]) {
+  while (result.length < 3 && candidates.length) result.push(...candidates.splice(Math.min(candidates.length - 1, Math.floor(random() * candidates.length)), 1));
+ }
+ return [...result, ...reserveChoices].slice(0, 3);
 }

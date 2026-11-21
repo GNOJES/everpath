@@ -10,8 +10,10 @@ describe('upgrade choices', () => {
  });
  it('excludes capped upgrades and handles an empty pool', () => {
   const run = createRun('warrior', parseSave(null)); run.weaponLevel = 5; run.evolved = true; run.skills = { whirl: 4, blade: 4, shield: 3, bash: 4 }; run.passives = { power: 5, haste: 5, vitality: 5, speed: 5 };
-  expect(availableUpgrades(run)).toHaveLength(0); expect(rollUpgrades(run, Math.random)).toEqual([]);
-  run.skills.shield = 2; expect(rollUpgrades(run, Math.random).map(x => x.id)).toEqual(['skill:shield']);
+  expect(availableUpgrades(run)).toHaveLength(0);
+  expect(rollUpgrades(run, () => 0).map(x => x.id)).toEqual(['reserve:gold', 'reserve:hp', 'reserve:speed']);
+  run.skills.shield = 2;
+  expect(rollUpgrades(run, () => 0).map(x => x.id)).toEqual(['skill:shield', 'reserve:gold', 'reserve:hp']);
  });
 });
 
@@ -32,8 +34,8 @@ it.each([
   const options = availableUpgrades(run).filter(option => [early, middle, late].some(id => option.id === `skill:${id}`));
   expect(options.map(option => option.id)).toEqual(expected.map(id => `skill:${id}`));
   const rolled = rollUpgrades(run, () => 0);
-  expect(rolled).toHaveLength(expected.length ? 4 : 3);
-  if (expected.length) expect(rolled.at(-1)?.id).toBe(`skill:${expected.at(-1)}`);
+  expect(rolled).toHaveLength(3);
+  if (expected.length) expect(rolled.map(option => option.id)).toContain(`skill:${expected.at(-1)}`);
  }
 });
 

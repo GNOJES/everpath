@@ -198,7 +198,7 @@ export class App {
  private renderShop() {
   const { gold, upgrades, invested } = this.store.data;
   this.overlay.innerHTML = `<div class="menu-panel shop-panel">${this.topbar('영구 강화', 'shop-back')}
-   <div class="gold-wallet"><h2>성장의 제단</h2><strong aria-label="보유 골드">${icon('coin')} ${gold.toLocaleString()}</strong></div>
+   <div class="gold-wallet"><div class="shop-hero">${portrait(this.hero)}<h2>성장의 제단</h2></div><strong aria-label="보유 골드">${icon('coin')} ${gold.toLocaleString()}</strong></div>
    <div class="shop-list">${(Object.keys(PERMANENT) as PermanentId[]).map(id => {
     const item = PERMANENT[id], level = upgrades[id], max = permanentLimit(id), maxed = level >= max, cost = upgradeCost(level, id);
     const refund = this.store.upgradeRefund(id), bonus = Number((level * item.step * 100).toFixed(1));
@@ -343,20 +343,26 @@ export class App {
  }
  private renderUpgradeChoices(s: RunState) {
   this.overlay.innerHTML = `<section class="upgrade-panel" aria-labelledby="upgrade-title">
-   <header class="upgrade-heading"><h2 id="upgrade-title">강화 선택</h2><span>Lv. ${s.level}</span></header>
-   <div class="upgrade-choices">${s.choices.map(choice => `
-    <button class="upgrade-card" data-action="upgrade" data-id="${choice.id}">
+   <header class="upgrade-heading"><div>${portrait(s.hero)}<h2 id="upgrade-title">강화 선택</h2></div><span>Lv. ${s.level}</span></header>
+   <div class="upgrade-choices">${s.choices.map(choice => {
+    const kind = choice.id === 'evolve' ? 'evolve' : choice.max === 0 ? 'reward' : choice.level === 0 ? 'learn' : 'improve';
+    const badge = { evolve: '진화', reward: '즉시 적용', learn: '새 습득', improve: '보유 강화' }[kind];
+    const transition = kind === 'learn' ? 'Lv.1' : kind === 'improve' ? `<span>${choice.level}</span> → <b>${choice.level + 1}</b>` : '';
+    return `
+    <button class="upgrade-card" data-action="upgrade" data-id="${choice.id}" data-upgrade-kind="${kind}">
      <span class="skill-icon">${icon(choice.icon)}</span>
      <span class="upgrade-copy">
       <span class="upgrade-card-heading">
        <strong class="upgrade-name">${choice.name}</strong>
-       <span class="upgrade-transition" aria-label="${choice.id === 'evolve' ? '기본 무기 진화' : `현재 ${choice.level}단계, 선택하면 ${choice.level + 1}단계`}">${choice.id === 'evolve' ? '진화' : `<span>${choice.level}</span> → <b>${choice.level + 1}</b>`}</span>
+       <span class="upgrade-badge">${badge}</span>
       </span>
       <span class="upgrade-description">${choice.description}</span>
-      <span class="upgrade-levels" aria-hidden="true">${Array.from({ length: choice.max }, (_, index) =>
-       `<i class="${index < choice.level ? 'lit' : index === choice.level ? 'next' : ''}"></i>`).join('')}</span>
+      ${transition ? `<span class="upgrade-rank-row"><span class="upgrade-transition" aria-label="${kind === 'learn' ? '선택하면 1단계' : `현재 ${choice.level}단계, 선택하면 ${choice.level + 1}단계`}">${transition}</span>
+       <span class="upgrade-levels" aria-hidden="true">${Array.from({ length: choice.max }, (_, index) =>
+        `<i class="${index < choice.level ? 'lit' : index === choice.level ? 'next' : ''}"></i>`).join('')}</span></span>` : ''}
      </span>
-    </button>`).join('')}</div></section>`;
+    </button>`;
+   }).join('')}</div></section>`;
  }
  private updateTimeStop(state?: RunState) {
   const button = this.root.querySelector<HTMLButtonElement>('.time-stop-button')!;

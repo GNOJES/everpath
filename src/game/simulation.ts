@@ -89,12 +89,15 @@ export class GameSimulation {
    const level = s.skills[id];
    if (!level) continue;
    this.skillTimers[id] = (this.skillTimers[id] ?? 0) - dt;
+   if (this.skillTimers[id] > 0) continue;
    const skill = SKILLS[id];
    const baseRank = Math.min(level, B.skillMax);
    const finalRank = level === ATTACK_SKILL_UPGRADE.rank;
-   if (this.skillTimers[id] <= 0 && this.castSkill(id, baseRank, finalRank)) {
+   const killsBeforeCast = s.kills;
+   if (this.castSkill(id, baseRank, finalRank)) {
     const rankHaste = 1 + (baseRank - 1) * (skill.hastePerLevel ?? B.skillHasteStep);
     this.skillTimers[id] = skill.cooldown / this.haste / rankHaste / (finalRank ? ATTACK_SKILL_UPGRADE.haste : 1);
+    if (id === 'chain' && finalRank && s.kills > killsBeforeCast) this.skillTimers[id] *= .5;
     if (!this.hasWon()) this.onSound?.(id);
    }
   }
@@ -187,7 +190,7 @@ export class GameSimulation {
    if (!bossEntering) e.timer -= dt;
    let dir = unit(e, p), speed = e.speed;
    if (!isBoss(e.kind) && (e.slowedUntil ?? 0) > s.elapsed) speed *= .52;
-   if (s.skills.frost && distance(e, p) < SKILLS.frost.radius + (Math.min(s.skills.frost, B.skillMax) - 1) * B.skillRadiusStep + e.radius) speed *= .76 - .075 * Math.min(3, s.skills.frost);
+   if (!isBoss(e.kind) && s.skills.frost && distance(e, p) < SKILLS.frost.radius + (Math.min(s.skills.frost, B.skillMax) - 1) * B.skillRadiusStep + e.radius) speed *= .76 - .075 * Math.min(3, s.skills.frost);
    if (e.entryTarget) {
     const step = (bossEntering ? 140 : speed * 1.75) * dt;
     const remaining = distance(e, e.entryTarget);
@@ -653,12 +656,15 @@ export class GameSimulation {
  }
  private nextChoice() {
   const s = this.state; if (this.pendingChoices <= 0) { s.choices = []; s.status = 'running'; return; }
-  s.choices = rollUpgrades(s, this.random); if (!s.choices.length) { this.pendingChoices = 0; s.status = 'running'; return; } s.status = 'upgrade';
+  s.choices = rollUpgrades(s, this.random); s.status = 'upgrade';
  }
  chooseUpgrade(id: string): boolean {
   const s = this.state; if (s.status !== 'upgrade' || !s.choices.some(c => c.id === id)) return false;
   if (id === 'evolve') { s.evolved = true; this.effect('ring', s.player, 0xffe2a4, 130, 1); }
   else if (id === 'weapon') s.weaponLevel++;
+  else if (id === 'reserve:gold') { this.goldRaw += 8; s.gold = Math.floor(this.goldRaw); }
+  else if (id === 'reserve:hp') s.player.maxHp += 4;
+  else if (id === 'reserve:speed') s.player.speed += 3;
   else if (id.startsWith('skill:')) { const key = id.slice(6); s.skills[key] = (s.skills[key] ?? 0) + 1; this.skillTimers[key] = 0; }
   else { const key = id.slice(8) as PassiveId; s.passives[key]++; if (key === 'vitality') { const extra = HEROES[s.hero].hp * B.vitalityStep; s.player.maxHp += extra; s.player.hp = Math.min(s.player.maxHp, s.player.hp + extra * 1.6); } else if (key === 'speed') s.player.speed += HEROES[s.hero].speed * B.speedStep; }
   this.pendingChoices--; this.nextChoice(); return true;

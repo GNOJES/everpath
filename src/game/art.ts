@@ -1,10 +1,6 @@
 import type Phaser from 'phaser';
-import warrior from './sprites/warrior.png';
-import archer from './sprites/archer.png';
-import mage from './sprites/mage.png';
 
-export const HERO_SPRITES = { warrior, archer, mage };
-export const artUrls: Record<string, string> = { ...HERO_SPRITES };
+const artUrls: Record<string, string> = {};
 type Draw = (ctx: CanvasRenderingContext2D, w: number, h: number) => void;
 function canvas(w: number, h: number, draw: Draw) { const c = document.createElement('canvas'); c.width = w; c.height = h; const ctx = c.getContext('2d')!; ctx.imageSmoothingEnabled = false; draw(ctx, w, h); return c; }
 const rect = (c: CanvasRenderingContext2D, color: string, x: number, y: number, w: number, h: number) => { c.fillStyle = color; c.fillRect(Math.round(x), Math.round(y), w, h); };
@@ -123,4 +119,4 @@ export function createArt(scene: Phaser.Scene) {
   }
  }));
 }
-export function portrait(id: string, className = '') { return `<img class="pixel-portrait ${className}" src="${artUrls[id] ?? ''}" alt="" draggable="false">`; }
+export function portrait(id: string, className = '') { return `<img class="pixel-portrait ${className}" src="${artUrls[`field-${id}`] ?? ''}" alt="" draggable="false">`; }

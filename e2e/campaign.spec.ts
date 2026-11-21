@@ -36,6 +36,11 @@ test('common menus fit one small screen and refund buttons work without a reset'
   await noScroll();
   await page.getByRole('button', {name:'설정 완료'}).tap();
   await page.getByRole('button', {name:'영구 강화'}).tap();
+  const shopPortrait = await page.locator('.shop-hero img').evaluate(async (image: HTMLImageElement) => {
+   await image.decode();
+   return { src: image.src, height: image.naturalHeight };
+  });
+  expect(shopPortrait.height).toBe(22);
   await noScroll();
   await page.locator('[data-action="buy"][data-id="attack"]').tap();
   await expect(page.locator('.gold-wallet strong')).toHaveText('76');
@@ -50,6 +55,7 @@ test('common menus fit one small screen and refund buttons work without a reset'
   await expect(page.locator('[data-action="downgrade"][data-id="attack"]')).toBeDisabled();
   await page.getByRole('button', {name:'원정 준비로 돌아가기'}).tap();
   await page.getByRole('button', {name:'모험 시작'}).tap();
+  await expect(page.locator('[data-hero="warrior"] img')).toHaveAttribute('src', shopPortrait.src);
   for (const hero of ['warrior', 'archer', 'mage']) {
    await page.locator(`[data-hero="${hero}"]`).tap();
    await noScroll();
@@ -105,18 +111,30 @@ test('skill upgrades fit a short phone and remain legible while pressed', async 
  }));
  await page.goto('/skill-choice-test');
  await page.getByRole('button', {name:'모험 시작'}).click();
+ const portraits = await page.locator('.hero-card img').evaluateAll(async elements => {
+  const images = elements as HTMLImageElement[];
+  await Promise.all(images.map(image => image.decode()));
+  return images.map(image => ({src:image.src, height:image.naturalHeight}));
+ });
+ expect(new Set(portraits.map(portrait => portrait.src)).size).toBe(3);
+ expect(portraits.map(portrait => portrait.height)).toEqual([22, 22, 22]);
  await page.getByRole('button', {name:'숲으로 떠나기'}).click();
  await page.evaluate(async () => {
   const {sim} = (window as unknown as {skillTest:{sim:import('../src/game/simulation').GameSimulation}}).skillTest;
   const {availableUpgrades} = await import('../src/game/progression');
   sim.state.skills.shield = 1;
   sim.state.skills.bash = 1;
-  sim.state.choices = availableUpgrades(sim.state).filter(choice => ['weapon','skill:shield','passive:vitality'].includes(choice.id));
+  sim.state.choices = availableUpgrades(sim.state).filter(choice => ['skill:whirl','skill:shield','passive:vitality'].includes(choice.id));
   sim.state.status = 'upgrade';
  });
  const panel = page.locator('.upgrade-panel');
  await expect(panel.locator('.upgrade-card')).toHaveCount(3);
+ await expect(panel.locator('.upgrade-heading img')).toHaveAttribute('src', portraits[0].src);
+ const whirl = panel.locator('[data-id="skill:whirl"]');
+ await expect(whirl.locator('.upgrade-badge')).toHaveText('새 습득');
+ await expect(whirl.locator('.upgrade-transition')).toHaveText('Lv.1');
  const shield = panel.locator('[data-id="skill:shield"]');
+ await expect(shield.locator('.upgrade-badge')).toHaveText('보유 강화');
  await expect(shield.locator('.upgrade-transition')).toHaveText('1 → 2');
  const size = await panel.evaluate(el => ({
   panel:el.scrollHeight - el.clientHeight,
