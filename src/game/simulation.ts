@@ -1,4 +1,4 @@
-import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, FIRST_GRORM, WARRIOR_CONTACT_DAMAGE, ARCHER_CONTACT_DAMAGE, MAGE_CONTACT_DAMAGE, MAGE_ARROW_DAMAGE, CAMPAIGN, PICKUPS, TIME_STOP, WARDEN_MAGIC_ARMOR, EVOLUTIONS, WARRIOR_WEAPON_STEPS, WARRIOR_PARRY, ATTACK_SKILL_UPGRADE, warriorSweepAngle, isBoss } from './config';
+import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, FIRST_GRORM, CAMPAIGN, PICKUPS, TIME_STOP, WARRIOR_PARRY, ATTACK_SKILL_UPGRADE, warriorSweepAngle, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind, MIDDLE_BOSS_WAVES, openingProgress } from './encounters';
@@ -20,20 +20,18 @@ export class GameSimulation {
  private serial = 0; private spawnTimer = B.firstSpawn; private attackTimer = .1; private skillTimers: Record<string, number> = {}; private pendingChoices = 0; private goldRaw = 0;
  constructor(hero: HeroId, private save: SaveData, private random: () => number = Math.random, rank = 0) { this.save = structuredClone(save); this.state = createRun(hero, this.save, Math.floor(clamp(rank, 0, save.challengeUnlocked))); }
  private hasWon() { return this.state.status === 'victory'; }
- get power() { return HEROES[this.state.hero].damage * (1 + this.save.upgrades.attack * PERMANENT.attack.step) * (1 + this.state.passives.power * B.powerStep); }
+ private get attackMultiplier() { return (1 + this.save.upgrades.attack * PERMANENT.attack.step) * (1 + this.state.passives.power * B.powerStep); }
+ get power() { return HEROES[this.state.hero].skillPower * this.attackMultiplier; }
  get damage() {
   const { hero, weaponLevel, evolved } = this.state;
-  const weaponScale = hero === 'warrior'
-   ? WARRIOR_WEAPON_STEPS[weaponLevel - 1]
-   : 1 + (weaponLevel - 1) * (hero === 'archer' ? .15 : B.weaponDamageStep);
-  return this.power * HEROES[hero].basicDamageScale * weaponScale * (evolved ? EVOLUTIONS[hero].damageMultiplier : 1);
+  const weaponScale = 1 + (weaponLevel - 1) * B.weaponDamageStep;
+  return HEROES[hero].weaponDamage * this.attackMultiplier * weaponScale * (evolved ? B.weaponEvolutionDamage : 1);
  }
  get haste() { return 1 + this.state.passives.haste * B.hasteStep; }
  get weaponHaste() { return this.haste + (this.state.weaponLevel - 1) * B.weaponHasteStep + (this.state.evolved ? .25 : 0); }
  get range() {
   const { hero, weaponLevel, evolved } = this.state;
-  const rangeStep = hero === 'warrior' ? .045 : B.weaponRangeStep;
-  return HEROES[hero].range * (1 + (weaponLevel - 1) * rangeStep) * (evolved ? 1.25 : 1);
+  return HEROES[hero].range * (1 + (weaponLevel - 1) * B.weaponRangeStep) * (evolved ? 1.25 : 1);
  }
  pause() { if (this.state.status === 'running') this.state.status = 'paused'; }
  resume() { if (this.state.status === 'paused') this.state.status = 'running'; }
@@ -238,8 +236,7 @@ export class GameSimulation {
    } else if (e.kind === 'skeleton') {
     if (distance(e, p) < 220 && distance(e, p) > 140) { dir = { x: Math.sin(s.elapsed + e.seed) * .5, y: 0 }; }
     if (e.timer <= 0 && e.y > 70) {
-     const damage = s.hero === 'mage' ? e.damage * MAGE_ARROW_DAMAGE : e.damage;
-     this.shoot(e, p, 'enemy', damage, 155, 1); e.timer = 2.65;
+     this.shoot(e, p, 'enemy', e.damage, 155, 1); e.timer = 2.65;
     }
    } else if (e.kind === 'bat') { dir.x += Math.sin(s.elapsed * 5 + e.seed) * .65; dir = normalize(dir.x, dir.y); }
    e.x += dir.x * speed * dt; e.y += (dir.y * speed + (isBoss(e.kind) ? 0 : W.scrollSpeed * .10)) * dt;
@@ -303,15 +300,9 @@ export class GameSimulation {
   return enraged ? .95 : .80;
  }
  private damageEnemyContact(enemy: Enemy) {
-  const { hero } = this.state;
   let damage = enemy.damage;
   if (enemy.paired && enemy.phase !== 'dash') damage *= .68;
   if (enemy.kind === 'warden' && enemy.phase === 'recover') damage *= .65;
-  if (enemy.kind !== 'warden') {
-   if (hero === 'warrior') damage *= WARRIOR_CONTACT_DAMAGE;
-   if (hero === 'mage') damage *= MAGE_CONTACT_DAMAGE;
-   if (hero === 'archer') damage *= ARCHER_CONTACT_DAMAGE;
-  }
   this.damagePlayer(damage);
  }
  private nearest(origin: Vec, range = Infinity, excluded = new Set<number>(), includeRadius = false): Enemy | undefined {
@@ -431,7 +422,7 @@ export class GameSimulation {
    if (!marked) return false;
    if (id === 'deadeye') this.effect('deadeye', p, 0xffdf75, 12, .46, 0, undefined, marked);
    else this.effect(id, marked, id === 'meteor' ? 0xff964e : 0xaf4c21, id === 'meteor' ? 46 : 31, .55);
-   this.damageEnemy(marked, damage, true);
+   this.damageEnemy(marked, damage);
   } else if (id === 'ricochet' || id === 'prism') {
    const hit = new Set<number>();
    let origin: Vec = p;
@@ -488,10 +479,10 @@ export class GameSimulation {
    this.addHazard(this.densest(target), radius, .65, damage, 'player', 'rain', 'rainImpact');
   } else if (id === 'fire') {
    this.effect('fire', target, 0xff6b36, 25, .44);
-   this.damageEnemy(target, damage, true);
+   this.damageEnemy(target, damage);
   } else if (id === 'chain') {
    this.effect('lightning', { x: target.x + 25, y: target.y - 115 }, 0x807aff, 0, .34, 0, undefined, target);
-   this.damageEnemy(target, damage, true);
+   this.damageEnemy(target, damage);
   }
   return true;
  }
@@ -541,8 +532,7 @@ export class GameSimulation {
      shot.life = 0;
      break;
     }
-    const focused = shot.kind === 'magic' || (shot.kind === 'arrow' && !shot.skillShot && shot.hit.size === 0);
-    shot.hit.add(e.id); this.damageEnemy(e, shot.damage, focused); shot.damage *= shot.pierceScale ?? 1; if (shot.kind === 'magic') this.effect('crystal', shot, 0xad8dff, 20, .24); shot.pierce--; if (shot.pierce <= 0) shot.life = 0;
+    shot.hit.add(e.id); this.damageEnemy(e, shot.damage); shot.damage *= shot.pierceScale ?? 1; if (shot.kind === 'magic') this.effect('crystal', shot, 0xad8dff, 20, .24); shot.pierce--; if (shot.pierce <= 0) shot.life = 0;
    }
   }
   s.projectiles = s.projectiles.filter(p => p.life > 0 && p.x > -50 && p.x < W.width + 50 && p.y > -60 && p.y < W.height + 60);
@@ -567,17 +557,8 @@ export class GameSimulation {
   }
   this.state.hazards = this.state.hazards.filter(h => h.life > 0);
  }
- damageEnemy(enemy: Enemy, amount: number, focused = false) {
+ damageEnemy(enemy: Enemy, amount: number) {
   if (enemy.hp <= 0 || this.state.status === 'victory' || this.state.status === 'gameover') return;
-  if (focused && (isBoss(enemy.kind) || enemy.elite || enemy.kind === 'brute')) amount *= B.focusedDamageScale;
-  if (enemy.kind === 'warden' && this.state.hero !== 'mage') amount *= CAMPAIGN.wardenDamage[this.state.hero];
-  if (enemy.kind === 'warden' && this.state.hero === 'mage') {
-   const { lowRankDamage, lowAttackRank, fullAttackRank } = WARDEN_MAGIC_ARMOR;
-   const progress = clamp((this.save.upgrades.attack - lowAttackRank) / (fullAttackRank - lowAttackRank), 0, 1);
-   amount *= lowRankDamage + (CAMPAIGN.wardenDamage.mage - lowRankDamage) * progress;
-  }
-  if (enemy.kind === 'boss' && this.state.hero === 'archer') amount *= enemy.paired ? PAIRED_GRORM.archerDamage : FIRST_GRORM.archerDamage;
-  if (enemy.kind === 'boss' && !enemy.paired && this.state.hero === 'mage') amount *= focused ? FIRST_GRORM.mageFocusedDamage : FIRST_GRORM.mageDamage;
   enemy.hp -= amount; enemy.hitFlash = .12;
   this.effect('hit', enemy, 0xffedc2, 13, .14); this.effect('text', { x: enemy.x + this.random() * 12 - 6, y: enemy.y - 15 }, 0xffecc9, 0, .65, 0, `${Math.round(amount)}`);
   if (!isBoss(enemy.kind) && this.state.timeStopRemaining <= 0) { const away = unit(this.state.player, enemy); enemy.x += away.x * 4; enemy.y += away.y * 4; }

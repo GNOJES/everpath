@@ -196,21 +196,29 @@ it('rank-four damage improves only the selected offensive skill', () => {
  expect(mastered.weaponDamage).toBe(base.weaponDamage);
 });
 
-it('raises regular monster HP and rewards focused damage against tough enemies', () => {
- const sim = new GameSimulation('mage', parseSave(null), () => .5);
- const slime = sim.spawnEnemy('slime', 216, 260)!;
- const brute = sim.spawnEnemy('brute', 216, 250)!;
- expect(slime.maxHp).toBeGreaterThan(16);
- expect(brute.maxHp).toBeGreaterThan(43);
- sim.damageEnemy(slime, 10, true);
- sim.damageEnemy(brute, 10, true);
- expect(slime.maxHp - slime.hp).toBe(10);
- expect(brute.maxHp - brute.hp).toBe(13);
- sim.damageEnemy(brute, 10);
- expect(brute.maxHp - brute.hp).toBe(23);
+it.each(['warrior', 'archer', 'mage'] as const)('applies the same incoming and outgoing damage for %s', hero => {
+ const sim = new GameSimulation(hero, parseSave(null), () => .5);
+ for (const kind of ['brute', 'boss', 'briar', 'warden'] as const) {
+  const target = sim.spawnEnemy(kind, 216, 150)!;
+  sim.damageEnemy(target, 10);
+  expect(target.maxHp - target.hp).toBe(10);
+  if (kind === 'boss') {
+   target.paired = true;
+   sim.damageEnemy(target, 10);
+   expect(target.maxHp - target.hp).toBe(20);
+  }
+ }
+ const p = sim.state.player;
+ const contact = sim.spawnEnemy('slime', p.x, p.y)!;
+ const skeleton = sim.spawnEnemy('skeleton', p.x, p.y - 90)!;
+ skeleton.timer = 0;
+ const before = p.hp;
+ sim.update(.025);
+ expect(before - p.hp).toBeCloseTo(contact.damage);
+ expect(sim.state.projectiles.find(shot => shot.kind === 'enemy')?.damage).toBe(skeleton.damage);
 });
 
-it('lets focused spells hit armored targets harder and area spells hit the group', () => {
+it('keeps single-target and area spells distinct with the same damage rules', () => {
  const cast = (skill: 'fire' | 'frost') => {
   const sim = new GameSimulation('mage', parseSave(null), () => .5);
   const targets = [
@@ -223,19 +231,18 @@ it('lets focused spells hit armored targets harder and area spells hit the group
   return targets.map(target => (target.maxHp - target.hp) / (sim.power * SKILLS[skill].damage));
  };
  const focused = cast('fire'), area = cast('frost');
- expect(focused[0]).toBeCloseTo(1.3);
+ expect(focused[0]).toBeCloseTo(1);
  expect(focused.slice(1)).toEqual([0, 0]);
  for (const multiplier of area) expect(multiplier).toBeCloseTo(1);
 });
 
-it('preserves the bow first-hit bonus when upgraded arrows gain pierce', () => {
+it('retains the bow pierce with falloff on each subsequent target', () => {
  const sim = new GameSimulation('archer', parseSave(null), () => .5);
  sim.state.weaponLevel = 2;
  const front = sim.spawnEnemy('brute', 216, 460)!;
  const back = sim.spawnEnemy('brute', 216, 398)!;
  for (const enemy of [front, back]) enemy.speed = 0;
  frames(sim, .33);
- expect(front.maxHp - front.hp).toBeCloseTo(sim.damage * 1.3);
- expect(back.maxHp - back.hp).toBeGreaterThan(0);
- expect(back.maxHp - back.hp).toBeLessThanOrEqual(sim.damage);
+ expect(front.maxHp - front.hp).toBeCloseTo(sim.damage);
+ expect(back.maxHp - back.hp).toBeCloseTo(sim.damage * .94);
 });

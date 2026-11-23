@@ -70,6 +70,11 @@ describe('boss entry waves', () => {
    expect(wave.every(enemy => enemy.y < 0 && !!enemy.entryTarget)).toBe(true);
    expect(new Set(wave.map(enemy => enemy.x)).size).toBe(kinds.length);
    expect(new Set(wave.map(enemy => enemy.timer)).size).toBe(kinds.length);
+   const grormHp = Math.max(...wave.filter(enemy => enemy.kind === 'boss').map(enemy => enemy.maxHp));
+   for (const briar of wave.filter(enemy => enemy.kind === 'briar')) {
+    expect(briar.maxHp).toBeGreaterThanOrEqual(2 * grormHp);
+    expect(briar.hp).toBe(briar.maxHp);
+   }
    const before = sim.state.bosses;
    for (const enemy of wave) sim.damageEnemy(enemy, 1e9);
    while (sim.state.choices[0]) sim.chooseUpgrade(sim.state.choices[0].id);
@@ -148,7 +153,7 @@ it('cycles through warning circles, a targeted fan and a radial volley in the Wa
  const s = sim.state;
  s.elapsed = 600; s.finalSpawned = true;
  const boss = sim.spawnEnemy('warden', 216, 155)!;
- expect(boss.maxHp).toBe(9600);
+ expect(boss.maxHp).toBe(12000);
  boss.speed = 0; boss.timer = 0;
  sim.update(.025);
  expect(s.hazards.filter(zone => zone.owner === 'enemy')).toHaveLength(2);

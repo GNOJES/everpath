@@ -8,6 +8,7 @@ export class GameAudio {
  private context?:AudioContext;private musicBus?:GainNode;private sfxBus?:GainNode;private musicGate?:GainNode;
  private soundtracks: Partial<Record<MusicTrack, AudioBuffer>> = {};
  private soundtrackLoading = new Set<MusicTrack>();
+ private battleDownload?: Promise<ArrayBuffer | undefined>;
  private track: MusicTrack = 'battle';
  private musicSource?: AudioBufferSourceNode;
  private musicOffset = 0;
@@ -20,13 +21,31 @@ export class GameAudio {
  private noiseBuffer?: AudioBuffer;
  get music(){return this.musicVolume;}set music(v:number){this.musicVolume=volume(v);if(this.musicBus)this.musicBus.gain.setTargetAtTime(this.musicVolume,this.context!.currentTime,.015);}
  get sfx(){return this.sfxVolume;}set sfx(v:number){this.sfxVolume=volume(v);if(this.sfxBus)this.sfxBus.gain.setTargetAtTime(this.sfxVolume * 1.6,this.context!.currentTime,.015);}
+ preloadBattle() {
+  if (!this.soundtracks.battle && !this.soundtrackLoading.has('battle')) {
+   this.battleDownload ??= this.fetchSoundtrack('battle').catch(() => undefined);
+  }
+ }
+ beginRun() {
+  this.stopMusic();
+  this.track = 'battle';
+  this.musicOffset = 0;
+  this.musicLevel = 1;
+  if (this.context && this.musicGate) {
+   const now = this.context.currentTime;
+   this.musicGate.gain.cancelScheduledValues(now);
+   this.musicGate.gain.setValueAtTime(1, now);
+  }
+  this.loadSoundtrack('battle');
+  this.startMusic();
+ }
  unlock(){try{
   this.suspended = false;
   if(!this.context){const c=this.context=new AudioContext();const master=c.createGain();master.gain.value=.9;const limiter=c.createDynamicsCompressor();limiter.threshold.value=-12;limiter.knee.value=18;limiter.ratio.value=8;limiter.attack.value=.003;limiter.release.value=.15;master.connect(limiter);limiter.connect(c.destination);
    this.musicBus=c.createGain();this.musicBus.gain.value=this.musicVolume;this.musicBus.connect(master);
    this.sfxBus=c.createGain();this.sfxBus.gain.value=this.sfxVolume * 1.6;this.sfxBus.connect(master);
    this.musicGate=c.createGain();this.musicGate.gain.value=this.musicLevel;this.musicGate.connect(this.musicBus);
-  }void this.context.resume().catch(()=>{});
+ }void this.context.resume().then(()=>this.startMusic()).catch(()=>{});
   this.loadSoundtrack('battle');
   this.loadSoundtrack('warden');
  }catch{/* Sound remains optional if audio is unavailable. */}}
@@ -103,14 +122,20 @@ export class GameAudio {
   for (const [pitch, end, seconds, gain, wave, delay] of tones) this.tone(pitch, seconds, gain, wave, delay, end);
   if (noise) this.noise(...noise);
  }
+ private async fetchSoundtrack(track: MusicTrack) {
+  const response = await fetch(`${import.meta.env.BASE_URL}audio/everpath-${track}.m4a`);
+  return response.ok ? response.arrayBuffer() : undefined;
+ }
  private loadSoundtrack(track: MusicTrack) {
   const context = this.context;
   if (!context?.decodeAudioData || this.soundtrackLoading.has(track) || this.soundtracks[track]) return;
   this.soundtrackLoading.add(track);
   void (async () => {
-   const response = await fetch(`${import.meta.env.BASE_URL}audio/everpath-${track}.m4a`);
-   if (!response.ok) return;
-   this.soundtracks[track] = await context.decodeAudioData(await response.arrayBuffer());
+   let data = track === 'battle' ? await this.battleDownload : undefined;
+   if (track === 'battle') this.battleDownload = undefined;
+   data ??= await this.fetchSoundtrack(track);
+   if (!data) return;
+   this.soundtracks[track] = await context.decodeAudioData(data);
    this.startMusic();
   })().catch(() => { /* Failed music downloads leave sound effects available. */ })
    .finally(() => this.soundtrackLoading.delete(track));

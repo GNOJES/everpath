@@ -53,7 +53,7 @@ describe('combat and run lifecycle', () => {
  });
  it('applies permanent stats to all heroes and damage invulnerability', () => {
   const save = parseSave(null); save.upgrades = { attack: 2, hp: 2, speed: 2, gold: 2, timeStop: 0 };
-  const sim = new GameSimulation('warrior', save); expect(sim.state.player.maxHp).toBe(179); const hp = sim.state.player.hp; sim.damagePlayer(10); sim.damagePlayer(10); expect(sim.state.player.hp).toBe(hp - 10);
+  const sim = new GameSimulation('warrior', save); expect(sim.state.player.maxHp).toBe(Math.round(HEROES.warrior.hp * 1.12)); const hp = sim.state.player.hp; sim.damagePlayer(10); sim.damagePlayer(10); expect(sim.state.player.hp).toBe(hp - 10);
  });
  it('ends on zero HP and retry creates clean state', () => {
   const sim = new GameSimulation('mage', parseSave(null)); sim.damagePlayer(10000); expect(sim.state.status).toBe('gameover'); expect(sim.result().hero).toBe('mage');
@@ -75,6 +75,22 @@ describe('skills, bosses and bounded encounters', () => {
    else expect(enemy.hp).toBeLessThan(before);
   });
  }
+ it.each([[1, 102], [2, 118], [3, 134], [4, 134]])('limits rank %i arrow rain to one third of its former radius', (rank, oldRadius) => {
+  const sim = new GameSimulation('archer', parseSave(null), () => .5);
+  sim.state.timeStopRemaining = 1;
+  sim.state.skills.rain = rank;
+  const center = sim.spawnEnemy('slime', 216, 450)!;
+  const nearby = sim.spawnEnemy('slime', 241, 450)!;
+  const outside = sim.spawnEnemy('slime', 280, 450)!;
+  for (const enemy of [center, nearby, outside]) enemy.hp = enemy.maxHp = 1000;
+  sim.update(.05);
+  const rain = sim.state.hazards.find(hazard => hazard.kind === 'rain')!;
+  expect(rain.radius).toBeCloseTo(oldRadius / 3);
+  expect(rain.x).toBe(center.x);
+  tick(sim, .7);
+  expect(nearby.hp).toBeLessThan(nearby.maxHp);
+  expect(outside.hp).toBe(outside.maxHp);
+ });
  it('boss telegraphs a dash, stays on screen and awards a kill without ending the run', () => {
   const sim = new GameSimulation('warrior', parseSave(null)); const boss = sim.spawnEnemy('boss', 216, 160)!;
   tick(sim, 3.1); expect(boss.phase).toBe('warn'); tick(sim, 1.2); expect(boss.phase).toBe('dash');

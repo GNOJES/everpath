@@ -12,31 +12,29 @@ export function createArt(scene: Phaser.Scene) {
  const add = (key: string, source: HTMLCanvasElement) => { if (!scene.textures.exists(key)) scene.textures.addCanvas(key, source); artUrls[key] = source.toDataURL(); };
  const heroColors = { o: '#342640', d: '#814c43', s: '#eb9867', S: '#ffcc91' };
  add('field-warrior', pixelSprite([
-  '      oooo', '     oyyyyoo', '    oyyYYyyyo', '  oyyyYYYYyyoo', ' oyyooYYYyYyyo',
-  ' ooooyyYyYYYyo      o', '    oyYYyYYyoo     olo', '   oyyyoyooo      ollo',
-  '   ooybSSSbSo    ollLo', '    obSSoSSoo    ollLo', '    odSSSSSo    ollLo',
-  '    oodSSdo     ollo', '   obbboooobo  ollo', '  obbbBLbBBBo ollo',
-  '  obyLBByBBbooyo', '  oyyBBoLBbooYyo', '   oyobBBobooyo', '    oobbbyboo',
-  '     obobybo', '     obo obo', '    obbo obbo', '    oooo oooo',
- ], { ...heroColors, y: '#df883c', Y: '#ffd86f', b: '#4a4b73', B: '#7184ab', L: '#dce9de', l: '#a6bdd2' }));
- add('field-archer', pixelSprite([
-  '     oooo', '    ogGGgoo', '   ogGggGGgo', '  ogGoorrRGgo', ' oggooRRRRGGgo',
-  '  oooRRRdRRRGgo', '    odRdSdRRGGo   oo', '   odRSoSSdoGgo  oygo',
-  '   odRSSSoSodgo  oyGgo', '    odSSSSSogo  oy o',
-  '   ogodSSdogoo  oY o', '  oggGGoooGgggo oY o', '  oggGYgYggggsooY o',
-  '  oggGggGGggosooY o', '   ogggYYgggo   oY o', '   oogyyYggoo   oy o',
-  '    oggggggo     oyo', '     obbybbo      oo', '     obo obo', '     obo obo',
-  '    odbo obdo', '    oooo oooo',
- ], { ...heroColors, g: '#557749', G: '#95ac5d', r: '#a74c34', R: '#e77e47', b: '#54445b', y: '#ad6b3e', Y: '#e7b26b' }));
- add('field-mage', pixelSprite([
-  '      oooo', '     opPPpo', '    opPPPppo', '    opPPpYOo', '    opPPpYyoo',
-  '   opPPppYyppo', ' ooppPPPPPPpPpo', 'oppPPPPPPPPPPppo',
-  ' opPPoobbbobppoo   o', '  oooobSSSbooo    oco', '    obSoSSobo    ocCo',
-  '    obSSSSSbo   oCCcco', '    obbdSSdoo    ocCo', '    opPoooopPo   oco',
-  '   opPPpYpPPpo    so', '   opPPpyPPppso   so', '  oppPPYPppopso   so',
-  '  oppPPpPPppo ooooso', '   oppPpPPpo      so', '    obpo pbo      so',
+  '          oo', '       oooHo', '     ooHHHHho', '    oHHHhHHhho',
+  '   oohHHHHHho          o', '   oRrrRRRRro         oLo', '  orRohSkSSko        oLlo', ' orrooSSSSsdo       oLlo',
+  '  oo  odSSso       oLlo', '       oooo       oLlo', '     ooooooo     oLlo', '   oorrrrrroo   oLlo',
+  '  oYBLLBLLBYo oyoLo', '  oBBBbBBbBBoobooYo', '  oobBLLBbboooSSyo', '   obBBBBbo  ooyo',
+  '    oyYYyo    oyo', '    obo obo', '    obo obo', '    obo obo',
   '    obbo obbo', '    oooo oooo',
- ], { ...heroColors, p: '#7851a7', P: '#ad79d0', b: '#4d416e', c: '#4c9890', C: '#a4e9cd', y: '#b87355', Y: '#efb866', O: '#ffc773' }));
+ ], { ...heroColors, o: '#2c2838', k: '#25212e', r: '#a44845', R: '#e77554', h: '#73453e', H: '#ba7749', y: '#ad713a', Y: '#f4c76e', b: '#4b607a', B: '#819ab4', L: '#f1f6f5', l: '#a9cad9' }));
+ add('field-archer', pixelSprite([
+  '      ooooo', '    oogGGGoo', '   ogGGGGGGgo', '   ogGGGGGGGgo',
+  '  ogGGgooooGgo', '  ogGorRRRdogo', '  ogorRRRRRrog  oo', '  ogorSSSSSdo   soo',
+  '  ogodSoSSodo   s oYo', '   oodSSSSdo    s  oyo', '    oodSSdo     s   oYo', '   oggooogoo    s   oYo',
+  '  ogGGGgGGGgoooossSoYo', '  ogGGggGGGgooSSSSSoyo', '  oggGgyggggo   s   oYo', '   oggYyyggo    s  oyo',
+  '    ogggggo     s oYo', '    obo obo     soo', '    obo obo     oo', '    obo obo',
+  '    obbo obbo', '    oooo oooo',
+ ], { ...heroColors, g: '#53794c', G: '#9dbd65', r: '#a44e36', R: '#e77e4c', b: '#56475c', y: '#a96738', Y: '#eab969', s: '#fff0be' }));
+ add('field-mage', pixelSprite([
+  '         oo', '        oPPo', '       oPPpo', '      oPPpo',
+  '     oPPPpo      oo', '    oPPpYpoo    ocCo', '  oooPPPYpPPo  ocCCco', ' oppPPPPPPPppo ocCCco',
+  '  oooooooooooo  ocCo', '   obSSSSSbo     oo', '   obSoSSobo     oyo', '   obSSSSSbo     oyo',
+  '    odSSSdo      oyo', '   opPooopPo o   oyo', '   opPPYPPpo ooooyo', '  opPPPYPpPpooSSSyo',
+  '  opPPppPPPpo    oyo', '  opppPPpppo     oyo', '   oooooooo      oyo', '    obo obo      oyo',
+  '    obbo obbo    ooo', '    oooo oooo',
+ ], { ...heroColors, p: '#6e51a1', P: '#aa7dcb', b: '#4d416e', c: '#458e84', C: '#bdf5dc', y: '#a36b49', Y: '#f4bc72' }));
  add('slime', pixelSprite(['      ggggg     ', '    ggGGGGGgg   ', '   gGGGGGllGGg  ', '  gGGGGGGGlGGGg ', ' gGGGGGGGGGGGGGg', ' gGGdoGGGGdoGGGg', ' gGGooGGGGooGGGg', ' gGGGGGGGGGGGGGg', '  ggGGGddGGGggg ', '   ggggggggggg  '], { ...palette, g: '#226d83', G: '#55d0c4' }));
  add('goblin', pixelSprite(['       rrr      ', '      rrRrr     ', '  go ogggggo og ', '  gGogGGGGGogGg ', '   gGGlGGGlGGg  ', '    gGoGGoGg    ', '     gGssGg     ', '     ohhhho     ', '   oghGhGhgo  a ', '   osghhggso aa ', '   osohhhoso ah ', '    ogggggo  h  ', '     ohhho      ', '    ogo ogo     ', '   ohho ohho    ', '   oooo oooo    '], palette));
  add('skeleton', pixelSprite(['      ooooo     ', '     obbbbbo    ', '     obllbbo    ', '     boddobo    ', '     obbdbbo    ', '      obbbo     ', '      oddo   h  ', '    obbbbbo  hh ', '    osdbdso  h h', '    obbbbo   h h', '     obdbo   h h', '     obbbo   hh ', '     obdbo   h  ', '    obo obo     ', '    obo obo     ', '   obbo obbo    ', '   oooo oooo    '], palette));

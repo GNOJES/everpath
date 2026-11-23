@@ -32,7 +32,12 @@ test('audio survives native suspension and resumes only on user gesture',async({
    }
   };
  });
- await page.goto('/e2e/playtest.html');await page.locator('[data-action="embark"]').click();await page.locator('[data-action="start"]').click();
+ const preload = page.waitForResponse(response => response.url().endsWith('/audio/everpath-battle.m4a') && response.ok());
+ await page.goto('/e2e/playtest.html');
+ const battleTrack = await preload;
+ await battleTrack.finished();
+ expect(await page.evaluate(() => (window as unknown as { contexts: AudioContext[] }).contexts.length)).toBe(0);
+ await page.locator('[data-action="embark"]').click();await page.locator('[data-action="start"]').click();
  await expect.poll(()=>page.evaluate(()=>(window as unknown as { contexts:AudioContext[] }).contexts[0]?.state)).toBe('running');
  const music = () => page.evaluate(() => (window as unknown as { soundtrack: { offset: number; channels: number; duration: number; loop: boolean }[] }).soundtrack);
  await expect.poll(async () => (await music()).length).toBe(1);
@@ -46,6 +51,12 @@ test('audio survives native suspension and resumes only on user gesture',async({
  await page.locator('[data-action="resume"]').click();await expect.poll(()=>page.evaluate(()=>(window as unknown as { contexts:AudioContext[] }).contexts[0]?.state)).toBe('running');
  await expect.poll(async () => (await music()).length).toBe(2);
  expect((await music())[1].offset).toBeGreaterThan(0);
+ await page.locator('[data-action="pause"]').click();
+ await page.locator('[data-action="title"]').click();
+ await page.locator('[data-action="embark"]').click();
+ await page.locator('[data-action="start"]').click();
+ await expect.poll(async () => (await music()).length).toBe(3);
+ expect((await music())[2].offset).toBe(0);
 });
 
 test('music pauses on pause and background, and plays at 30% during upgrades', async ({ page }) => {

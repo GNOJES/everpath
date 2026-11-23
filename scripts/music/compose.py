@@ -8,7 +8,7 @@ TEMPO = 166 if warden else 154
 BAR_COUNT = 32 if warden else 48
 events = []
 # Note order follows the sampler program order in render.swift.
-STRINGS, LOW_STRINGS, HORNS, TRUMPETS, WOODS, TIMPANI, HARP, FLUTE, PIZZ, CHOIR, BELLS, BRASS, KIT = range(13)
+STRINGS, LOW_STRINGS, HORNS, TRUMPETS, WOODS, TIMPANI, HARP, FLUTE, PIZZ, CHOIR, BELLS, BRASS, VIOLA, CLARINET, BASSOON, CELESTA, KIT = range(17)
 chords = [
     (38, 50, 53, 57), (34, 50, 53, 58), (41, 48, 53, 57), (36, 48, 52, 55),
     (38, 50, 53, 57), (34, 50, 53, 58), (31, 50, 55, 58), (33, 49, 52, 57),
@@ -56,6 +56,17 @@ if warden:
         if section >= 2:
             for i,pitch in enumerate((octave, fifth+12, third+12, octave+12)):
                 play(BELLS if section == 2 else FLUTE, start+.25+i*.75, .43, pitch, 74)
+        if section in (0, 3):
+            for beat, pitch, length in ((.5, root+12, .44), (2.25, fifth-12, .54), (3.25, third-12, .39)):
+                play(BASSOON, start+beat, length, pitch, 82)
+        if section == 2:
+            play(VIOLA, start+.1, 1.6, fifth-12, 79)
+            play(VIOLA, start+2, 1.58, third, 73)
+            for i, pitch in enumerate((third, fifth, octave, fifth+12)):
+                play(CELESTA, start+.62+i*.75, .34, pitch, 67)
+        if section in (1, 3) and phrase in (2, 3, 6, 7):
+            play(CLARINET, start+2.65, .65, octave, 75)
+            play(CLARINET, start+3.35, .53, fifth, 70)
     Path(sys.argv[1]).write_text(json.dumps({"duration": BAR_COUNT * 4 * 60 / TEMPO, "events": events}))
     sys.exit()
 
@@ -126,5 +137,22 @@ for bar in range(BAR_COUNT):
     if section == 5 and phrase >= 4:
         for i, pitch in enumerate([high+12, mid+12, low+12, mid+12]):
             play(WOODS, start+1.75+i*.5, .30, pitch, 80)
+
+    # Answers enter behind the lead, then trade places between sections.
+    if section in (0, 1, 4):
+        play(VIOLA, start+.12, 1.62, mid, 75 if section == 0 else 82)
+        play(VIOLA, start+2.1, 1.44, high, 74)
+    if section in (0, 3, 5):
+        for beat, length, pitch in ((.75, .55, high+12), (2.25, .70, mid+12), (3.25, .53, low+12)):
+            play(CLARINET, start+beat, length, pitch, (81 if section == 0 else 74) - (3 if beat > 3 else 0))
+    if section in (1, 3, 4):
+        for beat, length, pitch in ((.5, .55, root+12), (1.75, .32, low), (2.5, .63, high-12)):
+            play(BASSOON, start+beat, length, pitch, 72 if section == 3 else 82)
+    if section in (2, 5):
+        for i, pitch in enumerate((mid+12, high+12, low+24, high+24)):
+            play(CELESTA, start+.375+i*.75, .38, pitch, 75 if sparse else 68)
+    if section == 5 and phrase in (0, 4):
+        for pitch in (mid, high, high+12):
+            play(VIOLA, start+.06, 2.55, pitch, 83)
 
 Path(sys.argv[1]).write_text(json.dumps({"duration": BAR_COUNT * 4 * 60 / TEMPO, "events": events}))

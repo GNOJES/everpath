@@ -29,6 +29,7 @@ export class ForestScene extends Phaser.Scene {
  private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private endFxTime = 0;
  constructor() { super('forest'); }
  create() {
+  this.audio.preloadBattle();
   createArt(this); this.ground = this.add.tileSprite(216, 384, 432, 768, 'terrain').setDepth(-10);
   this.shadows = this.add.graphics().setDepth(5); this.fx = this.add.graphics().setDepth(2000); this.joystick = this.add.graphics().setDepth(3000);
   for (let i = 0; i < 24; i++) { const row = Math.floor(i / 2), left = i % 2 === 0; const x = left ? 8 + Math.sin(i * 41) * 28 : 417 + Math.sin(i * 17) * 25; const y = row * 102 - 120; const image = this.add.image(x, y, i % 4 === 0 ? 'pine' : 'tree').setOrigin(.5, 1).setScale(i % 4 === 0 ? 1.25 : 1.35); this.scenery.push({ image, x, y }); }
@@ -43,7 +44,12 @@ export class ForestScene extends Phaser.Scene {
  setRun(sim?: GameSimulation) {
   if (this.simulation) this.simulation.onSound = undefined;
   this.simulation = sim;
-  if (sim) sim.onSound = cue => this.audio.playCue(cue);
+  if (sim) {
+   sim.onSound = cue => this.audio.playCue(cue);
+   this.audio.beginRun();
+  } else {
+   this.audio.syncMusic();
+  }
   this.controls?.reset();
   this.lastEffect = 0;
   this.endFxTime = 0;
