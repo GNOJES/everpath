@@ -12,6 +12,7 @@ export function createRun(hero: HeroId, save: SaveData, rank = 0): RunState {
 }
 export class GameSimulation {
  readonly state: RunState;
+ speedMultiplier: 1 | 2 = 1;
  onSound?: (cue: CombatSound) => void;
  private regularSpawns = 0; private sideSpawns = 0;
  private healDrops = 0;
@@ -45,11 +46,12 @@ export class GameSimulation {
  }
  update(seconds: number, direction: Vec = { x: 0, y: 0 }) {
   const s = this.state;
-  if (s.status !== 'running') return;
   const dt = clamp(seconds, 0, .05);
-  const frozen = s.timeStopRemaining > 0;
-  this.advance(dt, direction, frozen);
-  if (frozen) s.timeStopRemaining = s.timeStopRemaining - dt > 1e-9 ? s.timeStopRemaining - dt : 0;
+  for (let step = 0; step < this.speedMultiplier && s.status === 'running'; step++) {
+   const frozen = s.timeStopRemaining > 0;
+   this.advance(dt, direction, frozen);
+   if (frozen) s.timeStopRemaining = s.timeStopRemaining - dt > 1e-9 ? s.timeStopRemaining - dt : 0;
+  }
  }
  private advance(dt: number, direction: Vec, frozen: boolean) {
   const s = this.state, p = s.player;
@@ -239,7 +241,7 @@ export class GameSimulation {
      this.shoot(e, p, 'enemy', e.damage, 155, 1); e.timer = 2.65;
     }
    } else if (e.kind === 'bat') { dir.x += Math.sin(s.elapsed * 5 + e.seed) * .65; dir = normalize(dir.x, dir.y); }
-   e.x += dir.x * speed * dt; e.y += (dir.y * speed + (isBoss(e.kind) ? 0 : W.scrollSpeed * .10)) * dt;
+   e.x += dir.x * speed * dt; e.y += (dir.y * speed + (isBoss(e.kind) ? 0 : W.enemyDrift)) * dt;
    if (e.kind === 'boss' || e.kind === 'briar') { e.x = clamp(e.x, 30, W.width - 30); e.y = clamp(e.y, 137, W.height - 60); }
    if (distance(e, p) < e.radius + W.playerRadius) this.damageEnemyContact(e);
   }

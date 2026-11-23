@@ -57,7 +57,7 @@ export class ForestScene extends Phaser.Scene {
   this.lastShotSound = 0;
  }
  update(_time: number, delta: number) {
-  const dt = Math.min(delta / 1000, .05); const sim = this.simulation; if (!sim || sim.state.status === 'running') this.clock += dt;
+  const dt = Math.min(delta / 1000, .05); const sim = this.simulation; if (!sim || sim.state.status === 'running') this.clock += dt * (sim?.speedMultiplier ?? 1);
   if (sim) { const direction = this.controls.direction(); if (sim.state.status === 'running') this.onInputFrame?.(performance.now()); sim.update(dt, direction); } else this.titleScroll += dt * 9;
   if (sim?.state.status === 'victory' || sim?.state.status === 'gameover') this.endFxTime += dt;
   const s = sim?.state, scroll = s?.scroll ?? this.titleScroll; this.ground.tilePositionY = -scroll;

@@ -13,11 +13,29 @@ describe('movement and scroll', () => {
  it('scrolls identically when standing still, going up, or going down', () => {
   const a = new GameSimulation('warrior', parseSave(null), () => .5); const b = new GameSimulation('warrior', parseSave(null), () => .5); const c = new GameSimulation('warrior', parseSave(null), () => .5);
   tick(a, 1); tick(b, 1, { x: 0, y: -1 }); tick(c, 1, { x: 0, y: 1 });
-  expect(a.state.scroll).toBeGreaterThan(0); expect(a.state.scroll).toBe(b.state.scroll); expect(b.state.scroll).toBe(c.state.scroll); expect(b.state.player.y).toBeLessThan(a.state.player.y);
+  expect(a.state.scroll).toBeCloseTo(42); expect(a.state.scroll).toBe(b.state.scroll); expect(b.state.scroll).toBe(c.state.scroll); expect(b.state.player.y).toBeLessThan(a.state.player.y);
  });
  it('clamps movement and freezes the entire world when paused', () => {
   const sim = new GameSimulation('archer', parseSave(null)); tick(sim, 3, { x: -1, y: -1 }); expect(sim.state.player.x).toBeGreaterThanOrEqual(22); expect(sim.state.player.y).toBeGreaterThanOrEqual(104);
   sim.pause(); const before = JSON.stringify(sim.state); sim.update(1, { x: 1, y: 1 }); expect(JSON.stringify(sim.state)).toBe(before);
+ });
+ it('runs two normal-sized steps at 2× and stops at upgrade choices', () => {
+  const normal = new GameSimulation('warrior', parseSave(null), () => .5);
+  const fast = new GameSimulation('warrior', parseSave(null), () => .5);
+  const right = { x: 1, y: 0 };
+  fast.speedMultiplier = 2;
+  fast.update(.05, right);
+  normal.update(.05, right);
+  normal.update(.05, right);
+  expect(fast.state.elapsed).toBeCloseTo(.1);
+  expect(fast.state.scroll).toBe(normal.state.scroll);
+  expect(fast.state.player.x).toBe(normal.state.player.x);
+  const enemy = fast.spawnEnemy('slime', fast.state.player.x, fast.state.player.y - 20)!;
+  enemy.hp = 1;
+  fast.state.xp = fast.state.xpNext - 1;
+  fast.update(.05);
+  expect(fast.state.status).toBe('upgrade');
+  expect(fast.state.elapsed).toBeCloseTo(.15);
  });
 });
 describe('combat and run lifecycle', () => {

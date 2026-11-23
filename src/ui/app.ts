@@ -75,6 +75,13 @@ export class App {
   else if (action === 'title') { if (this.sim && this.sim.state.status !== 'gameover') this.store.settle(this.sim.result()); this.sim = undefined; this.scene.setRun(); this.screen = 'title'; this.render(); }
   else if (action === 'time-stop' && this.sim?.activateTimeStop()) this.updateTimeStop(this.sim.state);
   else if (action === 'pause' || action === 'resume') this.togglePause();
+  else if (action === 'run-speed' && this.screen === 'run' && this.sim?.state.status === 'paused') {
+   const speed = button.dataset.speed === '2' ? 2 : 1;
+   this.sim.speedMultiplier = speed;
+   for (const option of this.overlay.querySelectorAll<HTMLButtonElement>('[data-action="run-speed"]')) {
+    option.setAttribute('aria-pressed', String(option.dataset.speed === String(speed)));
+   }
+  }
   else if (action === 'upgrade') { if (this.sim?.chooseUpgrade(button.dataset.id!)) { this.scene.controls.reset(); this.previousStatus = ''; this.render(); } }
   else if (action === 'history') { this.historyReturn = this.screen; this.historyPage = 0; this.screen = 'history'; this.render(); }
   else if (action === 'history-page') { this.historyPage += Number(button.dataset.direction); this.render(); }
@@ -334,6 +341,10 @@ export class App {
   this.overlay.innerHTML = `<section class="pause-panel" aria-labelledby="pause-title">
    <h2 id="pause-title">일시정지</h2>
    <div class="pause-run-summary">${formatTime(s.elapsed)} · ${s.kills}처치 · ${s.gold}G</div>
+   <div class="pause-speed" role="group" aria-label="게임 속도">
+    <span>게임 속도</span>
+    ${[1, 2].map(speed => `<button type="button" data-action="run-speed" data-speed="${speed}" aria-pressed="${this.sim?.speedMultiplier === speed}">${speed}배속</button>`).join('')}
+   </div>
    <h3>습득한 스킬</h3>
    <ul class="pause-skills">${learned.map(skill => `<li>${icon(skill.icon)}<span>${skill.name}</span><b>Lv.${skill.level}</b></li>`).join('')}</ul>
    <button class="button primary" data-action="resume">${icon('play')} 모험 계속하기</button>
@@ -346,7 +357,7 @@ export class App {
    <header class="upgrade-heading"><div>${portrait(s.hero)}<h2 id="upgrade-title">강화 선택</h2></div><span>Lv. ${s.level}</span></header>
    <div class="upgrade-choices">${s.choices.map(choice => {
     const kind = choice.id === 'evolve' ? 'evolve' : choice.max === 0 ? 'reward' : choice.level === 0 ? 'learn' : 'improve';
-    const badge = { evolve: '진화', reward: '즉시 적용', learn: '새 습득', improve: '보유 강화' }[kind];
+    const badge = choice.id === 'weapon' ? '기본무기' : { evolve: '진화', reward: '즉시 적용', learn: '새 습득', improve: '보유 강화' }[kind];
     const transition = kind === 'learn' ? 'Lv.1' : kind === 'improve' ? `<span>${choice.level}</span> → <b>${choice.level + 1}</b>` : '';
     return `
     <button class="upgrade-card" data-action="upgrade" data-id="${choice.id}" data-upgrade-kind="${kind}">

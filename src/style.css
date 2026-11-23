@@ -236,6 +236,7 @@ html,body{overscroll-behavior-y:none}
 [data-upgrade-kind="learn"] .upgrade-badge{background:#d8eddd;color:#19583a}
 [data-upgrade-kind="improve"] .upgrade-badge{background:#dce8ff;color:#244582}
 [data-upgrade-kind="evolve"] .upgrade-badge{background:#f7e6bd;color:#684118}
+.upgrade-card[data-id="weapon"] .upgrade-badge{background:#f7e6bd;color:#684118}
 .upgrade-rank-row{display:flex;align-items:center;gap:7px}
 .upgrade-card .upgrade-name{display:block;color:#203057!important;font-size:clamp(13px,4.3cqw,17px);font-weight:850;line-height:1.16;word-break:keep-all}
 .upgrade-transition{flex:none;white-space:nowrap;border-radius:5px;padding:2px 5px;background:#dce8ff;color:#213d76;font-size:clamp(11px,3.7cqw,15px);font-weight:700;font-variant-numeric:tabular-nums}
@@ -268,6 +269,10 @@ html,body{overscroll-behavior-y:none}
 .pause-panel h2{margin:0;font-size:clamp(19px,5.5cqw,27px)}
 .pause-panel h3{margin:1px 0 0;font-size:14px;align-self:flex-start}
 .pause-run-summary{color:#455778;font-size:12px}
+.pause-speed{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;gap:4px;width:100%;font-size:12px}
+.pause-speed>span{text-align:left;font-weight:800}
+.pause-speed button{min-height:34px;padding:4px;border:1px solid #aebfdf;border-radius:5px;background:#edf3ff;color:#274c97;font:inherit;font-weight:800;cursor:pointer;touch-action:manipulation}
+.pause-speed button[aria-pressed="true"]{border-color:#274c97;background:#274c97;color:#fff}
 .pause-skills{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%;padding:0;margin:0}
 .pause-skills li{display:flex;align-items:center;gap:3px;min-width:0;padding:4px 3px;border:1px solid #b8c9e3;border-radius:5px;background:#edf3ff;font-size:clamp(9px,3.4cqw,13px);text-align:left}
 .pause-skills .icon{width:13px;height:13px;flex:none;color:#31528e}
