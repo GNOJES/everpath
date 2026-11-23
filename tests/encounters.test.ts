@@ -2,13 +2,17 @@ import { it, expect } from 'vitest';
 import { GameSimulation } from '../src/game/simulation';
 import { parseSave } from '../src/game/save';
 import { chooseEnemyKind, spawnInterval } from '../src/game/encounters';
-it('uses fewer arrivals early and tapers smoothly into sparse final-boss reinforcements', () => {
+import { BALANCE, CAMPAIGN } from '../src/game/config';
+it('tapers regular arrivals to one-third of the normal rate before the final boss', () => {
  expect(spawnInterval(0)).toBeGreaterThan(.85);
  expect(spawnInterval(300)).toBeLessThan(spawnInterval(0));
  for (const t of [65, 120, 240, 360, 480, 555]) expect(Math.abs(spawnInterval(t + .01) - spawnInterval(t - .01))).toBeLessThan(.001);
  expect(spawnInterval(580)).toBeGreaterThan(spawnInterval(555));
  expect(spawnInterval(590)).toBeGreaterThan(spawnInterval(580));
- expect(spawnInterval(599.999)).toBeCloseTo(7.5, 1);
+ const normalLateInterval = BALANCE.minSpawnInterval;
+ const halfway = (CAMPAIGN.approachAt + CAMPAIGN.finalAt) / 2;
+ expect(normalLateInterval / spawnInterval(halfway)).toBeCloseTo(2 / 3);
+ expect(normalLateInterval / spawnInterval(599.999)).toBeCloseTo(1 / 3, 4);
  expect(spawnInterval(600)).toBe(7.5);
  expect(spawnInterval(670)).toBe(7.5);
 });

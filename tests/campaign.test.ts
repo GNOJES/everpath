@@ -55,6 +55,27 @@ describe('campaign boundary cases',()=>{
 });
 
 describe('boss entry waves', () => {
+ it('doubles the previous HP of each scheduled middle boss', () => {
+  const baseline = [
+   [120, [410 * 1.14]],
+   [240, [410 * .64, 410 * .64]],
+   [360, [410 * .86, 850 * .85]],
+   [480, [410 * .56, 850 * .59, 410 * .56, 850 * .59]],
+  ] as const;
+  for (const [at, health] of baseline) {
+   const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+   sim.state.elapsed = at - .025;
+   sim.state.nextBoss = at;
+   sim.update(.025);
+   const wave = sim.state.enemies.filter(enemy => enemy.middleWave === at);
+   expect(wave).toHaveLength(health.length);
+   wave.forEach((enemy, slot) => {
+    expect(enemy.maxHp).toBeCloseTo(2 * health[slot] * (1 + at * .0044));
+    expect(enemy.hp).toBe(enemy.maxHp);
+   });
+  }
+ });
+
  it('sends the requested four middle-boss waves from offscreen', () => {
   const sim = new GameSimulation('warrior', parseSave(null), () => .5);
   const schedule = [

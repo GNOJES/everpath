@@ -153,7 +153,7 @@ export class GameSimulation {
    return;
   }
   const doubleChance = .12 * clamp((elapsed - 90) / 30, 0, 1);
-  const count = elapsed >= CAMPAIGN.approachAt ? 1 : this.random() < doubleChance ? 2 : 1;
+  const count = !finalSpawned && this.random() < doubleChance ? 2 : 1;
   for (let i = 0; i < count && enemies.length < W.maxEnemies; i++) {
    let kind: EnemyKind = finalSpawned ? (this.random() < .55 ? 'goblin' : 'bat') : chooseEnemyKind(elapsed, this.random);
    if (kind === 'shaman') {

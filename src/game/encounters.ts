@@ -4,10 +4,11 @@ import type { EnemyKind } from './types';
 export const openingProgress = (seconds: number) => clamp(seconds / 120, 0, 1);
 // A continuous arrival rate avoids the old 65-second jumps in simultaneous spawns.
 export function spawnInterval(seconds: number): number {
+ if (seconds >= CAMPAIGN.finalAt) return CAMPAIGN.reinforcementInterval;
  const openingPace = 1 + .65 * (1 - openingProgress(seconds));
  const normal = Math.max(BALANCE.minSpawnInterval, 1 / (1 / BALANCE.spawnInterval + Math.max(0, seconds) * BALANCE.spawnRateRamp)) * openingPace;
  const approach = clamp((seconds - CAMPAIGN.approachAt) / (CAMPAIGN.finalAt - CAMPAIGN.approachAt), 0, 1);
- return 1 / ((1 - approach) / normal + approach / CAMPAIGN.reinforcementInterval);
+ return normal / (1 - approach * 2 / 3);
 }
 
 export const MIDDLE_BOSS_WAVES = [

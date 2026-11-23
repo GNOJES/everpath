@@ -38,8 +38,8 @@ export const ENEMIES: Record<EnemyKind, { hp: number; speed: number; damage: num
  brute: { hp: 59, speed: 31, damage: 22, radius: 20, xp: 8, name: '가시 갑주병' },
  shaman: { hp: 33, speed: 26, damage: 16, radius: 13, xp: 6, name: '독안개 주술사' },
  warden: { hp: 12000, speed: 31, damage: 34, radius: 34, xp: 150, name: '모르바 · 뿌리의 군주' },
- boss: { hp: 410, speed: 34, damage: 25, radius: 29, xp: 40, name: '그롬 · 숲을 삼킨 자' },
- briar: { hp: 850, speed: 26, damage: 22, radius: 27, xp: 40, name: '바르크 · 가시 포격수' },
+ boss: { hp: 820, speed: 34, damage: 25, radius: 29, xp: 40, name: '그롬 · 숲을 삼킨 자' },
+ briar: { hp: 1700, speed: 26, damage: 22, radius: 27, xp: 40, name: '바르크 · 가시 포격수' },
 };
 export const PERMANENT: Record<PermanentId, { name: string; subtitle: string; icon: string; step: number; description: string }> = {
  attack: { name: '힘의 맹세', subtitle: 'MIGHT', icon: 'sword', step: .06, description: '공격력' }, hp: { name: '참나무 심장', subtitle: 'VITALITY', icon: 'heart', step: .06, description: '최대 체력' }, speed: { name: '바람의 걸음', subtitle: 'SWIFTNESS', icon: 'wind', step: .01, description: '이동속도' }, gold: { name: '황금의 축복', subtitle: 'FORTUNE', icon: 'coin', step: .025, description: '골드 획득량' },
