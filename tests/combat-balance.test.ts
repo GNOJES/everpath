@@ -2,12 +2,51 @@ import { describe, it, expect } from 'vitest';
 import { GameSimulation } from '../src/game/simulation';
 import { HEROES, SKILLS } from '../src/game/config';
 import { parseSave } from '../src/game/save';
+import { availableUpgrades } from '../src/game/progression';
 const frames = (sim: GameSimulation, seconds: number) => { for (let i = 0; i < seconds * 30; i++) sim.update(1 / 30); };
 describe('weapon and skill balance regressions', () => {
  it('keeps an aimed arrow at weapon level three instead of missing both sides of a small target', () => {
   const sim = new GameSimulation('archer', parseSave(null), () => .5); sim.state.weaponLevel = 3;
   const target = sim.spawnEnemy('slime', 216, 274)!; target.hp = target.maxHp = 1000; target.speed = 0;
   frames(sim, 1); expect(target.hp).toBeLessThan(1000);
+ });
+ it('fires one narrow arrow through a line without hitting the flank', () => {
+  const sim = new GameSimulation('archer', parseSave(null), () => .5);
+  sim.state.weaponLevel = 5;
+  sim.state.timeStopRemaining = 2;
+  const line = [440, 380, 320, 260].map(y => sim.spawnEnemy('brute', 216, y)!);
+  const flank = sim.spawnEnemy('slime', 234, 360)!;
+  frames(sim, .15);
+  expect(sim.state.projectiles).toHaveLength(1);
+  expect(sim.state.projectiles[0].radius).toBe(4);
+  frames(sim, .61);
+  expect(line.every(enemy => enemy.hp < enemy.maxHp)).toBe(true);
+  expect(flank.hp).toBe(flank.maxHp);
+ });
+ it('starts the bow farther away than either other weapon and keeps opening slime hits below lethal', () => {
+  expect(HEROES.archer.range).toBe(410);
+  expect(HEROES.mage.range).toBe(280);
+  expect(HEROES.warrior.range).toBe(88);
+  for (const [hero, hp] of [['warrior', 285], ['archer', 235], ['mage', 190]] as const) {
+   const sim = new GameSimulation(hero, parseSave(null), () => .5);
+   const slime = sim.spawnEnemy('slime', 216, 455)!;
+   expect(sim.state.player.maxHp).toBe(hp);
+   expect(sim.damage).toBeLessThan(slime.hp);
+   expect(sim.damage * 2).toBeGreaterThanOrEqual(slime.hp);
+  }
+ });
+ it('increases expedition movement speed by 18% of base per pick, up to three picks', () => {
+  const sim = new GameSimulation('archer', parseSave(null), () => .5);
+  for (let level = 0; level < 3; level++) {
+   const speed = availableUpgrades(sim.state).find(upgrade => upgrade.id === 'passive:speed')!;
+   expect(speed.max).toBe(3);
+   expect(speed.description).toContain('+18%');
+   sim.state.status = 'upgrade';
+   sim.state.choices = [speed];
+   expect(sim.chooseUpgrade(speed.id)).toBe(true);
+   expect(sim.state.player.speed).toBeCloseTo(HEROES.archer.speed * (1 + .18 * (level + 1)));
+  }
+  expect(availableUpgrades(sim.state).some(upgrade => upgrade.id === 'passive:speed')).toBe(false);
  });
  it('keeps trained magic single-target even with a second enemy in the line of fire', () => {
   const sim = new GameSimulation('mage', parseSave(null), () => .5); sim.state.weaponLevel = 4;
@@ -113,7 +152,7 @@ it('gives the close-range warrior the strongest starting hit', () => {
  expect(damage('mage')).toBeGreaterThan(damage('archer'));
 });
 
-it.each([[1, false, 52], [5, true, 86]])('limits sword level %i to the advertised frontal cone', (weaponLevel, evolved, degrees) => {
+it.each([[1, false, 50], [5, false, 66], [5, true, 72]])('limits sword level %i to the advertised frontal cone', (weaponLevel, evolved, degrees) => {
  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
  const p = sim.state.player;
  sim.state.weaponLevel = weaponLevel;
@@ -129,6 +168,19 @@ it.each([[1, false, 52], [5, true, 86]])('limits sword level %i to the advertise
  if (weaponLevel === 1) expect(flank.hp).toBe(flank.maxHp);
  const slash = sim.state.effects.find(effect => effect.kind === 'slash');
  expect((slash?.halfAngle ?? 0) * 360 / Math.PI).toBeCloseTo(degrees);
+});
+
+it.each([[1, false, 1], [3, false, 2], [5, false, 3], [5, true, 4]])('parries more shots at sword level %i', (weaponLevel, evolved, count) => {
+ const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+ const { player, projectiles } = sim.state;
+ sim.state.weaponLevel = weaponLevel;
+ sim.state.evolved = evolved;
+ for (let i = 0; i < 5; i++) {
+  projectiles.push({ id: 900 + i, x: player.x, y: player.y - 60 + i, kind: 'enemy',
+   vx: 0, vy: 50, pierce: 1, damage: 25, radius: 4, life: 1, hit: new Set() });
+ }
+ frames(sim, .15);
+ expect(sim.state.projectiles.filter(shot => shot.kind === 'enemy')).toHaveLength(5 - count);
 });
 
 it.each([
@@ -242,7 +294,7 @@ it('retains the bow pierce with falloff on each subsequent target', () => {
  const front = sim.spawnEnemy('brute', 216, 460)!;
  const back = sim.spawnEnemy('brute', 216, 398)!;
  for (const enemy of [front, back]) enemy.speed = 0;
- frames(sim, .33);
+ frames(sim, .4);
  expect(front.maxHp - front.hp).toBeCloseTo(sim.damage);
  expect(back.maxHp - back.hp).toBeCloseTo(sim.damage * .94);
 });

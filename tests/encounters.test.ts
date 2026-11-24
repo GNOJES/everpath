@@ -13,8 +13,8 @@ it('tapers regular arrivals to one-third of the normal rate before the final bos
  const halfway = (CAMPAIGN.approachAt + CAMPAIGN.finalAt) / 2;
  expect(normalLateInterval / spawnInterval(halfway)).toBeCloseTo(2 / 3);
  expect(normalLateInterval / spawnInterval(599.999)).toBeCloseTo(1 / 3, 4);
- expect(spawnInterval(600)).toBe(7.5);
- expect(spawnInterval(670)).toBe(7.5);
+ expect(spawnInterval(600)).toBe(4);
+ expect(spawnInterval(670)).toBe(4);
 });
 
 it('gives single-target builds time to level before fast enemies build up', () => {

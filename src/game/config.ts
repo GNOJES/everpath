@@ -1,11 +1,11 @@
 import type { HeroConfig, HeroId, EnemyKind, SkillConfig, PermanentId, PassiveId } from './types';
 export const DEFAULT_SFX_VOLUME = .7;
 export const WORLD = { width: 432, height: 768, scrollSpeed: 42, enemyDrift: 2.8, playerRadius: 12, minY: 38, margin: 22, joystickRadius: 48, joystickDeadzone: 7, invincibility: .2, maxEnemies: 100, maxProjectiles: 180, maxEffects: 60, maxHazards: 12 };
-export const BALANCE = { firstSpawn: 0, spawnInterval: .96, minSpawnInterval: .39, spawnRateRamp: .0032, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .08, weaponDamageStep: .13, weaponHasteStep: .08, weaponRangeStep: .06, weaponEvolutionDamage: 1.15, eliteAfter: 80, goldPerKill: 1.08, regularXpScale: 1.42, bossGold: 40, bossXp: 40, enemyHpGrowth: .0044, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
+export const BALANCE = { firstSpawn: 0, spawnInterval: .96, minSpawnInterval: .39, spawnRateRamp: .0032, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, speedMax: 3, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .18, weaponDamageStep: .13, weaponHasteStep: .08, weaponRangeStep: .06, weaponEvolutionDamage: 1.15, eliteAfter: 80, goldPerKill: 1.08, regularXpScale: 1.42, bossGold: 40, bossXp: 40, enemyHpGrowth: .0044, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
 export const HEROES: Record<HeroId, HeroConfig> = {
- warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '새벽의 검으로 적을 밀고, 다가오는 탄환을 자동으로 쳐냅니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격으로 일반 적을 밀어냅니다. 범위 안 탄환을 지우며 5레벨부터 최대 두 개를 막습니다.', icon: 'sword', color: '#efae35', hp: 250, speed: 155, weaponDamage: 16.1, skillPower: 5.2, cooldown: 1.18, range: 100, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield', 'bash', 'lunge', 'quake', 'sunder'], bars: [5, 3, 3] },
- archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '빠르고 약한 화살로 거리를 유지합니다. 활을 강화하면 적을 관통합니다.', weapon: '바람의 활', upgradeDescription: '1레벨은 적 하나에 명중합니다. 2레벨부터 관통합니다. 3·5레벨에서 화살 각도가 추가되며 같은 적에게는 한 번만 명중합니다.', icon: 'bow', color: '#f47153', hp: 215, speed: 190, weaponDamage: 11, skillPower: 6.0, cooldown: .84, range: 310, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain', 'snare', 'ricochet', 'blastArrow', 'deadeye'], bars: [2, 5, 4] },
- mage: { id: 'mage', name: '엘라', title: 'THE ARCANIST', role: '마법사', description: '유도탄으로 견제하고, 재사용 시간이 긴 강력한 주문으로 적을 제압합니다.', weapon: '별빛 지팡이', upgradeDescription: '단일 유도탄. 레벨이 오르면 피해·사거리·공격 속도가 증가합니다.', icon: 'staff', color: '#7583e8', hp: 235, speed: 177, weaponDamage: 14.4, skillPower: 7.4, cooldown: 1.02, range: 290, projectileSpeed: 350, skills: ['chain', 'fire', 'frost', 'meteor', 'gravity', 'prism', 'runeCross'], bars: [2, 3, 5] },
+ warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '새벽의 검으로 적을 밀고, 다가오는 탄환을 자동으로 쳐냅니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격으로 일반 적을 밀어냅니다. 검격이 닿는 탄환을 쳐냅니다. 1·3·5레벨과 진화에서 최대 1·2·3·4발을 막습니다.', icon: 'sword', color: '#efae35', hp: 285, speed: 155, weaponDamage: 17.8, skillPower: 5.2, cooldown: 1.18, range: 88, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield', 'bash', 'lunge', 'quake', 'sunder'], bars: [5, 3, 3] },
+ archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '빠르고 약한 화살로 거리를 유지합니다. 활을 강화하면 적을 관통합니다.', weapon: '바람의 활', upgradeDescription: '1레벨은 적 하나에 명중합니다. 2레벨부터 관통합니다. 좁은 직선으로 화살 한 발을 쏘며, 강화할수록 더 많은 적을 관통합니다.', icon: 'bow', color: '#f47153', hp: 235, speed: 190, weaponDamage: 9.6, skillPower: 6.0, cooldown: .78, range: 410, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain', 'snare', 'ricochet', 'blastArrow', 'deadeye'], bars: [2, 5, 4] },
+ mage: { id: 'mage', name: '엘라', title: 'THE ARCANIST', role: '마법사', description: '유도탄으로 견제하고, 재사용 시간이 긴 강력한 주문으로 적을 제압합니다.', weapon: '별빛 지팡이', upgradeDescription: '단일 유도탄. 레벨이 오르면 피해·사거리·공격 속도가 증가합니다.', icon: 'staff', color: '#7583e8', hp: 190, speed: 177, weaponDamage: 17.6, skillPower: 7.4, cooldown: 1, range: 280, projectileSpeed: 350, skills: ['chain', 'fire', 'frost', 'meteor', 'gravity', 'prism', 'runeCross'], bars: [2, 3, 5] },
 };
 export const SKILLS: Record<string, SkillConfig> = {
  whirl: { name: '휩쓸기', subtitle: 'WHIRLWIND', description: '전방에 넓은 검격을 가합니다. 강화하면 부채꼴과 피해가 증가합니다.', icon: 'whirl', color: '#dfc183', cooldown: 5, damage: 1.6, radius: 115, count: 1 },
@@ -46,29 +46,30 @@ export const PERMANENT: Record<PermanentId, { name: string; subtitle: string; ic
  timeStop: { name: '시간의 회중시계', subtitle: 'TIME STOP', icon: 'watch', step: 0, description: '시간의 회중시계' },
 };
 export const PASSIVES: Record<PassiveId, { name: string; subtitle: string; icon: string; description: string }> = {
- power: { name: '강인한 일격', subtitle: 'MIGHT', icon: 'sword', description: '모든 공격 피해 +15%' }, haste: { name: '신속한 손놀림', subtitle: 'HASTE', icon: 'wind', description: '모든 공격 주기 단축 +10%' }, vitality: { name: '생명의 뿌리', subtitle: 'VITALITY', icon: 'heart', description: '기본 최대 체력 +18%, 체력 회복' }, speed: { name: '가벼운 발걸음', subtitle: 'SWIFTNESS', icon: 'leaf', description: '기본 이동속도 +8%' },
+ power: { name: '강인한 일격', subtitle: 'MIGHT', icon: 'sword', description: '모든 공격 피해 +15%' }, haste: { name: '신속한 손놀림', subtitle: 'HASTE', icon: 'wind', description: '모든 공격 주기 단축 +10%' }, vitality: { name: '생명의 뿌리', subtitle: 'VITALITY', icon: 'heart', description: '기본 최대 체력 +18%, 체력 회복' }, speed: { name: '가벼운 발걸음', subtitle: 'SWIFTNESS', icon: 'leaf', description: `기본 이동속도 +${Math.round(BALANCE.speedStep * 100)}%` },
 };
 
 export const BOSS_PATTERN = { windup: 1.15, dashSpeed: 265, dashDuration: .62, recover: 1.6, chase: 3.2, slamRadius: 75, slamDelay: 1.35, slamDamage: 1.4 };
 export const PAIRED_GRORM = { recover: 2.15, slamRadius: 60 };
 export const FIRST_GRORM = { volleyRange: 150, volleySpeed: 205, volleyDamage: .72 };
 
-export const CAMPAIGN = { finalAt: 600, approachAt: 555, arenaLimit: 100, reinforcementInterval: 7.5, maxReinforcements: 3, clearGold: 300, arenaHeal: .2, rankMax: 3 };
+export const CAMPAIGN = { finalAt: 600, approachAt: 555, arenaLimit: 100, reinforcementInterval: 4, maxReinforcements: 3, clearGold: 300, arenaHeal: .2, rankMax: 3 };
 export const TIME_STOP = { maxCharges: 3, duration: 2, prices: [180, 320, 500] };
 export const PICKUPS = { from: 180, healChance: .0017, maxHeals: 2, healFraction: .50, coinChance: .006, coinGold: 9, firstChestGold: 120, pairedChestGold: 85, radius: 30 };
 export const permanentLimit = (id: PermanentId) => id === 'timeStop' ? TIME_STOP.maxCharges : BALANCE.permanentMax;
 export const EVOLUTIONS = {
- warrior: { name: '여명의 성검', passive: 'power' as const, description: '검격 거리 +25%, 검격 각도 +10°, 피해 +15%.' },
+ warrior: { name: '여명의 성검', passive: 'power' as const, description: '검격 거리 +25%, 검격 각도 +6°, 최대 4발 방어, 피해 +15%.' },
  archer: { name: '폭풍의 활', passive: 'haste' as const, description: '최대 5대상을 관통하며 피해가 15% 증가합니다.' },
  mage: { name: '천체의 지팡이', passive: 'power' as const, description: '단일 유도탄 피해 +15%, 공격 주기 단축.' },
 };
 export const WARRIOR_PARRY = { cooldown: .65, lookahead: .2 };
+export const BLAST_ARROW_AIM_RANGE = 310;
 export const ATTACK_SKILL_UPGRADE = {
  rank: BALANCE.skillMax + 1, damage: 1.32, haste: 1.18,
  description: '이 스킬의 피해 +32%, 발동 빈도 +18%.',
 };
 export const skillRankLimit = (skill: SkillConfig) => skill.damage > 0 ? ATTACK_SKILL_UPGRADE.rank : BALANCE.skillMax;
 export const warriorSweepAngle = (level: number, evolved: boolean) =>
- (26 + (level - 1) * 3 + (evolved ? 5 : 0)) * Math.PI / 180;
+ (25 + (level - 1) * 2 + (evolved ? 3 : 0)) * Math.PI / 180;
 
 export const isBoss = (kind: EnemyKind) => kind === 'boss' || kind === 'briar' || kind === 'warden';

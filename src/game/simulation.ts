@@ -1,4 +1,4 @@
-import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, FIRST_GRORM, CAMPAIGN, PICKUPS, TIME_STOP, WARRIOR_PARRY, ATTACK_SKILL_UPGRADE, warriorSweepAngle, isBoss } from './config';
+import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, FIRST_GRORM, CAMPAIGN, PICKUPS, TIME_STOP, WARRIOR_PARRY, BLAST_ARROW_AIM_RANGE, ATTACK_SKILL_UPGRADE, warriorSweepAngle, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind, MIDDLE_BOSS_WAVES, openingProgress } from './encounters';
@@ -346,7 +346,8 @@ export class GameSimulation {
   const { player, weaponLevel, evolved } = this.state;
   const angle = player.facing = Math.atan2(aim.y - player.y, aim.x - player.x);
   const halfAngle = warriorSweepAngle(weaponLevel, evolved);
-  for (const blocked of threats.filter(shot => this.inSweep(player, shot, angle, halfAngle)).slice(0, weaponLevel >= 5 ? 2 : 1)) {
+  const blockLimit = evolved ? 4 : 1 + Math.floor((weaponLevel - 1) / 2);
+  for (const blocked of threats.filter(shot => this.inSweep(player, shot, angle, halfAngle)).slice(0, blockLimit)) {
    blocked.life = 0;
    this.effect('crystal', blocked, 0xffd982, 17, .24);
    this.parryTimer = WARRIOR_PARRY.cooldown;
@@ -374,17 +375,16 @@ export class GameSimulation {
     this.shoot(p, target, 'magic', this.damage, config.projectileSpeed, 1, 0, target.id);
    } else {
     const pierce = s.evolved ? 5 : s.weaponLevel >= 5 ? 4 : s.weaponLevel >= 3 ? 3 : s.weaponLevel >= 2 ? 2 : 1;
-    const hit = new Set<number>();
-    const spreads = s.weaponLevel >= 5 ? [0, -.18, .18] : s.weaponLevel >= 3 ? [0, .14] : [0];
-    for (const spread of spreads) this.shoot(p, target, 'arrow', this.damage, config.projectileSpeed, pierce, spread, undefined, .94, hit);
+    this.shoot(p, target, 'arrow', this.damage, config.projectileSpeed, pierce, 0, undefined, .94);
    }
   }
   return true;
  }
- private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number, pierceScale = 1, hit = new Set<number>(), skillShot?: SkillShot, blastRadius?: number) {
+ private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number, pierceScale = 1, skillShot?: SkillShot, blastRadius?: number) {
   const s = this.state; if (s.projectiles.length >= W.maxProjectiles) return false;
   const a = Math.atan2(to.y - from.y, to.x - from.x) + spread;
-  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius: kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' ? 6 : 4, damage, kind, life: 3.5, pierce, hit, target, pierceScale, skillShot, blastRadius });
+  const radius = kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' && skillShot ? 6 : 4;
+  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius, damage, kind, life: 3.5, pierce, hit: new Set(), target, pierceScale, skillShot, blastRadius });
   return true;
  }
  private castSkill(id: SkillId, level: number, finalRank: boolean): boolean {
@@ -437,8 +437,8 @@ export class GameSimulation {
     if (id === 'ricochet') origin = marked;
    }
   } else if (id === 'blastArrow') {
-   const marked = this.nearest(p, HEROES.archer.range);
-   return !!marked && this.shoot(p, marked, 'arrow', damage, 520, 1, 0, undefined, 1, undefined, 'blast', radius);
+   const marked = this.nearest(p, BLAST_ARROW_AIM_RANGE);
+   return !!marked && this.shoot(p, marked, 'arrow', damage, 520, 1, 0, undefined, 1, 'blast', radius);
   } else if (id === 'gravity') {
    const center = { x: target.x, y: target.y };
    for (const enemy of s.enemies) {
@@ -476,7 +476,7 @@ export class GameSimulation {
   else if (id === 'blade' || id === 'multishot' || id === 'pierce') {
    const count = id === 'multishot' ? cfg.count + (level - 1) * 2 : id === 'blade' ? level : 1;
    const style = id === 'multishot' ? 'volley' : id;
-   for (let i = 0; i < count; i++) this.shoot(p, target, id === 'blade' ? 'blade' : 'arrow', damage, id === 'pierce' ? 490 : 350, id === 'multishot' ? 1 : 5 + level, (i - (count - 1) / 2) * .2, undefined, 1, undefined, style);
+   for (let i = 0; i < count; i++) this.shoot(p, target, id === 'blade' ? 'blade' : 'arrow', damage, id === 'pierce' ? 490 : 350, id === 'multishot' ? 1 : 5 + level, (i - (count - 1) / 2) * .2, undefined, 1, style);
   } else if (id === 'rain') {
    this.addHazard(this.densest(target), radius, .65, damage, 'player', 'rain', 'rainImpact');
   } else if (id === 'fire') {

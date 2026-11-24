@@ -138,9 +138,9 @@ it('keeps living enemies, shots and telegraphs as the Warden joins the field', (
  expect(s.hazards).toContain(zone);
  expect(s.withdrawn).toBe(0);
  const spawned = s.spawned;
- for (let i = 0; i < 60; i++) sim.update(.025);
+ for (let i = 0; i < 152; i++) sim.update(.025);
  expect(s.spawned).toBe(spawned);
- for (let i = 0; i < 360; i++) sim.update(.025);
+ for (let i = 0; i < 16; i++) sim.update(.025);
  expect(s.spawned - spawned).toBe(1);
  expect(s.enemies.some(enemy => enemy.reinforcement)).toBe(true);
  for (let i = 0; i < 1200; i++) {

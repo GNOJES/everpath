@@ -19,7 +19,10 @@ export function availableUpgrades(run: RunState): Upgrade[] {
    : ATTACK_SKILL_UPGRADE.description;
   options.push({ id: `skill:${id}`, ...skill, level, max, description });
  }
- for (const id of Object.keys(PASSIVES) as PassiveId[]) if (run.passives[id] < BALANCE.passiveMax) options.push({ id: `passive:${id}`, ...PASSIVES[id], level: run.passives[id], max: BALANCE.passiveMax, color: '#c7c2a0' });
+ for (const id of Object.keys(PASSIVES) as PassiveId[]) {
+  const max = id === 'speed' ? BALANCE.speedMax : BALANCE.passiveMax;
+  if (run.passives[id] < max) options.push({ id: `passive:${id}`, ...PASSIVES[id], level: run.passives[id], max, color: '#c7c2a0' });
+ }
  return options;
 }
 export function rollUpgrades(run: RunState, random: () => number): Upgrade[] {
