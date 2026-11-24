@@ -14,9 +14,15 @@ export function availableUpgrades(run: RunState): Upgrade[] {
   const skill = SKILLS[id], level = run.skills[id] ?? 0, max = skillRankLimit(skill);
   if (run.level < (skill.unlockLevel ?? 1) || level >= max) continue;
   let description = skill.description;
-  if (level === BALANCE.skillMax) description = id === 'chain'
-   ? '피해 +32%, 발동 빈도 +18%. 처치 시 다음 낙뢰 대기 시간 절반.'
-   : ATTACK_SKILL_UPGRADE.description;
+  if (level === BALANCE.skillMax) {
+   description = ATTACK_SKILL_UPGRADE.description;
+   if (id === 'chain') description += ' 처치 시 다음 낙뢰 대기 시간 절반.';
+   if (id === 'ricochet') description += ' 최대 명중 대상 5 → 6명.';
+   if (id === 'snare') description += ' 덫 4 → 5초, 감속 68 → 80%.';
+   if (id === 'blastArrow') description += ' 불 장판 4 → 5초.';
+   if (id === 'frost') description += ' 일반 적 70%, 중간보스 35% 감속.';
+   if (id === 'gravity') description += ' 중력장 반경 140 → 165.';
+  }
   options.push({ id: `skill:${id}`, ...skill, level, max, description });
  }
  for (const id of Object.keys(PASSIVES) as PassiveId[]) {

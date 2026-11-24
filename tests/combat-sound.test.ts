@@ -17,7 +17,7 @@ for (const {id: hero, skills} of Object.values(HEROES)) {
   const cues: CombatSound[] = [];
   sim.onSound = cue => cues.push(cue);
   sim.state.skills[id] = 3;
-  const target = sim.spawnEnemy('brute', 216, 465)!;
+  const target = sim.spawnEnemy('brute', 216, id === 'gravity' ? 325 : 465)!;
   target.hp = target.maxHp = 10000;
   sim.update(.05);
   expect(cues.filter(cue => cue === id)).toHaveLength(1);

@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
 import { createArt } from './art';
-import { WORLD as W, BALANCE, BOSS_PATTERN, HEROES, ENEMIES, SKILLS, isBoss } from './config';
+import { WORLD as W, BOSS_PATTERN, HEROES, ENEMIES, FROST_AURA, SKILLS, isBoss } from './config';
 import { PlayerInput } from './input';
 import { GameSimulation } from './simulation';
 import { GameAudio } from './audio';
 import { clamp } from './math';
-import { renderSkillEffect, renderSkillShot } from './skill-effects';
+import { renderMeteorShower, renderShield, renderSkillEffect, renderSkillShot } from './skill-effects';
 import type { InputObservation } from '../diagnostics/types';
 import type { RunState } from './types';
 
@@ -86,7 +86,15 @@ export class ForestScene extends Phaser.Scene {
    this.heroShadow(image, groundY);
   });
   this.renderWardenFall(s);
-  if (s) { this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderPickups(s); this.renderEffects(s); if (p.shield) { this.fx.lineStyle(1.5, 0xf2da99, .75); this.fx.strokeCircle(p.x, p.y - 9, 27); } if (s.skills.frost) { this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1); this.fx.strokeCircle(p.x, p.y, SKILLS.frost.radius + (Math.min(s.skills.frost, BALANCE.skillMax) - 1) * BALANCE.skillRadiusStep); } }
+  if (s) {
+   this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderPickups(s); this.renderEffects(s);
+   if (s.meteorShower && !defeated) renderMeteorShower(this.fx, s.meteorShower.elapsed);
+   if (p.shield) renderShield(this.fx, p.x, p.y - 12, SKILLS.shield.radius, .9);
+   if (s.skills.frost) {
+    this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1);
+    this.fx.strokeCircle(p.x, p.y, FROST_AURA.radius[s.skills.frost - 1]);
+   }
+  }
   else { this.actors.trim(0); this.shots.trim(0); for (const label of this.labels) label.setVisible(false); }
   // Small drifting spores are bounded and deterministic, rather than particle emitters.
   for (let i = 0; i < 17; i++) { const x = ((i * 107 + Math.sin(this.clock * .6 + i) * 18) % 430 + 430) % 430, y = (i * 61 + this.clock * (6 + i % 4)) % 768; this.fx.fillStyle(0xf5dca0, .15 + (Math.sin(this.clock * 1.3 + i) + 1) * .15); this.fx.fillRect(x, y, 2, 2); }
@@ -184,6 +192,29 @@ export class ForestScene extends Phaser.Scene {
  }
  private renderHazards(s: RunState) {
   const g = this.fx;
+  for (const field of s.groundFields) {
+   const { x, radius } = field, y = field.groundY + s.scroll;
+   const fade = Math.min(1, field.remaining * 3), burn = field.kind === 'burn';
+   const edge = burn ? 0xffb953 : 0x8cf4cd;
+   g.fillStyle(burn ? 0x953b23 : 0x185750, .24 * fade).fillCircle(x, y, radius);
+   g.lineStyle(3, burn ? 0x7b3220 : 0x23504a, .74 * fade).strokeCircle(x, y, radius);
+   g.lineStyle(1.5, edge, .92 * fade).strokeCircle(x, y, radius - 3);
+   if (burn) {
+    for (let i = 0; i < 13; i++) {
+     const angle = i * 2.399, reach = radius * (.16 + (i % 5) * .16);
+     const lift = 2 + 5 * (.5 + .5 * Math.sin(this.clock * 11 + i));
+     g.fillStyle(i % 2 ? edge : 0xf77738, .83 * fade)
+      .fillRect(x + Math.cos(angle) * reach - 1, y + Math.sin(angle) * reach - lift, 3, lift);
+    }
+   } else {
+    g.lineStyle(1.5, edge, .6 * fade);
+    for (let i = -2; i <= 2; i++) {
+     const offset = i * radius * .29, half = Math.sqrt((radius - 5) ** 2 - offset ** 2);
+     g.lineBetween(x - half, y + offset, x + half, y + offset);
+     g.lineBetween(x + offset, y - half, x + offset, y + half);
+    }
+   }
+  }
   for (const h of s.hazards) {
    const hostile = h.owner === 'enemy', color = hostile ? 0xd92e61 : 0x1b8cba;
    const progress = h.fired ? 1 : clamp(1 - h.delay / (h.windup ?? .65), 0, 1);

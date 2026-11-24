@@ -9,18 +9,22 @@ export interface RunResult { runId: string; hero: HeroId; time: number; level: n
 export interface Upgrade { id: string; name: string; subtitle: string; description: string; icon: string; level: number; max: number; color: string }
 export interface Player extends Vec { hp: number; maxHp: number; speed: number; invincible: number; shield: number; facing: number }
 export interface Enemy extends Vec { id: number; kind: EnemyKind; hp: number; maxHp: number; speed: number; damage: number; radius: number; elite: boolean; timer: number; phase: 'chase' | 'warn' | 'dash' | 'recover'; aim: Vec; hitFlash: number; seed: number; entryTarget?: Vec; rewardScale?: number; paired?: boolean; middleWave?: number; reinforcement?: boolean; wardenAttack?: number; slowedUntil?: number }
-export type SkillShot = 'blade' | 'volley' | 'pierce' | 'blast';
+export type SkillShot = 'blade' | 'volley' | 'pierce' | 'snare' | 'blast';
 export type SkillId = 'whirl' | 'blade' | 'shield' | 'bash' | 'lunge' | 'quake' | 'sunder'
  | 'multishot' | 'pierce' | 'rain' | 'snare' | 'ricochet' | 'blastArrow' | 'deadeye'
  | 'chain' | 'fire' | 'frost' | 'meteor' | 'gravity' | 'prism' | 'runeCross';
-export type CombatSound = SkillId | 'shieldBlock' | 'rainImpact' | 'blastImpact' | 'timeStop'
+export type CombatSound = SkillId | 'shieldBlock' | 'rainImpact' | 'blastImpact' | 'meteorImpact' | 'timeStop'
  | 'grormWarn' | 'grormVolley' | 'grormDash' | 'grormSlam' | 'grormDefeat'
  | 'briarWarn' | 'briarImpact' | 'wardenRoots' | 'wardenAim' | 'wardenFan' | 'wardenRing' | 'wardenSlam' | 'defeat' | 'victory';
-export type SkillEffect = 'whirl' | 'guard' | 'snare' | 'meteor' | 'frost' | 'lance' | 'quake' | 'sunder' | 'ricochet' | 'blast' | 'deadeye' | 'gravity' | 'prism' | 'runeCross';
-export interface Projectile extends Vec { id: number; vx: number; vy: number; radius: number; damage: number; life: number; kind: 'arrow' | 'magic' | 'blade' | 'enemy'; pierce: number; hit: Set<number>; target?: number; pierceScale?: number; skillShot?: SkillShot; blastRadius?: number }
+export type SkillEffect = 'whirl' | 'shieldRaise' | 'shieldBreak' | 'bash' | 'bashImpact' | 'frost' | 'lance' | 'quake' | 'sunder' | 'ricochet' | 'blast' | 'deadeye' | 'gravity' | 'prism' | 'runeCross';
+export interface MeteorShower { elapsed: number; waves: number; damage: number }
+export type FieldShot = { radius: number; duration: number } & ({ kind: 'snare'; slow: number } | { kind: 'burn' });
+export interface Projectile extends Vec { id: number; vx: number; vy: number; radius: number; damage: number; life: number; kind: 'arrow' | 'magic' | 'blade' | 'enemy'; pierce: number; hit: Set<number>; target?: number; pierceScale?: number; skillShot?: SkillShot; field?: FieldShot }
+export type GroundField = { x: number; groundY: number; radius: number; remaining: number }
+ & ({ kind: 'snare'; slow: number } | { kind: 'burn'; damage: number });
 export interface Effect extends Vec { id: number; kind: SkillEffect | 'slash' | 'crystal' | 'ring' | 'fire' | 'lightning' | 'hit' | 'death' | 'boss-death' | 'heal' | 'text'; color: number; life: number; duration: number; radius: number; angle: number; halfAngle?: number; x2?: number; y2?: number; text?: string }
 export interface Hazard extends Vec { id: number; radius: number; delay: number; life: number; damage: number; owner: 'enemy' | 'player'; kind: 'rain' | 'slam'; fired: boolean; windup?: number; impactSound?: CombatSound }
 export interface Pickup { x: number; groundY: number; kind: 'coin' | 'heal' | 'chest'; gold: number }
-export interface RunState { runId: string; hero: HeroId; status: 'running' | 'paused' | 'upgrade' | 'gameover' | 'victory'; elapsed: number; rank: number; evolved: boolean; finalSpawned: boolean; timeStopCharges: number; timeStopRemaining: number; pickups: Pickup[]; scroll: number; player: Player; enemies: Enemy[]; projectiles: Projectile[]; effects: Effect[]; hazards: Hazard[]; level: number; xp: number; xpNext: number; kills: number; spawned: number; escaped: number; withdrawn: number; bosses: number; gold: number; weaponLevel: number; skills: Record<string, number>; passives: Record<PassiveId, number>; choices: Upgrade[]; nextBoss: number }
+export interface RunState { runId: string; hero: HeroId; status: 'running' | 'paused' | 'upgrade' | 'gameover' | 'victory'; elapsed: number; rank: number; evolved: boolean; finalSpawned: boolean; timeStopCharges: number; timeStopRemaining: number; pickups: Pickup[]; scroll: number; player: Player; enemies: Enemy[]; projectiles: Projectile[]; effects: Effect[]; hazards: Hazard[]; groundFields: GroundField[]; meteorShower?: MeteorShower; level: number; xp: number; xpNext: number; kills: number; spawned: number; escaped: number; withdrawn: number; bosses: number; gold: number; weaponLevel: number; skills: Record<string, number>; passives: Record<PassiveId, number>; choices: Upgrade[]; nextBoss: number }
 export interface HeroConfig { id: HeroId; name: string; title: string; role: string; description: string; weapon: string; upgradeDescription: string; icon: string; color: string; hp: number; speed: number; weaponDamage: number; skillPower: number; cooldown: number; range: number; projectileSpeed: number; skills: SkillId[]; bars: [number, number, number] }
 export interface SkillConfig { name: string; subtitle: string; description: string; icon: string; color: string; cooldown: number; damage: number; radius: number; count: number; hastePerLevel?: number; radiusPerLevel?: number; unlockLevel?: number }

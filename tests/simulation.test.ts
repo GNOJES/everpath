@@ -89,6 +89,8 @@ describe('skills, bosses and bounded encounters', () => {
    else if (id === 'blade') expect(sim.state.projectiles.filter(p => p.kind === 'blade')).toHaveLength(3);
    else if (id === 'multishot') expect(sim.state.projectiles.filter(p => p.kind === 'arrow')).toHaveLength(7);
    else if (id === 'pierce') { expect(sim.state.projectiles).toHaveLength(1); expect(sim.state.projectiles[0].pierce).toBeGreaterThan(3); }
+   else if (id === 'snare') expect(sim.state.projectiles.some(shot => shot.skillShot === 'snare')).toBe(true);
+   else if (id === 'meteor') expect(sim.state.meteorShower).toMatchObject({ waves: 0 });
    else if (id === 'rain') { expect(sim.state.hazards).toHaveLength(1); expect(sim.state.hazards[0].kind).toBe('rain'); }
    else expect(enemy.hp).toBeLessThan(before);
   });
