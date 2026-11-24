@@ -147,7 +147,7 @@ describe('fatal frame ordering', () => {
  });
 });
 
-for (const [hero, previousInterval] of [['warrior', .59], ['archer', .42], ['mage', .51]] as const) it(`slows ${hero}'s starting attack and leaves the first enemies alive after one hit`, () => {
+for (const [hero, interval] of [['warrior', 1.18], ['archer', .78], ['mage', 1]] as const) it(`uses ${hero}'s distinct starting attack interval and takes two hits to kill the first slime`, () => {
  const sim = new GameSimulation(hero, parseSave(null), () => .5);
  sim.state.timeStopRemaining = 4;
  const player = sim.state.player;
@@ -163,11 +163,12 @@ for (const [hero, previousInterval] of [['warrior', .59], ['archer', .42], ['mag
   }
  }
  expect(hits).toHaveLength(2);
- expect(hits[1] - hits[0]).toBeGreaterThanOrEqual(previousInterval * 2 - step);
+ expect(Math.abs(hits[1] - hits[0] - interval)).toBeLessThanOrEqual(step + 1e-9);
  expect(slime.hp).toBeLessThanOrEqual(0);
 
  sim.state.timeStopRemaining = 0;
- for (const kind of ['slime','goblin','bat'] as const) {
+ for (const [kind, firstAppearance] of [['slime', 0], ['goblin', 22], ['bat', 50]] as const) {
+  sim.state.elapsed = firstAppearance;
   const enemy = sim.spawnEnemy(kind, 216, 160)!;
   sim.damageEnemy(enemy, sim.damage);
   expect(enemy.hp).toBeGreaterThan(0);
