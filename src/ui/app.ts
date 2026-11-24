@@ -196,7 +196,8 @@ export class App {
   this.updateDiagnostics();
  }
  private renderTitle() {
-  this.overlay.innerHTML = `<div class="title-screen"><div class="title-logo"><h1>EVERPATH</h1><div class="title-subtitle">푸른 숲 원정</div></div><div class="title-actions"><button class="button primary embark-button" data-action="embark">${icon('compass')}<span>모험 시작</span>${icon('right')}</button><div class="secondary-actions"><button class="button secondary" data-action="shop">${icon('leaf')} 영구 강화 <span class="mini-coin">${this.store.data.gold}</span></button><button class="button secondary settings-button" data-action="settings" aria-label="설정">${icon('settings')}</button></div><p class="title-footnote">10분 동안 생존하고 모르바를 처치하세요.</p></div></div>`;
+  this.overlay.innerHTML = `<div class="title-screen"><div class="title-logo"><span class="title-version"></span><h1>EVERPATH</h1><div class="title-subtitle">푸른 숲 원정</div></div><div class="title-actions"><button class="button primary embark-button" data-action="embark">${icon('compass')}<span>모험 시작</span>${icon('right')}</button><div class="secondary-actions"><button class="button secondary" data-action="shop">${icon('leaf')} 영구 강화 <span class="mini-coin">${this.store.data.gold}</span></button><button class="button secondary settings-button" data-action="settings" aria-label="설정">${icon('settings')}</button></div><p class="title-footnote">10분 동안 생존하고 모르바를 처치하세요.</p></div></div>`;
+  this.overlay.querySelector('.title-version')!.textContent = `ver. ${import.meta.env.VITE_BUILD_VERSION ?? 'dev'}`;
  }
  private renderSelect() {
   const selected = HEROES[this.hero];

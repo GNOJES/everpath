@@ -80,7 +80,8 @@ body{background:#e5eef1}
 .overlay,.overlay p,.overlay small{color:var(--ink)}
 .overlay .menu-panel,.screen-select,.screen-shop,.screen-settings,.screen-result,.screen-history,.screen-diagnostics{background:var(--paper);backdrop-filter:none}
 .title-screen{background:none;padding:0 0 24px}
-.title-logo{margin:0;width:100%;padding:11% 0 8%;background:#315bea;color:white;clip-path:polygon(0 0,100% 0,100% 90%,0 100%);text-align:left}
+.title-logo{position:relative;margin:0;width:100%;padding:11% 0 8%;background:#315bea;color:white;clip-path:polygon(0 0,100% 0,100% 90%,0 100%);text-align:left}
+.title-version{position:absolute;top:max(8px,env(safe-area-inset-top));right:12px;color:#f3f6ff;font:600 10px/1.1 system-ui;letter-spacing:.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
 .title-logo h1{font:950 clamp(40px,14cqw,75px)/.95 system-ui;color:#fff9ea;text-shadow:3px 4px #203057;margin:0 0 0 7%;letter-spacing:-.08em}
 .title-subtitle{justify-content:flex-start;font:750 15px/1.2 system-ui;letter-spacing:0;margin:10px 7% 0;color:#eef5ff}
 .title-actions{width:86%;background:var(--paper);border:2px solid var(--ink);border-radius:9px;padding:12px;box-shadow:4px 5px 0 var(--ink)}
