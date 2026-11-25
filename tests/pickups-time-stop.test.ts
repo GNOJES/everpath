@@ -4,6 +4,75 @@ import { GameSimulation } from '../src/game/simulation';
 import { parseSave, SaveStore } from '../src/game/save';
 
 describe('field pickups', () => {
+ it('awards 1G for regular enemies and 3G for elites before gold upgrades', () => {
+  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+  for (let i = 0; i < 20; i++) {
+   const enemy = sim.spawnEnemy('slime', 100, 350)!;
+   sim.damageEnemy(enemy, 10000);
+  }
+  expect(sim.state.gold).toBe(20);
+  const elite = sim.spawnEnemy('goblin', 100, 350)!;
+  elite.elite = true;
+  sim.damageEnemy(elite, 10000);
+  expect(sim.state.gold).toBe(23);
+ });
+
+ it.each([
+  [120, 150, 1], [240, 100, 1.25], [360, 120, 1.4], [480, 80, 1.5],
+ ])('awards milestone XP on the first kill of the %is wave and its chest on contact', (at, gold, xpScale) => {
+  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+  const s = sim.state;
+  s.elapsed = at - .02;
+  s.nextBoss = at;
+  s.xpNext = 100;
+  const cues: string[] = [];
+  sim.onSound = cue => cues.push(cue);
+  sim.update(.025);
+  const wave = s.enemies.filter(enemy => enemy.middleWave === at);
+  sim.damageEnemy(wave[0], 1e8);
+  expect(s.level).toBe(2);
+  expect(s.xp).toBe(Math.round(100 * xpScale) - 100);
+  expect(s.gold).toBe(0);
+  while (s.choices.length) sim.chooseUpgrade(s.choices[0].id);
+  const chest = s.pickups[0];
+  expect(chest).toMatchObject({kind: 'chest', gold});
+  s.player.x = chest.x; s.player.y = chest.groundY + s.scroll;
+  sim.update(.025);
+  expect(s.gold).toBe(gold);
+  expect(cues.filter(cue => cue === 'chestPickup')).toHaveLength(1);
+  expect(s.effects.some(effect => effect.kind === 'chestPickup')).toBe(true);
+  if (wave[1]) {
+   sim.damageEnemy(wave[1], 1e8);
+   expect(s.level).toBe(2);
+  }
+ });
+
+ it('grants more first-kill XP for Briar than Grorm in the same wave', () => {
+  const firstKillXp = (kind: 'boss' | 'briar') => {
+   const sim = new GameSimulation('mage', parseSave(null), () => .5);
+   const s = sim.state;
+   s.elapsed = 359.99;
+   s.nextBoss = 360;
+   s.xpNext = 100;
+   sim.update(.025);
+   sim.damageEnemy(s.enemies.find(enemy => enemy.kind === kind)!, 1e8);
+   expect(s.level).toBe(2);
+   return 100 + s.xp;
+  };
+  expect(firstKillXp('boss')).toBe(140);
+  expect(firstKillXp('briar')).toBe(175);
+ });
+
+ it('grants the increased chances for both types of ground drops', () => {
+  const sim = new GameSimulation('archer', parseSave(null), () => .5);
+  sim.state.elapsed = 180;
+  for (const roll of [.0027, .0147, .0149]) {
+   const enemy = sim.spawnEnemy('goblin', 160, 300)!;
+   enemy.seed = roll * Math.PI * 2;
+   sim.damageEnemy(enemy, 1e8);
+  }
+  expect(sim.state.pickups.map(item => [item.kind, item.gold])).toEqual([['heal', 0], ['coin', 10]]);
+ });
  it('removes timed supplies and only grants random drops on contact', () => {
   const sim = new GameSimulation('warrior', parseSave(null), () => .5);
   sim.state.elapsed = 119.99;

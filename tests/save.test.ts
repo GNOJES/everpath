@@ -17,7 +17,7 @@ describe('persistent progression', () => {
  });
  it('charges purchases once and persists levels, rejects unaffordable and capped upgrades', () => {
   const store = new SaveStore(new MemoryStorage()); store.data.gold = 100;
-  expect(store.purchase('attack')).toBe(true); expect(store.data.gold).toBe(76); expect(store.data.upgrades.attack).toBe(1);
+  expect(store.purchase('attack')).toBe(true); expect(store.data.gold).toBe(80); expect(store.data.upgrades.attack).toBe(1);
   store.data.gold = 0; expect(store.purchase('hp')).toBe(false);
   store.data.gold = 9999; store.data.upgrades.attack = 20; expect(store.purchase('attack')).toBe(false);
  });
@@ -36,13 +36,13 @@ it('reallocates one rank at a time without creating gold across saves', () => {
  const worth = store.data.gold + store.data.invested;
  expect(store.data.upgradePayments).toBeUndefined();
  const refund = store.upgradeRefund('attack');
- expect(refund).toBeGreaterThan(0);
+ expect(refund).toBe(14);
  expect(store.downgrade('attack')).toBe(true);
  expect(store.data.gold).toBe(100 + refund);
  expect(store.data.upgrades).toEqual({ attack: 3, hp: 2, speed: 0, gold: 0, timeStop: 0 });
  expect(store.purchase('speed')).toBe(true);
  store = new SaveStore(disk);
- expect(store.upgradeRefund('speed')).toBe(24);
+ expect(store.upgradeRefund('speed')).toBe(20);
  expect(store.downgrade('speed')).toBe(true);
  expect(store.downgrade('speed')).toBe(false);
  while (store.downgrade('attack')) {}

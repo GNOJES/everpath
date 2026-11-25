@@ -3,13 +3,15 @@ import { GameSimulation } from '../src/game/simulation';
 import { parseSave } from '../src/game/save';
 import { chooseEnemyKind, spawnInterval } from '../src/game/encounters';
 import { BALANCE, CAMPAIGN } from '../src/game/config';
-it('tapers regular arrivals to one-third of the normal rate before the final boss', () => {
+it('holds normal arrivals until 9:45 before tapering to one-third for the final boss entrance', () => {
  expect(spawnInterval(0)).toBeGreaterThan(.85);
  expect(spawnInterval(300)).toBeLessThan(spawnInterval(0));
- for (const t of [65, 120, 240, 360, 480, 555]) expect(Math.abs(spawnInterval(t + .01) - spawnInterval(t - .01))).toBeLessThan(.001);
- expect(spawnInterval(580)).toBeGreaterThan(spawnInterval(555));
- expect(spawnInterval(590)).toBeGreaterThan(spawnInterval(580));
+ for (const t of [65, 120, 240, 360, 480, 585]) expect(Math.abs(spawnInterval(t + .01) - spawnInterval(t - .01))).toBeLessThan(.001);
  const normalLateInterval = BALANCE.minSpawnInterval;
+ expect(spawnInterval(570)).toBeCloseTo(normalLateInterval);
+ expect(spawnInterval(585)).toBeCloseTo(normalLateInterval);
+ expect(spawnInterval(590)).toBeGreaterThan(spawnInterval(585));
+ expect(spawnInterval(595)).toBeGreaterThan(spawnInterval(590));
  const halfway = (CAMPAIGN.approachAt + CAMPAIGN.finalAt) / 2;
  expect(normalLateInterval / spawnInterval(halfway)).toBeCloseTo(2 / 3);
  expect(normalLateInterval / spawnInterval(599.999)).toBeCloseTo(1 / 3, 4);

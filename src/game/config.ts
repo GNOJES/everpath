@@ -1,7 +1,7 @@
 import type { HeroConfig, HeroId, EnemyKind, SkillConfig, PermanentId, PassiveId } from './types';
 export const DEFAULT_SFX_VOLUME = .7;
 export const WORLD = { width: 432, height: 768, scrollSpeed: 42, enemyDrift: 2.8, playerRadius: 12, minY: 38, margin: 22, joystickRadius: 48, joystickDeadzone: 7, invincibility: .2, maxEnemies: 100, maxProjectiles: 180, maxEffects: 60, maxHazards: 12 };
-export const BALANCE = { firstSpawn: 0, spawnInterval: .96, minSpawnInterval: .39, spawnRateRamp: .0032, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, speedMax: 3, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .18, weaponDamageStep: .13, weaponHasteStep: .08, weaponRangeStep: .06, weaponEvolutionDamage: 1.15, eliteAfter: 80, goldPerKill: 1.08, regularXpScale: 1.42, bossGold: 40, bossXp: 40, enemyHpGrowth: .0044, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
+export const BALANCE = { firstSpawn: 0, spawnInterval: .96, minSpawnInterval: .39, spawnRateRamp: .0032, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, speedMax: 3, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .18, weaponDamageStep: .13, weaponHasteStep: .08, weaponRangeStep: .06, weaponEvolutionDamage: 1.15, eliteAfter: 80, goldPerKill: 1, regularXpScale: 1.42, bossGold: 40, bossXp: 40, enemyHpGrowth: .0044, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
 export const HEROES: Record<HeroId, HeroConfig> = {
  warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '새벽의 검으로 적을 밀고, 다가오는 탄환을 자동으로 쳐냅니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격으로 일반 적을 밀어냅니다. 검격이 닿는 탄환을 쳐냅니다. 1·3·5레벨과 진화에서 최대 1·2·3·4발을 막습니다.', icon: 'sword', color: '#efae35', hp: 285, speed: 168, weaponDamage: 17.8, skillPower: 5.2, cooldown: 1.1, range: 98, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield', 'bash', 'lunge', 'quake', 'sunder'], bars: [5, 3, 3] },
  archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '빠르고 약한 화살로 거리를 유지합니다. 활을 강화하면 적을 관통합니다.', weapon: '바람의 활', upgradeDescription: '1레벨은 적 하나에 명중합니다. 2레벨부터 관통합니다. 좁은 직선으로 화살 한 발을 쏘며, 강화할수록 더 많은 적을 관통합니다.', icon: 'bow', color: '#f47153', hp: 235, speed: 190, weaponDamage: 9.6, skillPower: 6.0, cooldown: .78, range: 410, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain', 'snare', 'ricochet', 'blastArrow', 'deadeye'], bars: [2, 5, 4] },
@@ -43,7 +43,7 @@ export const ENEMIES: Record<EnemyKind, { hp: number; speed: number; damage: num
  shaman: { hp: 33, speed: 26, damage: 16, radius: 13, xp: 6, name: '독안개 주술사' },
  warden: { hp: 12000, speed: 31, damage: 34, radius: 34, xp: 150, name: '모르바 · 뿌리의 군주' },
  boss: { hp: 820, speed: 34, damage: 25, radius: 29, xp: 40, name: '그롬 · 숲을 삼킨 자' },
- briar: { hp: 1700, speed: 26, damage: 22, radius: 27, xp: 40, name: '바르크 · 가시 포격수' },
+ briar: { hp: 1700, speed: 26, damage: 22, radius: 27, xp: 50, name: '바르크 · 가시 포격수' },
 };
 export const PERMANENT: Record<PermanentId, { name: string; subtitle: string; icon: string; step: number; description: string }> = {
  attack: { name: '힘의 맹세', subtitle: 'MIGHT', icon: 'sword', step: .06, description: '공격력' }, hp: { name: '참나무 심장', subtitle: 'VITALITY', icon: 'heart', step: .06, description: '최대 체력' }, speed: { name: '바람의 걸음', subtitle: 'SWIFTNESS', icon: 'wind', step: .01, description: '이동속도' }, gold: { name: '황금의 축복', subtitle: 'FORTUNE', icon: 'coin', step: .025, description: '골드 획득량' },
@@ -57,9 +57,9 @@ export const BOSS_PATTERN = { windup: 1.15, dashSpeed: 265, dashDuration: .62, r
 export const PAIRED_GRORM = { recover: 2.15, slamRadius: 60 };
 export const FIRST_GRORM = { volleyRange: 150, volleySpeed: 205, volleyDamage: .72 };
 
-export const CAMPAIGN = { finalAt: 600, approachAt: 555, arenaLimit: 100, reinforcementInterval: 4, maxReinforcements: 3, clearGold: 300, arenaHeal: .2, rankMax: 3 };
+export const CAMPAIGN = { finalAt: 600, approachAt: 585, arenaLimit: 100, reinforcementInterval: 4, maxReinforcements: 3, clearGold: 300, arenaHeal: .2, rankMax: 3 };
 export const TIME_STOP = { maxCharges: 3, duration: 2, prices: [180, 320, 500] };
-export const PICKUPS = { from: 180, healChance: .0017, maxHeals: 2, healFraction: .50, coinChance: .006, coinGold: 9, firstChestGold: 120, pairedChestGold: 85, radius: 30 };
+export const PICKUPS = { from: 180, healChance: .0028, maxHeals: 2, healFraction: .50, coinChance: .012, coinGold: 10, firstChestGold: 150, radius: 30 };
 export const permanentLimit = (id: PermanentId) => id === 'timeStop' ? TIME_STOP.maxCharges : BALANCE.permanentMax;
 export const EVOLUTIONS = {
  warrior: { name: '여명의 성검', passive: 'power' as const, description: '검격 거리 +25%, 검격 각도 +6°, 최대 4발 방어, 피해 +15%.' },

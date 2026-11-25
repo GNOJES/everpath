@@ -17,6 +17,7 @@ export class GameSimulation {
  onSound?: (cue: CombatSound) => void;
  private regularSpawns = 0; private sideSpawns = 0;
  private healDrops = 0;
+ private rewardedMiddleWaves = new Set<number>();
  private nextShamanAt = 0;
  private parryTimer = 0;
  private burnExposure = new WeakMap<Enemy, number>();
@@ -135,7 +136,6 @@ export class GameSimulation {
    if (!boss) return;
    boss.hp = boss.maxHp *= hp;
    boss.damage *= wave.damageScale;
-   boss.rewardScale = wave.rewardScale;
    boss.paired = wave.enemies.length > 1;
    boss.timer += slot * (wave.enemies.length > 2 ? 2.45 : 1.45);
    boss.middleWave = wave.at;
@@ -684,19 +684,24 @@ export class GameSimulation {
    return;
   }
   if (isBoss(enemy.kind)) this.onSound?.('grormDefeat');
-  this.dropPickup(enemy);
+  const wave = isBoss(enemy.kind) ? MIDDLE_BOSS_WAVES.find(w => w.at === enemy.middleWave) : undefined;
+  this.dropPickup(enemy, wave?.chestGold);
   const openingXp = .78 * (1 - openingProgress(s.elapsed));
-  const xpScale = isBoss(enemy.kind) ? (enemy.rewardScale ?? 1) : (B.regularXpScale + openingXp) * (enemy.elite ? 2 : 1);
-  this.gainXp(Math.round(ENEMIES[enemy.kind].xp * xpScale));
+  const xpScale = isBoss(enemy.kind) ? (wave?.xpScale ?? 1) : (B.regularXpScale + openingXp) * (enemy.elite ? 2 : 1);
+  let xp = ENEMIES[enemy.kind].xp * xpScale;
+  if (wave && !this.rewardedMiddleWaves.has(wave.at)) {
+   this.rewardedMiddleWaves.add(wave.at);
+   const bossRatio = ENEMIES[enemy.kind].xp / ENEMIES.boss.xp;
+   xp = Math.max(xp, s.xpNext * wave.firstKillXp * bossRatio);
+  }
+  this.gainXp(Math.round(xp));
  }
- private dropPickup(enemy: Enemy) {
+ private dropPickup(enemy: Enemy, chestGold = PICKUPS.firstChestGold) {
   const s = this.state;
   let kind: Pickup['kind'], gold = 0;
   if (isBoss(enemy.kind)) {
    kind = 'chest';
-   gold = enemy.rewardScale === undefined
-    ? (enemy.paired ? PICKUPS.pairedChestGold : PICKUPS.firstChestGold)
-    : Math.round(PICKUPS.firstChestGold * enemy.rewardScale);
+   gold = chestGold;
   } else {
    if (s.elapsed < PICKUPS.from || s.finalSpawned) return;
    const roll = enemy.seed / (Math.PI * 2);
@@ -727,7 +732,12 @@ export class GameSimulation {
     const before = s.gold;
     this.goldRaw += pickup.gold * (1 + this.save.upgrades.gold * PERMANENT.gold.step);
     s.gold = Math.floor(this.goldRaw);
-    const label = pickup.kind === 'chest' ? '중간보스 보물 · ' : '';
+    const chest = pickup.kind === 'chest';
+    const label = chest ? '중간보스 보물 · ' : '';
+    if (chest) {
+     this.effect('chestPickup', { x: pickup.x, y }, 0xffce63, 58, .8);
+     this.onSound?.('chestPickup');
+    }
     this.effect('text', p, 0xffd38a, 0, 1.4, 0, `${label}+${s.gold - before}G`);
    }
    return false;

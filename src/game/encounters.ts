@@ -1,4 +1,4 @@
-import { BALANCE, CAMPAIGN } from './config';
+import { BALANCE, CAMPAIGN, PICKUPS } from './config';
 import { clamp } from './math';
 import type { EnemyKind } from './types';
 export const openingProgress = (seconds: number) => clamp(seconds / 120, 0, 1);
@@ -12,10 +12,10 @@ export function spawnInterval(seconds: number): number {
 }
 
 export const MIDDLE_BOSS_WAVES = [
- { at: 120, enemies: [{ kind: 'boss', x: .5, hp: 1.14 }], damageScale: 1, rewardScale: 1, title: '그롬 등장' },
- { at: 240, enemies: [{ kind: 'boss', x: .25, hp: .64 }, { kind: 'boss', x: .75, hp: .64 }], damageScale: .82, rewardScale: .64, title: '그롬 두 마리 등장' },
- { at: 360, enemies: [{ kind: 'boss', x: .25, hp: .86 }, { kind: 'briar', x: .75, hp: .85 }], damageScale: .82, rewardScale: .8, title: '그롬과 바르크 등장' },
- { at: 480, enemies: [{ kind: 'boss', x: .17, hp: .56 }, { kind: 'briar', x: .39, hp: .59 }, { kind: 'boss', x: .61, hp: .56 }, { kind: 'briar', x: .83, hp: .59 }], damageScale: .65, rewardScale: .56, title: '그롬 둘과 바르크 둘 등장' },
+ { at: 120, enemies: [{ kind: 'boss', x: .5, hp: 1.14 }], damageScale: 1, xpScale: 1, firstKillXp: 1, chestGold: PICKUPS.firstChestGold, title: '그롬 등장' },
+ { at: 240, enemies: [{ kind: 'boss', x: .25, hp: .64 }, { kind: 'boss', x: .75, hp: .64 }], damageScale: .82, xpScale: .64, firstKillXp: 1.25, chestGold: 100, title: '그롬 두 마리 등장' },
+ { at: 360, enemies: [{ kind: 'boss', x: .25, hp: .86 }, { kind: 'briar', x: .75, hp: .85 }], damageScale: .82, xpScale: .8, firstKillXp: 1.4, chestGold: 120, title: '그롬과 바르크 등장' },
+ { at: 480, enemies: [{ kind: 'boss', x: .17, hp: .56 }, { kind: 'briar', x: .39, hp: .59 }, { kind: 'boss', x: .61, hp: .56 }, { kind: 'briar', x: .83, hp: .59 }], damageScale: .65, xpScale: .56, firstKillXp: 1.5, chestGold: 80, title: '그롬 둘과 바르크 둘 등장' },
 ] as const;
 export const FOREST_ENCOUNTERS: { from: number; mix: [EnemyKind, number][] }[] = [
  { from: 0, mix: [['slime', 1]] },

@@ -50,11 +50,13 @@ export function parseSave(raw: string | null): SaveData {
  } catch { /* A corrupt save must never prevent boot. */ }
  return defaults;
 }
-export const upgradeCost = (level: number, key?: PermanentId) => key === 'timeStop' ? TIME_STOP.prices[level] ?? 0 : Math.floor(BALANCE.baseCost + 12 * level + 3 * level * level);
+const unroundedUpgradeCost = (level: number) => Math.floor(BALANCE.baseCost + 12 * level + 3 * level * level);
+export const upgradeCost = (level: number, key?: PermanentId) =>
+ key === 'timeStop' ? TIME_STOP.prices[level] ?? 0 : Math.round(unroundedUpgradeCost(level) / 10) * 10;
 function assignLegacyPayments(data: SaveData): UpgradePayments {
  // Older saves retain a total investment, but lack prices per rank. Allocate
- // that exact total by the current rank prices without creating any extra gold.
- const weights = permanentKeys.map(key => Array.from({ length: data.upgrades[key] }, (_, level) => upgradeCost(level, key)));
+ // that exact total using the original, unrounded rank prices.
+ const weights = permanentKeys.map(key => Array.from({ length: data.upgrades[key] }, (_, level) => key === 'timeStop' ? upgradeCost(level, key) : unroundedUpgradeCost(level)));
  const basis = weights.flat().reduce((sum, price) => sum + price, 0);
  let running = 0, assigned = 0;
  return Object.fromEntries(permanentKeys.map((key, index) => [key, weights[index].map(price => {

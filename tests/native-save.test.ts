@@ -24,7 +24,7 @@ it('copies the old payload once and prefers the native copy on all later launche
  await first.flush();
  const restarted = await openNativeSave(prefs, readLegacy);
  expect(restarted.data).toEqual(first.data);
- expect(restarted.data.gold).toBe(113);
+ expect(restarted.data.gold).toBe(117);
  expect(readLegacy).toHaveBeenCalledTimes(1);
 });
 

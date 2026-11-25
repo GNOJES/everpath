@@ -239,26 +239,37 @@ export class ForestScene extends Phaser.Scene {
   for (const { x, groundY, kind } of s.pickups) {
    const y = groundY + s.scroll;
    const lift = y - 6;
-   g.fillStyle(0x172927, .4).fillEllipse(x, y + 5, kind === 'chest' ? 34 : 20, 8);
+   g.fillStyle(0x172927, .65).fillEllipse(x, y + 5, kind === 'chest' ? 43 : 28, 9);
    if (kind === 'chest') {
-    const glint = .5 + Math.sin(this.clock * 5) * .2;
-    g.fillStyle(0xffcf69, .18 * glint).fillEllipse(x, y + 3, 58, 25);
-    g.fillStyle(0xffe2a0, .32 * glint).fillTriangle(x - 8, lift, x + 8, lift, x, lift - 46);
-    g.fillStyle(0x71452e, 1).fillRoundedRect(x - 14, lift - 9, 28, 20, 4);
-    g.lineStyle(2, 0xffdd92, 1).strokeRoundedRect(x - 14, lift - 9, 28, 20, 4);
-    g.lineBetween(x - 14, lift, x + 14, lift);
-    g.fillStyle(0xffdc82, 1).fillRect(x - 3, lift - 3, 6, 8);
+    g.fillStyle(0xffce63, .26).fillEllipse(x, y + 2, 66, 30);
+    g.fillStyle(0x382031, 1).fillRoundedRect(x - 20, lift - 13, 40, 27, 5);
+    g.fillStyle(0x9e3a38, 1).fillRoundedRect(x - 17, lift - 9, 34, 20, 3);
+    g.fillStyle(0xcf6846, 1).fillRoundedRect(x - 17, lift - 10, 34, 11, 3);
+    g.lineStyle(2.5, 0xffdf86, 1).strokeRoundedRect(x - 17, lift - 10, 34, 21, 3);
+    g.lineBetween(x - 17, lift + 1, x + 17, lift + 1);
+    g.fillStyle(0xfff0ac, 1).fillRoundedRect(x - 4, lift - 3, 8, 10, 2);
+    for (let i = 0; i < 3; i++) {
+     const phase = (this.clock * .85 + i / 3) % 1;
+     this.drawPickupSpark(x + (i - 1) * 19, lift - 13 - phase * 22, 3 + 4 * Math.sin(phase * Math.PI), Math.sin(phase * Math.PI));
+    }
    } else if (kind === 'heal') {
-    g.fillStyle(0x58cda0, .22).fillCircle(x, lift, 20);
-    g.fillStyle(0x39785e, 1).fillCircle(x, lift + 1, 9);
-    g.lineStyle(2, 0xc7f7c8, 1).strokeCircle(x, lift + 1, 9);
-    g.lineBetween(x - 4, lift + 1, x + 4, lift + 1).lineBetween(x, lift - 3, x, lift + 5);
+    g.fillStyle(0x79efb2, .27).fillCircle(x, lift, 21);
+    g.fillStyle(0x1c453b, 1).fillCircle(x, lift, 13);
+    g.lineStyle(2.5, 0x9ef7c6, 1).strokeCircle(x, lift, 11);
+    g.fillStyle(0xf1ffea, 1).fillRect(x - 6, lift - 1.5, 12, 3).fillRect(x - 1.5, lift - 6, 3, 12);
    } else {
-    g.fillStyle(0xe3a640, 1).fillCircle(x, lift, 7);
-    g.lineStyle(1.4, 0xffe197, 1).strokeCircle(x, lift, 7);
-    g.lineBetween(x, lift - 3, x, lift + 3);
+    g.fillStyle(0xffcd59, .27).fillCircle(x, lift, 18);
+    g.fillStyle(0x633923, 1).fillCircle(x, lift, 11);
+    g.fillStyle(0xecaa39, 1).fillCircle(x, lift, 8.5);
+    g.lineStyle(2, 0xffe8a0, 1).strokeCircle(x, lift, 8.5);
+    this.drawPickupSpark(x, lift, 5, 1);
    }
   }
+ }
+ private drawPickupSpark(x: number, y: number, size: number, alpha: number) {
+  this.fx.fillStyle(0xfff4c9, alpha)
+   .fillTriangle(x - size, y, x + size, y, x, y - size)
+   .fillTriangle(x - size, y, x + size, y, x, y + size);
  }
  private renderEffects(s: RunState) {
   let labelIndex = 0;
@@ -280,6 +291,17 @@ export class ForestScene extends Phaser.Scene {
      const settling = clamp(1 - progress * 1.1, 0, 1);
      const shock = e.radius * (.36 + progress * .84);
      g.lineStyle(2.5, 0xffe5a0, settling * .72).strokeEllipse(e.x, e.y + 11, shock * 2, shock * .62);
+    }
+    continue;
+   }
+   if (e.kind === 'chestPickup') {
+    const radius = 14 + e.radius * (1 - f * f);
+    g.fillStyle(e.color, f * .2).fillEllipse(e.x, e.y, radius * 2, radius);
+    g.lineStyle(3, e.color, f).strokeEllipse(e.x, e.y, radius * 2, radius);
+    for (let i = 0; i < 10; i++) {
+     const angle = i * Math.PI / 5;
+     const x = e.x + Math.cos(angle) * radius, y = e.y + Math.sin(angle) * radius * .65 - progress * 25;
+     this.drawPickupSpark(x, y, (4 + i % 3) * f, f);
     }
     continue;
    }

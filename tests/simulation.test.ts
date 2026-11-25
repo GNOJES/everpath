@@ -115,7 +115,7 @@ describe('skills, bosses and bounded encounters', () => {
   const sim = new GameSimulation('warrior', parseSave(null)); const boss = sim.spawnEnemy('boss', 216, 160)!;
   tick(sim, 3.1); expect(boss.phase).toBe('warn'); tick(sim, 1.2); expect(boss.phase).toBe('dash');
   tick(sim, 1); expect(boss.y).toBeLessThan(768); expect(sim.state.scroll).toBeGreaterThan(0);
-  sim.damageEnemy(boss, 1e6); expect(sim.state.bosses).toBe(1); expect(sim.state.pickups).toContainEqual(expect.objectContaining({kind:'chest',gold:120})); expect(sim.state.status).not.toBe('gameover');
+  sim.damageEnemy(boss, 1e6); expect(sim.state.bosses).toBe(1); expect(sim.state.pickups).toContainEqual(expect.objectContaining({kind:'chest',gold:150})); expect(sim.state.status).not.toBe('gameover');
  });
  it('reserves room for a scheduled boss even when normal enemies fill the cap', () => {
   const sim = new GameSimulation('warrior', parseSave(null));

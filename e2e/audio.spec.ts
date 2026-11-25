@@ -158,7 +158,7 @@ test('each combat cue renders a different audible waveform', async ({ page }) =>
   } finally { window.AudioContext = Original; }
   return values;
  });
- expect(values).toHaveLength(39);
+ expect(values).toHaveLength(40);
  for (const {cue,peak} of values) {
   expect(peak, cue).toBeGreaterThan(.005);
   expect(peak, cue).toBeLessThan(1);

@@ -33,6 +33,7 @@ export const COMBAT_SOUNDS: Record<CombatSound, SoundProfile> = {
  prism: { tones: [[493, 715, .23, .056, 'sine'], [659, 955, .23, .049, 'triangle', .045], [831, 1180, .28, .045, 'sine', .09]] },
  runeCross: { tones: [[365, 520, .15, .05, 'sine'], [734, 921, .17, .069, 'triangle', .09], [190, 91, .24, .092, 'triangle', .12]], noise: [2000, .13, .11, .1] },
  timeStop: { tones: [[1440, 1440, .07, .065, 'triangle'], [1077, 1077, .09, .06, 'triangle', .09], [420, 74, .46, .12, 'sine', .14]], noise: [2200, .12, .07, .11] },
+ chestPickup: { tones: [[784, 784, .19, .115, 'triangle'], [988, 988, .21, .10, 'sine', .065], [1319, 1319, .30, .12, 'triangle', .135]] },
  // Enemy telegraphs, releases and outcomes.
  grormWarn: { tones: [[62, 103, .32, .13, 'triangle'], [115, 84, .27, .068, 'triangle', .18]], noise: [290, .32, .12] },
  grormVolley: { tones: [[259, 118, .11, .09, 'triangle'], [318, 140, .1, .06, 'triangle', .042]], noise: [2200, .13, .115] },

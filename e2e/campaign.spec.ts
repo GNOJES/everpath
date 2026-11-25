@@ -8,8 +8,8 @@ test('growth refund requires confirmation, preserves records, persists and can b
  await page.locator('[data-action="refund-cancel"]').click();await expect(page.locator('.gold-wallet strong')).toHaveText(before!);
  await page.locator('[data-action="refund-preview"]').click();await page.locator('[data-action="refund-confirm"]').click();await expect(page.locator('.gold-wallet strong')).toContainText('1,043');
  await expect(page.locator('[data-action="refund-preview"]')).toBeDisabled();await page.locator('[data-action="buy"][data-id="attack"]').click();await expect(page.locator('.shop-item').first()).toContainText('+6%');
- await page.reload();await page.locator('[data-action="shop"]').click();await expect(page.locator('.gold-wallet strong')).toContainText('1,019');
- const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('everpath.save.v1')!));expect(saved.bestTime).toBe(123);expect(saved.settledRuns).toContain('preserve-me');expect(saved.invested).toBe(24);
+ await page.reload();await page.locator('[data-action="shop"]').click();await expect(page.locator('.gold-wallet strong')).toContainText('1,023');
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('everpath.save.v1')!));expect(saved.bestTime).toBe(123);expect(saved.settledRuns).toContain('preserve-me');expect(saved.invested).toBe(20);
  await page.locator('[data-action="buy"][data-id="gold"]').click();await expect(page.locator('.shop-item').filter({has:page.locator('[data-action=buy][data-id=gold]')})).toContainText('+2.5%');
  await page.screenshot({path:'test-results/campaign-refund-small.png'});await context.close();
 });
@@ -43,14 +43,14 @@ test('common menus fit one small screen and refund buttons work without a reset'
   expect(shopPortrait.height).toBe(22);
   await noScroll();
   await page.locator('[data-action="buy"][data-id="attack"]').tap();
-  await expect(page.locator('.gold-wallet strong')).toHaveText('76');
+  await expect(page.locator('.gold-wallet strong')).toHaveText('80');
   const attack = page.locator('.shop-item').filter({has:page.locator('[data-action=buy][data-id=attack]')});
   await expect(attack.locator('.shop-rank strong')).toHaveText('1');
   await expect(attack.locator('.shop-bonus')).toHaveText('+6%');
   await expect(attack.getByRole('meter')).toHaveAttribute('aria-valuenow', '1');
   await noScroll();
   await page.screenshot({path:'test-results/shop-ranks-mobile.png'});
-  await page.getByRole('button', {name:'공격력 한 단계 낮추기 · 24 골드 환불'}).tap();
+  await page.getByRole('button', {name:'공격력 한 단계 낮추기 · 20 골드 환불'}).tap();
   await expect(page.locator('.gold-wallet strong')).toHaveText('100');
   await expect(page.locator('[data-action="downgrade"][data-id="attack"]')).toBeDisabled();
   await page.getByRole('button', {name:'원정 준비로 돌아가기'}).tap();
