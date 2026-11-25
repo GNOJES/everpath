@@ -26,7 +26,8 @@ describe('weapon and skill balance regressions', () => {
  it('starts the bow farther away than either other weapon and keeps opening slime hits below lethal', () => {
   expect(HEROES.archer.range).toBe(410);
   expect(HEROES.mage.range).toBe(280);
-  expect(HEROES.warrior.range).toBe(88);
+  expect(HEROES.warrior.range).toBe(98);
+  expect(HEROES.warrior.speed).toBe(168);
   for (const [hero, hp] of [['warrior', 285], ['archer', 235], ['mage', 190]] as const) {
    const sim = new GameSimulation(hero, parseSave(null), () => .5);
    const slime = sim.spawnEnemy('slime', 216, 455)!;
@@ -63,7 +64,7 @@ describe('weapon and skill balance regressions', () => {
   // The level-two aura overlaps this slime's collision radius.
   expect(run(2)).toBeLessThan(run(0));
  });
- it('does weak frost damage and slows regular enemies and middle bosses at different rates', () => {
+ it('slows regular enemies and middle bosses without damaging them', () => {
   const cast = (frost: number) => {
    const sim = new GameSimulation('mage', parseSave(null), () => .5);
    sim.state.skills.frost = frost;
@@ -71,7 +72,6 @@ describe('weapon and skill balance regressions', () => {
    const briar = sim.spawnEnemy('briar', p.x, p.y - 145)!;
    const warden = sim.spawnEnemy('warden', p.x + 30, p.y - 90)!;
    const slime = sim.spawnEnemy('slime', p.x, p.y - 140)!;
-   sim.update(.05); // Measure movement after the first damage pulse.
    const startingY = [briar.y, warden.y, slime.y];
    sim.update(.05);
    return {
@@ -83,7 +83,32 @@ describe('weapon and skill balance regressions', () => {
   expect(frost.moved[0]).toBeCloseTo(normal.moved[0] * .65);
   expect(frost.moved[1]).toBeCloseTo(normal.moved[1]);
   expect(frost.moved[2] - .14).toBeCloseTo((normal.moved[2] - .14) * .3);
-  expect(frost.slimeDamage).toBeCloseTo(2.96 * 1.8 * 1.32);
+  expect(frost.slimeDamage).toBe(0);
+ });
+ it('applies and removes the aura slow as the player moves into and out of range', () => {
+  const sim = new GameSimulation('mage', parseSave(null), () => .5);
+  const { player, skills } = sim.state;
+  skills.frost = 1;
+  const mob = sim.spawnEnemy('slime', player.x, player.y - 150)!;
+  mob.speed = 100;
+  for (const [y, multiplier] of [[515, 1], [475, .6], [515, 1]]) {
+   player.y = y;
+   const before = mob.y;
+   sim.update(.025);
+   expect(mob.y - before).toBeCloseTo((100 * multiplier + 2.8) * .025);
+  }
+ });
+ it('adds no timed hit damage over multiple former pulse intervals', () => {
+  const damage = (rank: number) => {
+   const sim = new GameSimulation('mage', parseSave(null), () => .5);
+   sim.state.skills.frost = rank;
+   sim.state.timeStopRemaining = 15;
+   const target = sim.spawnEnemy('brute', 216, 395)!;
+   target.hp = target.maxHp = 10000;
+   frames(sim, 14);
+   return target.maxHp - target.hp;
+  };
+  expect(damage(4)).toBe(damage(0));
  });
  it('applies half of mastered frost slow to a middle boss during its dash', () => {
   const sim = new GameSimulation('mage', parseSave(null), () => .5);
@@ -335,7 +360,7 @@ it('aims dawn thrust at the highest remaining health within its reach', () => {
  sim.state.skills.lunge = 1;
  sim.state.timeStopRemaining = 1;
  const nearby = sim.spawnEnemy('slime', player.x + 48, player.y)!;
- const boss = sim.spawnEnemy('boss', player.x, player.y - 140)!;
+ const boss = sim.spawnEnemy('boss', player.x, player.y - 200)!;
  const injured = sim.spawnEnemy('warden', player.x + 135, player.y + 20)!;
  injured.hp = 10;
  const outOfRange = sim.spawnEnemy('warden', player.x, player.y - 240)!;
@@ -615,7 +640,7 @@ it.each(['warrior', 'archer', 'mage'] as const)('applies the same incoming and o
 });
 
 it('keeps single-target and area spells distinct with the same damage rules', () => {
- const cast = (skill: 'fire' | 'frost') => {
+ const cast = (skill: 'fire' | 'runeCross') => {
   const sim = new GameSimulation('mage', parseSave(null), () => .5);
   const targets = [
    sim.spawnEnemy('brute', 216, 441)!,
@@ -626,7 +651,7 @@ it('keeps single-target and area spells distinct with the same damage rules', ()
   sim.update(.05);
   return targets.map(target => (target.maxHp - target.hp) / (sim.power * SKILLS[skill].damage));
  };
- const focused = cast('fire'), area = cast('frost');
+ const focused = cast('fire'), area = cast('runeCross');
  expect(focused[0]).toBeCloseTo(1);
  expect(focused.slice(1)).toEqual([0, 0]);
  for (const multiplier of area) expect(multiplier).toBeCloseTo(1);

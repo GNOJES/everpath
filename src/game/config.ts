@@ -3,7 +3,7 @@ export const DEFAULT_SFX_VOLUME = .7;
 export const WORLD = { width: 432, height: 768, scrollSpeed: 42, enemyDrift: 2.8, playerRadius: 12, minY: 38, margin: 22, joystickRadius: 48, joystickDeadzone: 7, invincibility: .2, maxEnemies: 100, maxProjectiles: 180, maxEffects: 60, maxHazards: 12 };
 export const BALANCE = { firstSpawn: 0, spawnInterval: .96, minSpawnInterval: .39, spawnRateRamp: .0032, initialXp: 16, xpGrowth: 1.18, xpIncrement: 4, weaponMax: 5, skillMax: 3, passiveMax: 5, speedMax: 3, permanentMax: 20, baseCost: 24, costGrowth: 1.5, powerStep: .15, hasteStep: .1, vitalityStep: .18, speedStep: .18, weaponDamageStep: .13, weaponHasteStep: .08, weaponRangeStep: .06, weaponEvolutionDamage: 1.15, eliteAfter: 80, goldPerKill: 1.08, regularXpScale: 1.42, bossGold: 40, bossXp: 40, enemyHpGrowth: .0044, enemySpeedGrowth: .0008, maxEnemySpeedScale: 1.8, recoveryChoiceThreshold: .45, skillDamageStep: .4, skillHasteStep: .12, skillRadiusStep: 16 };
 export const HEROES: Record<HeroId, HeroConfig> = {
- warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '새벽의 검으로 적을 밀고, 다가오는 탄환을 자동으로 쳐냅니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격으로 일반 적을 밀어냅니다. 검격이 닿는 탄환을 쳐냅니다. 1·3·5레벨과 진화에서 최대 1·2·3·4발을 막습니다.', icon: 'sword', color: '#efae35', hp: 285, speed: 155, weaponDamage: 17.8, skillPower: 5.2, cooldown: 1.18, range: 88, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield', 'bash', 'lunge', 'quake', 'sunder'], bars: [5, 3, 3] },
+ warrior: { id: 'warrior', name: '로완', title: 'THE VANGUARD', role: '전사', description: '새벽의 검으로 적을 밀고, 다가오는 탄환을 자동으로 쳐냅니다.', weapon: '새벽의 검', upgradeDescription: '강한 전방 검격으로 일반 적을 밀어냅니다. 검격이 닿는 탄환을 쳐냅니다. 1·3·5레벨과 진화에서 최대 1·2·3·4발을 막습니다.', icon: 'sword', color: '#efae35', hp: 285, speed: 168, weaponDamage: 17.8, skillPower: 5.2, cooldown: 1.1, range: 98, projectileSpeed: 320, skills: ['whirl', 'blade', 'shield', 'bash', 'lunge', 'quake', 'sunder'], bars: [5, 3, 3] },
  archer: { id: 'archer', name: '린', title: 'THE WAYFARER', role: '궁수', description: '빠르고 약한 화살로 거리를 유지합니다. 활을 강화하면 적을 관통합니다.', weapon: '바람의 활', upgradeDescription: '1레벨은 적 하나에 명중합니다. 2레벨부터 관통합니다. 좁은 직선으로 화살 한 발을 쏘며, 강화할수록 더 많은 적을 관통합니다.', icon: 'bow', color: '#f47153', hp: 235, speed: 190, weaponDamage: 9.6, skillPower: 6.0, cooldown: .78, range: 410, projectileSpeed: 390, skills: ['multishot', 'pierce', 'rain', 'snare', 'ricochet', 'blastArrow', 'deadeye'], bars: [2, 5, 4] },
  mage: { id: 'mage', name: '엘라', title: 'THE ARCANIST', role: '마법사', description: '유도탄으로 견제하고, 재사용 시간이 긴 강력한 주문으로 적을 제압합니다.', weapon: '별빛 지팡이', upgradeDescription: '단일 유도탄. 레벨이 오르면 피해·사거리·공격 속도가 증가합니다.', icon: 'staff', color: '#7583e8', hp: 190, speed: 177, weaponDamage: 17.6, skillPower: 7.4, cooldown: 1, range: 280, projectileSpeed: 350, skills: ['chain', 'fire', 'frost', 'meteor', 'gravity', 'prism', 'runeCross'], bars: [2, 3, 5] },
 };
@@ -23,8 +23,8 @@ export const SKILLS: Record<string, SkillConfig> = {
  bash: { name: '방패 밀치기', subtitle: 'SHIELD BASH', description: '전방의 일반 적을 멀리 밀어냅니다. 강화하면 밀어내는 거리가 300에서 최대 340까지 늘어납니다.', icon: 'shield', color: '#ffb35a', cooldown: 6.3, damage: 1.3, radius: 86, count: 1 },
  snare: { name: '덫 화살', subtitle: 'SNARE', description: '명중 지점에 3~5초간 덫을 깝니다. 일반 적을 48~80% 감속합니다. 겹치면 가장 강한 덫이 적용됩니다.', icon: 'bow', color: '#81bdaa', cooldown: 5.2, damage: 2.1, radius: 270, count: 1 },
  meteor: { name: '별똥별', subtitle: 'FALLING STAR', description: '화면 안의 적에게 0.5초 간격으로 별똥별 피해를 세 번 줍니다.', icon: 'flame', color: '#fdba72', cooldown: 15, hastePerLevel: .20, damage: 3, radius: 0, count: METEOR_SHOWER.waves },
- frost: { name: '냉기 오라', subtitle: 'WINTERVEIL', description: '주변 일반 적을 40~70% 감속합니다. 중간보스에는 절반만 적용되며 냉기 파동의 피해는 낮습니다.', icon: 'snow', color: '#a6dcd9', cooldown: 6, damage: .4, radius: FROST_AURA.radius[0], count: 1 },
- lunge: { name: '새벽 찌르기', subtitle: 'DAWN THRUST', description: '범위 안에서 남은 체력이 가장 높은 적을 겨냥해 좁은 직선을 꿰뚫습니다.', icon: 'sword', color: '#ffda88', cooldown: 4.5, damage: 5.2, radius: 158, count: 1, unlockLevel: 4 },
+ frost: { name: '냉기 오라', subtitle: 'WINTERVEIL', description: '마법사를 따라다니는 오라입니다. 범위 안의 일반 적을 상시 40~70% 감속하며 중간보스에는 절반을 적용합니다.', icon: 'snow', color: '#a6dcd9', cooldown: 0, damage: 0, radius: FROST_AURA.radius[0], count: 0, maxRank: FROST_AURA.radius.length },
+ lunge: { name: '새벽 찌르기', subtitle: 'DAWN THRUST', description: '범위 안에서 남은 체력이 가장 높은 적을 겨냥해 좁은 직선을 꿰뚫습니다.', icon: 'sword', color: '#ffda88', cooldown: 3.8, damage: 5.2, radius: 186, count: 1, unlockLevel: 4 },
  quake: { name: '지면 강타', subtitle: 'GROUND BREAK', description: '주변 적에게 범위 피해를 주고 일반 적을 1.6초간 48% 느리게 합니다.', icon: 'mountain', color: '#df9862', cooldown: 5.4, hastePerLevel: .3, damage: 4.5, radius: 126, count: 1, unlockLevel: 6 },
  sunder: { name: '갑주 가르기', subtitle: 'SUNDER', description: '범위 안에서 남은 체력이 가장 높은 적 하나를 강하게 벱니다.', icon: 'sword', color: '#f19a63', cooldown: 5.2, hastePerLevel: .4, damage: 19.4, radius: 200, count: 1, unlockLevel: 8 },
  ricochet: { name: '전격 화살', subtitle: 'CHAIN ARROW', description: '전기가 서로 다른 적 3 / 4 / 5 / 6명에게 이어집니다. 튕길 때마다 피해가 10% 감소합니다.', icon: 'bolt', color: '#70d7ff', cooldown: 3.9, hastePerLevel: .3, damage: 3.6, radius: 310, count: 3, unlockLevel: 4 },
@@ -76,7 +76,7 @@ export const ATTACK_SKILL_UPGRADE = {
  rank: BALANCE.skillMax + 1, damage: 1.32, haste: 1.18,
  description: '이 스킬의 피해 +32%, 발동 빈도 +18%.',
 };
-export const skillRankLimit = (skill: SkillConfig) => skill.damage > 0 ? ATTACK_SKILL_UPGRADE.rank : BALANCE.skillMax;
+export const skillRankLimit = (skill: SkillConfig) => skill.maxRank ?? (skill.damage > 0 ? ATTACK_SKILL_UPGRADE.rank : BALANCE.skillMax);
 export const warriorSweepAngle = (level: number, evolved: boolean) =>
  (25 + (level - 1) * 2 + (evolved ? 3 : 0)) * Math.PI / 180;
 

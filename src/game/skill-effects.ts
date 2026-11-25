@@ -204,22 +204,14 @@ export function renderSkillEffect(g: Phaser.GameObjects.Graphics, effect: Effect
    }
    break;
   }
-  case 'frost':
   case 'gravity': {
-   const r = radius * (kind === 'gravity' ? 1 - progress * .72 : .73 + progress * .27);
+   const r = radius * (1 - progress * .72);
    g.fillStyle(color, alpha * .13).fillCircle(x, y, r);
    for (let i = 0; i < 6; i++) {
-    const a = i * Math.PI / 3 + (kind === 'gravity' ? progress * 2 : 0);
-    const dx = Math.cos(a), dy = Math.sin(a), bx = x + dx * r, by = y + dy * r;
-    if (kind === 'gravity') {
-     g.lineStyle(4, color, alpha * .8).beginPath().arc(x, y, r * (.78 + i % 2 * .18), a, a + Math.PI / 4).strokePath();
-    } else {
-     g.lineStyle(2.4, color, alpha).lineBetween(bx, by, x + dx * r * .63, y + dy * r * .63);
-     g.strokePoints([new Phaser.Math.Vector2(bx - dy * 7, by + dx * 7), new Phaser.Math.Vector2(bx - dx * 9, by - dy * 9), new Phaser.Math.Vector2(bx + dy * 7, by - dx * 7)]);
-    }
+    const a = i * Math.PI / 3 + progress * 2;
+    g.lineStyle(4, color, alpha * .8).beginPath().arc(x, y, r * (.78 + i % 2 * .18), a, a + Math.PI / 4).strokePath();
    }
-   if (kind === 'gravity') g.fillStyle(0x35224d, alpha).fillCircle(x, y, 6 + r * .14);
-   else g.lineStyle(1.5, color, alpha * .72).strokeCircle(x, y, r);
+   g.fillStyle(0x35224d, alpha).fillCircle(x, y, 6 + r * .14);
    break;
   }
   case 'runeCross': {

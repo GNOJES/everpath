@@ -27,7 +27,6 @@ export const COMBAT_SOUNDS: Record<CombatSound, SoundProfile> = {
  // Elements and spells.
  chain: { tones: [[560, 83, .15, .08, 'sawtooth'], [231, 99, .13, .09, 'triangle', .04]], noise: [2950, .14, .22] },
  fire: { tones: [[155, 360, .14, .07, 'triangle'], [300, 134, .21, .062, 'sine', .08]], noise: [670, .27, .18] },
- frost: { tones: [[1020, 820, .23, .04, 'sine'], [1350, 1150, .28, .037, 'sine', .037], [1550, 1220, .28, .035, 'triangle', .09]], noise: [4600, .14, .066] },
  meteor: { tones: [[560, 185, .28, .075, 'triangle']], noise: [1600, .28, .08] },
  meteorImpact: { tones: [[108, 43, .25, .16, 'sine'], [240, 120, .14, .055, 'triangle']], noise: [420, .2, .14] },
  gravity: { tones: [[321, 89, .36, .079, 'triangle'], [145, 51, .42, .077, 'sine', .075]], noise: [490, .29, .085] },

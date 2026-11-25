@@ -91,7 +91,7 @@ export class GameSimulation {
   if (this.hasWon()) return;
   for (const id of HEROES[s.hero].skills) {
    const level = s.skills[id];
-   if (!level || (id === 'shield' && p.shield)) continue;
+   if (!level || id === 'frost' || (id === 'shield' && p.shield)) continue;
    this.skillTimers[id] = (this.skillTimers[id] ?? 0) - dt;
    if (this.skillTimers[id] > 0) continue;
    const skill = SKILLS[id];
@@ -415,19 +415,12 @@ export class GameSimulation {
   s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius, damage, kind, life: 3.5, pierce, hit: new Set(), target, pierceScale, skillShot, field });
   return true;
  }
- private castSkill(id: SkillId, level: number, finalRank: boolean): boolean {
+ private castSkill(id: Exclude<SkillId, 'frost'>, level: number, finalRank: boolean): boolean {
   const s = this.state, p = s.player, cfg = SKILLS[id], target = this.nearest(p, 500);
   const damage = this.power * cfg.damage * (1 + (level - 1) * B.skillDamageStep) * (finalRank ? ATTACK_SKILL_UPGRADE.damage : 1);
   const radius = cfg.radius + (level - 1) * (cfg.radiusPerLevel ?? B.skillRadiusStep);
   const rankIndex = finalRank ? ATTACK_SKILL_UPGRADE.rank - 1 : level - 1;
   if (id === 'shield') { p.shield = 1; this.effect('shieldRaise', p, SHIELD_FX_COLOR, cfg.radius, .55); return true; }
-  if (id === 'frost') {
-   const auraRadius = FROST_AURA.radius[rankIndex];
-   const chilled = this.nearest(p, auraRadius, new Set<number>(), true);
-   if (!chilled) return false;
-   this.aoe(p, auraRadius, damage, 'frost', 0x4be0f2);
-   return true;
-  }
   if (id === 'meteor') {
    if (s.meteorShower || !s.enemies.some(enemy => enemy.hp > 0 && this.onScreen(enemy))) return false;
    s.meteorShower = { elapsed: 0, waves: 0, damage: damage / METEOR_SHOWER.waves };
@@ -772,8 +765,10 @@ export class GameSimulation {
   else if (id.startsWith('skill:')) {
    const key = id.slice(6);
    s.skills[key] = (s.skills[key] ?? 0) + 1;
-   const remaining = this.skillTimers[key] ?? 0;
-   this.skillTimers[key] = key === 'shield' ? Math.min(remaining, SHIELD_RECHARGE[s.skills[key] - 1] / this.haste) : 0;
+   if (key !== 'frost') {
+    const remaining = this.skillTimers[key] ?? 0;
+    this.skillTimers[key] = key === 'shield' ? Math.min(remaining, SHIELD_RECHARGE[s.skills[key] - 1] / this.haste) : 0;
+   }
   }
   else { const key = id.slice(8) as PassiveId; s.passives[key]++; if (key === 'vitality') { const extra = HEROES[s.hero].hp * B.vitalityStep; s.player.maxHp += extra; s.player.hp = Math.min(s.player.maxHp, s.player.hp + extra * 1.6); } else if (key === 'speed') s.player.speed += HEROES[s.hero].speed * B.speedStep; }
   this.pendingChoices--; this.nextChoice(); return true;

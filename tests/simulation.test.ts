@@ -80,7 +80,7 @@ describe('combat and run lifecycle', () => {
 });
 
 describe('skills, bosses and bounded encounters', () => {
- for (const [hero, skills] of [ ['warrior', ['whirl', 'blade', 'shield', 'bash']], ['archer', ['multishot', 'pierce', 'rain', 'snare']], ['mage', ['chain', 'fire', 'frost', 'meteor']] ] as const) {
+ for (const [hero, skills] of [ ['warrior', ['whirl', 'blade', 'shield', 'bash']], ['archer', ['multishot', 'pierce', 'rain', 'snare']], ['mage', ['chain', 'fire', 'meteor']] ] as const) {
   for (const id of skills) it(`${hero} casts ${id} automatically`, () => {
    const sim = new GameSimulation(hero, parseSave(null), () => .5); sim.state.skills[id] = 3;
    const enemy = sim.spawnEnemy('slime', 216, 450)!; enemy.hp = enemy.maxHp = 1000;
@@ -149,7 +149,7 @@ describe('fatal frame ordering', () => {
  });
 });
 
-for (const [hero, interval] of [['warrior', 1.18], ['archer', .78], ['mage', 1]] as const) it(`uses ${hero}'s distinct starting attack interval and takes two hits to kill the first slime`, () => {
+for (const [hero, interval] of [['warrior', 1.1], ['archer', .78], ['mage', 1]] as const) it(`uses ${hero}'s distinct starting attack interval and takes two hits to kill the first slime`, () => {
  const sim = new GameSimulation(hero, parseSave(null), () => .5);
  sim.state.timeStopRemaining = 4;
  const player = sim.state.player;

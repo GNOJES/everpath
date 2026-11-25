@@ -1,4 +1,4 @@
-import { BALANCE, HEROES, PASSIVES, SKILLS, EVOLUTIONS, ATTACK_SKILL_UPGRADE, skillRankLimit } from './config';
+import { BALANCE, HEROES, PASSIVES, SKILLS, EVOLUTIONS, FROST_AURA, ATTACK_SKILL_UPGRADE, skillRankLimit } from './config';
 import type { RunState, Upgrade, PassiveId } from './types';
 const reserveChoices: Upgrade[] = [
  { id: 'reserve:gold', name: '골드', subtitle: '', description: '원정 골드 +8', icon: 'coin', level: 0, max: 0, color: '#a36a28' },
@@ -14,13 +14,15 @@ export function availableUpgrades(run: RunState): Upgrade[] {
   const skill = SKILLS[id], level = run.skills[id] ?? 0, max = skillRankLimit(skill);
   if (run.level < (skill.unlockLevel ?? 1) || level >= max) continue;
   let description = skill.description;
-  if (level === BALANCE.skillMax) {
+  if (id === 'frost' && level > 0) {
+   const slow = Math.round(FROST_AURA.slow[level] * 100);
+   description = `오라 반경 ${FROST_AURA.radius[level - 1]} → ${FROST_AURA.radius[level]}. 일반 적 ${slow}%, 중간보스 ${slow / 2}% 감속.`;
+  } else if (level === BALANCE.skillMax) {
    description = ATTACK_SKILL_UPGRADE.description;
    if (id === 'chain') description += ' 처치 시 다음 낙뢰 대기 시간 절반.';
    if (id === 'ricochet') description += ' 최대 명중 대상 5 → 6명.';
    if (id === 'snare') description += ' 덫 4 → 5초, 감속 68 → 80%.';
    if (id === 'blastArrow') description += ' 불 장판 4 → 5초.';
-   if (id === 'frost') description += ' 일반 적 70%, 중간보스 35% 감속.';
    if (id === 'gravity') description += ' 중력장 반경 140 → 165.';
   }
   options.push({ id: `skill:${id}`, ...skill, level, max, description });

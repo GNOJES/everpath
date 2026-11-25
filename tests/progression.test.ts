@@ -52,3 +52,14 @@ it('offers the same offensive skill at rank four and caps the shield at rank thr
  expect(run.weaponLevel).toBe(1);
  expect(availableUpgrades(run).some(option => option.id === 'skill:whirl')).toBe(false);
 });
+
+it('offers a fourth aura rank that describes only the movement debuff', () => {
+ const run = createRun('mage', parseSave(null));
+ run.skills.frost = 3;
+ const option = availableUpgrades(run).find(upgrade => upgrade.id === 'skill:frost');
+ expect(option).toMatchObject({ level: 3, max: 4 });
+ expect(option?.description).toContain('70%');
+ expect(option?.description).not.toMatch(/피해|발동 빈도/);
+ run.skills.frost = 4;
+ expect(availableUpgrades(run).some(upgrade => upgrade.id === 'skill:frost')).toBe(false);
+});

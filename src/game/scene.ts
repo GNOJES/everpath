@@ -91,8 +91,9 @@ export class ForestScene extends Phaser.Scene {
    if (s.meteorShower && !defeated) renderMeteorShower(this.fx, s.meteorShower.elapsed);
    if (p.shield) renderShield(this.fx, p.x, p.y - 12, SKILLS.shield.radius, .9);
    if (s.skills.frost) {
-    this.fx.lineStyle(1, 0xb0e5dc, .2 + Math.sin(this.clock * 3) * .1);
-    this.fx.strokeCircle(p.x, p.y, FROST_AURA.radius[s.skills.frost - 1]);
+    const radius = FROST_AURA.radius[s.skills.frost - 1];
+    this.fx.fillStyle(0x78ddef, .065).fillCircle(p.x, p.y, radius);
+    this.fx.lineStyle(1.5, 0xb7f4f5, .55).strokeCircle(p.x, p.y, radius);
    }
   }
   else { this.actors.trim(0); this.shots.trim(0); for (const label of this.labels) label.setVisible(false); }

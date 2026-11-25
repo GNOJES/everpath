@@ -13,10 +13,10 @@ export type SkillShot = 'blade' | 'volley' | 'pierce' | 'snare' | 'blast';
 export type SkillId = 'whirl' | 'blade' | 'shield' | 'bash' | 'lunge' | 'quake' | 'sunder'
  | 'multishot' | 'pierce' | 'rain' | 'snare' | 'ricochet' | 'blastArrow' | 'deadeye'
  | 'chain' | 'fire' | 'frost' | 'meteor' | 'gravity' | 'prism' | 'runeCross';
-export type CombatSound = SkillId | 'shieldBlock' | 'rainImpact' | 'blastImpact' | 'meteorImpact' | 'timeStop'
+export type CombatSound = Exclude<SkillId, 'frost'> | 'shieldBlock' | 'rainImpact' | 'blastImpact' | 'meteorImpact' | 'timeStop'
  | 'grormWarn' | 'grormVolley' | 'grormDash' | 'grormSlam' | 'grormDefeat'
  | 'briarWarn' | 'briarImpact' | 'wardenRoots' | 'wardenAim' | 'wardenFan' | 'wardenRing' | 'wardenSlam' | 'defeat' | 'victory';
-export type SkillEffect = 'whirl' | 'shieldRaise' | 'shieldBreak' | 'bash' | 'bashImpact' | 'frost' | 'lance' | 'quake' | 'sunder' | 'ricochet' | 'blast' | 'deadeye' | 'gravity' | 'prism' | 'runeCross';
+export type SkillEffect = 'whirl' | 'shieldRaise' | 'shieldBreak' | 'bash' | 'bashImpact' | 'lance' | 'quake' | 'sunder' | 'ricochet' | 'blast' | 'deadeye' | 'gravity' | 'prism' | 'runeCross';
 export interface MeteorShower { elapsed: number; waves: number; damage: number }
 export type FieldShot = { radius: number; duration: number } & ({ kind: 'snare'; slow: number } | { kind: 'burn' });
 export interface Projectile extends Vec { id: number; vx: number; vy: number; radius: number; damage: number; life: number; kind: 'arrow' | 'magic' | 'blade' | 'enemy'; pierce: number; hit: Set<number>; target?: number; pierceScale?: number; skillShot?: SkillShot; field?: FieldShot }
@@ -27,4 +27,4 @@ export interface Hazard extends Vec { id: number; radius: number; delay: number;
 export interface Pickup { x: number; groundY: number; kind: 'coin' | 'heal' | 'chest'; gold: number }
 export interface RunState { runId: string; hero: HeroId; status: 'running' | 'paused' | 'upgrade' | 'gameover' | 'victory'; elapsed: number; rank: number; evolved: boolean; finalSpawned: boolean; timeStopCharges: number; timeStopRemaining: number; pickups: Pickup[]; scroll: number; player: Player; enemies: Enemy[]; projectiles: Projectile[]; effects: Effect[]; hazards: Hazard[]; groundFields: GroundField[]; meteorShower?: MeteorShower; level: number; xp: number; xpNext: number; kills: number; spawned: number; escaped: number; withdrawn: number; bosses: number; gold: number; weaponLevel: number; skills: Record<string, number>; passives: Record<PassiveId, number>; choices: Upgrade[]; nextBoss: number }
 export interface HeroConfig { id: HeroId; name: string; title: string; role: string; description: string; weapon: string; upgradeDescription: string; icon: string; color: string; hp: number; speed: number; weaponDamage: number; skillPower: number; cooldown: number; range: number; projectileSpeed: number; skills: SkillId[]; bars: [number, number, number] }
-export interface SkillConfig { name: string; subtitle: string; description: string; icon: string; color: string; cooldown: number; damage: number; radius: number; count: number; hastePerLevel?: number; radiusPerLevel?: number; unlockLevel?: number }
+export interface SkillConfig { name: string; subtitle: string; description: string; icon: string; color: string; cooldown: number; damage: number; radius: number; count: number; hastePerLevel?: number; radiusPerLevel?: number; unlockLevel?: number; maxRank?: number }
