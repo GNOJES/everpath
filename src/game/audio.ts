@@ -1,6 +1,6 @@
 import type { CombatSound, HeroId, RunState } from './types';
 import { DEFAULT_SFX_VOLUME } from './config';
-import { COMBAT_SOUNDS } from './combat-sounds';
+import { COMBAT_SOUNDS, STORYBOOK_CUES } from './combat-sounds';
 
 const volume=(v:number)=>Number.isFinite(v)?Math.max(0,Math.min(1,v)):0;
 type MusicTrack = 'battle' | 'warden';
@@ -19,6 +19,13 @@ export class GameAudio {
  private voices = new Set<AudioScheduledSourceNode>();
  private lastCues = new Map<CombatSound, number>();
  private noiseBuffer?: AudioBuffer;
+ private readonly clickDownload?: Promise<ArrayBuffer | undefined>;
+ private clickBuffer?: Promise<AudioBuffer | undefined>;
+ constructor(clickUrl?: string) {
+  if (clickUrl) this.clickDownload = fetch(clickUrl)
+   .then(response => response.ok ? response.arrayBuffer() : undefined)
+   .catch(() => undefined);
+ }
  get music(){return this.musicVolume;}set music(v:number){this.musicVolume=volume(v);if(this.musicBus)this.musicBus.gain.setTargetAtTime(this.musicVolume,this.context!.currentTime,.015);}
  get sfx(){return this.sfxVolume;}set sfx(v:number){this.sfxVolume=volume(v);if(this.sfxBus)this.sfxBus.gain.setTargetAtTime(this.sfxVolume * 1.6,this.context!.currentTime,.015);}
  preloadBattle() {
@@ -105,20 +112,40 @@ export class GameAudio {
   filter.type = 'bandpass'; filter.frequency.value = center; filter.Q.value = .65;
   this.playVoice(c, source, c.currentTime + delay, duration, level, filter);
  }
- click(){this.tone(523,.09,.06,'triangle');}
+ click() {
+  const c = this.context;
+  if (!this.clickDownload || !c) {
+   this.tone(523, .09, .06, 'triangle');
+   return;
+  }
+  this.clickBuffer ??= this.clickDownload.then(data => data ? c.decodeAudioData(data) : undefined).catch(() => undefined);
+  void this.clickBuffer.then(buffer => {
+   if (!this.canPlay(c) || this.voices.size >= 24) return;
+   if (!buffer) {
+    this.tone(523, .09, .06, 'triangle');
+    return;
+   }
+   const source = c.createBufferSource();
+   source.buffer = buffer;
+   this.playVoice(c, source, c.currentTime, buffer.duration, .21);
+  });
+ }
  hit(){const now=performance.now();if(now-this.lastFx<85)return;this.lastFx=now;this.tone(215,.06,.025,'triangle');}
  hurt(){this.tone(98,.18,.1,'triangle');this.tone(73,.2,.04);}
  attack(hero:HeroId){const now=performance.now();if(now-this.lastAttack<140)return;this.lastAttack=now;this.tone(hero==='mage'?880:hero==='archer'?660:260,.07,.018,'triangle');}
  levelUp(){[523,659,784].forEach((f,i)=>this.tone(f,.28,.065,'triangle',i*.07));}
- boss(){[164,155,130].forEach((f,i)=>this.tone(f,.38,.075,'triangle',i*.18));}
- playCue(cue: CombatSound) {
+ boss(storybook = false) {
+  const notes = storybook ? [196, 262, 220] : [164, 155, 130];
+  notes.forEach((f, i) => this.tone(f, .38, .075, 'triangle', i * .18));
+ }
+ playCue(cue: CombatSound, storybook = false) {
   if (!this.canPlay(this.context)) return;
   const terminal = cue === 'defeat' || cue === 'victory';
   const now = this.context.currentTime;
   if (!terminal && now - (this.lastCues.get(cue) ?? -Infinity) < .07) return;
   this.lastCues.set(cue, now);
   if (terminal) this.stopVoices();
-  const {tones, noise} = COMBAT_SOUNDS[cue];
+  const {tones, noise} = (storybook ? STORYBOOK_CUES[cue] : undefined) ?? COMBAT_SOUNDS[cue];
   for (const [pitch, end, seconds, gain, wave, delay] of tones) this.tone(pitch, seconds, gain, wave, delay, end);
   if (noise) this.noise(...noise);
  }

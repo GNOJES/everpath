@@ -303,3 +303,138 @@ html,body{overscroll-behavior-y:none}
  .screen-select .menu-heading h2{font-size:20px}
  .screen-select .modal-topbar>.icon-button{width:38px;height:38px}
 }
+
+/* Local storybook color study. */
+.storybook-preview {
+ --ink: #20355c;
+ --paper: #f7fcff;
+ --gold: #94344d;
+ --blue: #2856e9;
+ --line: #9bbada;
+}
+.storybook-preview .title-logo { background: #2856e9; }
+.storybook-preview .title-logo h1 { color: #fff; }
+.storybook-preview .hero-card[data-hero="warrior"] { background: #ffe1e9; }
+.storybook-preview .hero-card[data-hero="archer"] { background: #c8f7dd; }
+.storybook-preview .hero-card[data-hero="mage"] { background: #e4dbff; }
+.storybook-preview .hud,
+.storybook-preview .diagnostics-hud { background: #224c97; color: #fff; border-bottom-color: #173d78; }
+.storybook-preview .hud-hero,
+.storybook-preview .hud-time,
+.storybook-preview .hud-time .icon,
+.storybook-preview .hud-counters,
+.storybook-preview .hp-row > span,
+.storybook-preview .xp-row > span { color: #fff; }
+
+/* Mini World's field palette across the local preview menus. */
+.mini-world {
+ --ink: #163f34;
+ --paper: #f6fcf4;
+ --gold: #7c421c;
+ --blue: #14624c;
+ --line: #a7ccba;
+ --mini-line: #a7ccba;
+ --mini-muted: #416455;
+ --mini-tile: #e7f4e9;
+}
+.mini-world .site-header,
+.mini-world .record-row { border-color: var(--mini-line); }
+.mini-world .game-frame { border-color: var(--ink); }
+.mini-world .title-logo {
+ padding: 26px 7% 16px;
+ background: var(--ink);
+ border-bottom: 4px solid #79df93;
+ clip-path: none;
+}
+.mini-world .title-logo h1 {
+ margin: 0;
+ font-size: clamp(38px, 12.5cqw, 65px);
+ text-shadow: none;
+}
+.mini-world .title-subtitle { margin: 7px 0 0; color: #baf1ba; font-size: 13px; }
+.mini-world .title-version { color: #d5f5de; }
+.mini-world .title-actions { box-shadow: 0 4px var(--ink); }
+.mini-world .title-footnote { color: var(--mini-muted) !important; }
+.mini-world .button.primary {
+ background: #14624c;
+ border-color: #123f33;
+ box-shadow: 0 3px #123f33;
+}
+.mini-world .button.primary:hover { background: #0f543f; }
+.mini-world .button.secondary,
+.mini-world .icon-button,
+.mini-world .buy-button {
+ background: #f5fcf6;
+ color: var(--ink);
+ border-color: var(--mini-line);
+}
+.mini-world .button.secondary:hover,
+.mini-world .icon-button:hover { background: #ddf3e3; }
+.mini-world button:focus-visible { outline: 2px solid #14624c; outline-offset: 2px; }
+.mini-world .menu-heading { text-align: left; }
+.mini-world .menu-heading h2 { color: var(--ink); }
+.mini-world .modal-topbar > span:not(.purse) { color: var(--mini-muted); font-weight: 700; }
+.mini-world .menu-heading p,
+.mini-world .hero-card .hero-role,
+.mini-world .hero-detail > p,
+.mini-world .hero-detail-title h3 small,
+.mini-world .starting-skills > span,
+.mini-world .settings-sliders label > span,
+.mini-world .history-record summary,
+.mini-world .text-button { color: var(--mini-muted) !important; }
+.mini-world.storybook-preview .hero-card[data-hero="warrior"] { background: #ffe9dd; }
+.mini-world.storybook-preview .hero-card[data-hero="archer"] { background: #d9f6dc; }
+.mini-world.storybook-preview .hero-card[data-hero="mage"] { background: #eee3ff; }
+.mini-world .hero-card { border-color: var(--mini-line); }
+.mini-world .hero-card.selected { border-color: var(--ink); box-shadow: 0 3px var(--ink); }
+.mini-world .hero-card strong,
+.mini-world .hero-base-stats b { color: var(--ink) !important; }
+.mini-world .hero-portrait-scene { background: none; }
+.mini-world .hero-portrait-scene::after { background: #163f342e; }
+.mini-world .starting-skills > span { font-size: clamp(11px, 3.3cqw, 13px) !important; }
+.mini-world .hero-detail,
+.mini-world .hero-base-stats,
+.mini-world .settings-controls,
+.mini-world .result-grid,
+.mini-world .combat-summary { border-color: var(--mini-line); }
+.mini-world .skill-icon,
+.mini-world .gold-wallet,
+.mini-world .challenge-selector button,
+.mini-world .history-record,
+.mini-world .pause-skills li,
+.mini-world .pause-speed button {
+ background: var(--mini-tile);
+ border-color: var(--mini-line);
+ color: var(--ink);
+}
+.mini-world .challenge-selector button[aria-pressed="true"],
+.mini-world .pause-speed button[aria-pressed="true"] {
+ background: #14624c;
+ border-color: #14624c;
+ color: white;
+}
+.mini-world .shop-panel .shop-item { background: #fafffa; border-color: var(--mini-line); }
+.mini-world .shop-item .step-button[data-action="buy"]:not(:disabled) { background: #14624c; border-color: #14624c; }
+.mini-world .shop-meter,
+.mini-world .level-dots > i,
+.mini-world .stat-pips > i { background: #cde4d4; }
+.mini-world .stat-pips > .lit,
+.mini-world .level-dots > .lit { background: #258061; }
+.mini-world .settings-sliders input { accent-color: #14624c; }
+.mini-world .hud,
+.mini-world .diagnostics-hud { background: #16463a; border-bottom-color: #0e3329; }
+.mini-world .hud .pause-button { background: #215d4d; border-color: #82bca4; }
+.mini-world .pause-panel,
+.mini-world .screen-run .upgrade-panel {
+ background: var(--paper);
+ color: var(--ink);
+ border-color: var(--ink);
+ box-shadow: 4px 4px var(--ink);
+}
+.mini-world .upgrade-card { background: #fbfffb; border-color: var(--mini-line); }
+.mini-world .upgrade-card:hover,
+.mini-world .upgrade-card:active { background: #dff3e3; border-color: #3e8168; }
+.mini-world .upgrade-card .skill-icon { background: var(--mini-tile); border-color: var(--mini-line); }
+.mini-world .result-hero { background: var(--mini-tile); border-color: var(--mini-line); }
+.mini-world .result-time,
+.mini-world .result-grid strong { color: var(--ink); }

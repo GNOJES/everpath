@@ -50,3 +50,13 @@ export const COMBAT_SOUNDS: Record<CombatSound, SoundProfile> = {
  defeat: { tones: [[110, 42, .39, .19, 'sine'], [294, 294, .35, .105, 'triangle', .07], [233, 233, .38, .1, 'triangle', .26], [147, 118, .53, .113, 'sine', .44]], noise: [350, .25, .17] },
  victory: { tones: [[83, 48, .40, .21, 'sine'], [392, 392, .28, .09, 'triangle', .075], [493, 493, .30, .09, 'triangle', .2], [587, 587, .36, .1, 'triangle', .32], [784, 784, .59, .108, 'triangle', .46], [988, 988, .57, .064, 'sine', .46], [1175, 1175, .54, .052, 'sine', .49]], noise: [430, .26, .18] },
 };
+
+// Brighter upper partials survive phone speakers while keeping attacks and loot distinct.
+export const STORYBOOK_CUES: Partial<Record<CombatSound, SoundProfile>> = {
+ grormWarn: { tones: [[196, 246, .24, .12, 'triangle'], [294, 392, .18, .08, 'triangle', .19]], noise: [430, .18, .08] },
+ grormVolley: { tones: [[374, 201, .12, .095, 'triangle'], [560, 340, .1, .04, 'sine', .035]], noise: [1900, .11, .11] },
+ grormDash: { tones: [[244, 84, .25, .12, 'triangle']], noise: [850, .22, .16] },
+ grormSlam: { tones: [[123, 55, .27, .16, 'triangle'], [274, 102, .17, .09, 'sine', .03]], noise: [580, .20, .16] },
+ grormDefeat: { tones: [[164, 70, .24, .11, 'triangle'], [330, 330, .21, .09, 'triangle', .14], [440, 440, .31, .08, 'sine', .24]], noise: [610, .19, .10] },
+ chestPickup: { tones: [[523, 683, .13, .10, 'triangle'], [880, 880, .20, .095, 'triangle', .055], [1175, 1175, .25, .105, 'sine', .12], [1568, 1568, .21, .042, 'sine', .16]] },
+};

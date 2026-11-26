@@ -15,6 +15,7 @@ export class GameSimulation {
  readonly state: RunState;
  speedMultiplier: 1 | 2 = 1;
  onSound?: (cue: CombatSound) => void;
+ onBasicAttack?: (angle: number) => void;
  private regularSpawns = 0; private sideSpawns = 0;
  private healDrops = 0;
  private rewardedMiddleWaves = new Set<number>();
@@ -381,6 +382,7 @@ export class GameSimulation {
    this.parryTimer = WARRIOR_PARRY.cooldown;
   }
   this.slash(player, this.range, angle, halfAngle, this.damage, 0xffd067, 15);
+  this.onBasicAttack?.(angle);
  }
  private parryProjectile(dt: number) {
   const threats = this.swordThreats(Math.min(this.attackTimer + dt, WARRIOR_PARRY.lookahead));
@@ -399,12 +401,11 @@ export class GameSimulation {
    if (!target) return false;
    const angle = p.facing = Math.atan2(target.y - p.y, target.x - p.x);
    const config = HEROES[s.hero];
-   if (s.hero === 'mage') {
-    this.shoot(p, target, 'magic', this.damage, config.projectileSpeed, 1, 0, target.id);
-   } else {
-    const pierce = s.evolved ? 5 : s.weaponLevel >= 5 ? 4 : s.weaponLevel >= 3 ? 3 : s.weaponLevel >= 2 ? 2 : 1;
-    this.shoot(p, target, 'arrow', this.damage, config.projectileSpeed, pierce, 0, undefined, .94);
-   }
+   const pierce = s.evolved ? 5 : s.weaponLevel >= 5 ? 4 : s.weaponLevel >= 3 ? 3 : s.weaponLevel >= 2 ? 2 : 1;
+   const fired = s.hero === 'mage'
+    ? this.shoot(p, target, 'magic', this.damage, config.projectileSpeed, 1, 0, target.id)
+    : this.shoot(p, target, 'arrow', this.damage, config.projectileSpeed, pierce, 0, undefined, .94);
+   if (fired) this.onBasicAttack?.(angle);
   }
   return true;
  }

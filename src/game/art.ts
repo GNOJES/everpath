@@ -1,4 +1,27 @@
 import type Phaser from 'phaser';
+import { createStorybookArt } from './storybook-art';
+
+export type PreviewPack = 'puny' | 'mini' | 'ninja';
+
+export function isPreviewPack(value: string | null): value is PreviewPack {
+ return value === 'puny' || value === 'mini' || value === 'ninja';
+}
+
+const packAssetUrls = import.meta.glob<string>('./assets/preview-packs/*/*.png', {
+ eager: true, import: 'default', query: '?no-inline',
+});
+const packTextures = { terrain: 'terrain', warrior: 'field-warrior', archer: 'field-archer', mage: 'field-mage', slime: 'slime' };
+
+export function preloadPack(scene: Phaser.Scene, pack: PreviewPack) {
+ for (const asset of Object.keys(packTextures)) {
+  scene.load.image('pack-' + asset, packAssetUrls[`./assets/preview-packs/${pack}/${asset}.png`]);
+ }
+ if (pack !== 'mini') return;
+ for (const hero of ['warrior', 'archer', 'mage']) {
+  scene.load.spritesheet('mini-motion-' + hero, packAssetUrls[`./assets/preview-packs/mini/${hero}-motion.png`],
+   { frameWidth: 40, frameHeight: 40 });
+ }
+}
 
 const artUrls: Record<string, string> = {};
 type Draw = (ctx: CanvasRenderingContext2D, w: number, h: number) => void;
@@ -8,8 +31,21 @@ function random(seed: number) { let n = seed; return () => { n = (n * 1664525 + 
 function pixelSprite(map: string[], colors: Record<string, string>) { return canvas(Math.max(...map.map(r => r.length)), map.length, ctx => { map.forEach((row, y) => [...row].forEach((key, x) => { if (colors[key]) rect(ctx, colors[key], x, y, 1, 1); })); }); }
 // A limited ink-and-pigment palette keeps silhouettes readable on the bright field.
 const palette = { o: '#202943', d: '#344c72', a: '#4e8ac4', b: '#a4daef', l: '#f9f5db', s: '#efb586', h: '#81513c', r: '#bc3540', R: '#fc6650', g: '#286d69', G: '#82c8a3', p: '#5549ab', P: '#aca0ff', c: '#44d6f4', y: '#ffd367', w: '#fff7ee' };
-export function createArt(scene: Phaser.Scene) {
- const add = (key: string, source: HTMLCanvasElement) => { if (!scene.textures.exists(key)) scene.textures.addCanvas(key, source); artUrls[key] = source.toDataURL(); };
+export function createArt(scene: Phaser.Scene, storybook = false, pack?: PreviewPack) {
+ const add = (key: string, source: HTMLCanvasElement) => {
+  if (scene.textures.exists(key)) return;
+  scene.textures.addCanvas(key, source);
+  artUrls[key] = source.toDataURL();
+ };
+ if (pack) {
+  for (const [asset, key] of Object.entries(packTextures)) {
+   const from = 'pack-' + asset;
+   if (!scene.textures.exists(from)) continue;
+   const source = scene.textures.get(from).getSourceImage() as HTMLImageElement;
+   add(key, canvas(source.width, source.height, ctx => ctx.drawImage(source, 0, 0)));
+  }
+ }
+ if (storybook) createStorybookArt(add, pixelSprite, canvas, rect, random);
  const heroColors = { o: '#342640', d: '#814c43', s: '#eb9867', S: '#ffcc91' };
  add('field-warrior', pixelSprite([
   '          oo', '       oooHo', '     ooHHHHho', '    oHHHhHHhho',

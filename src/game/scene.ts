@@ -1,5 +1,11 @@
 import Phaser from 'phaser';
-import { createArt } from './art';
+import blossoms from './assets/kenney/blossoms.png?no-inline';
+import shrub from './assets/kenney/shrub.png?no-inline';
+import sprout from './assets/kenney/sprout.png?no-inline';
+import clickSample from './assets/kenney/click-001.mp3?no-inline';
+import { createArt, preloadPack, type PreviewPack } from './art';
+import { MIDDLE_BOSS_WAVES } from './encounters';
+import { storybookShot, storybookSlash } from './storybook-effects';
 import { WORLD as W, BOSS_PATTERN, HEROES, ENEMIES, FROST_AURA, SKILLS, isBoss } from './config';
 import { PlayerInput } from './input';
 import { GameSimulation } from './simulation';
@@ -20,21 +26,48 @@ class ImagePool {
  trim(count: number) { for (let i = count; i < this.images.length; i++) this.images[i].setVisible(false); }
 }
 export class ForestScene extends Phaser.Scene {
- simulation?: GameSimulation; controls!: PlayerInput; audio = new GameAudio();
+ simulation?: GameSimulation; controls!: PlayerInput; audio: GameAudio;
  onReady?: () => void; onFrame?: (state?: RunState, endFxTime?: number) => void; onPause?: () => void; onInputObservation?: (event: InputObservation) => void; onInputFrame?: (at: number) => void;
  private announcedBosses = new Set<number>(); private lastShotSound = 0;
+ private miniStrike?: { angle: number; time: number };
+ private miniWalkTime = 0;
+ private miniIsWalking = false;
  private ground!: Phaser.GameObjects.TileSprite; private actors!: ImagePool; private shots!: ImagePool;
  private shadows!: Phaser.GameObjects.Graphics; private fx!: Phaser.GameObjects.Graphics; private joystick!: Phaser.GameObjects.Graphics;
  private hero!: Phaser.GameObjects.Image; private fallenWarden!: Phaser.GameObjects.Image; private companions: Phaser.GameObjects.Image[] = []; private scenery: { image: Phaser.GameObjects.Image; y: number; x: number }[] = [];
  private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private endFxTime = 0;
- constructor() { super('forest'); }
+ constructor(private readonly storybook = false, private readonly cc0 = false, private readonly previewPack?: PreviewPack) {
+  super('forest');
+  this.audio = new GameAudio(cc0 ? clickSample : undefined);
+ }
+ preload() {
+  if (this.previewPack) preloadPack(this, this.previewPack);
+  if (!this.cc0) return;
+  this.load.image('kenney-blossoms', blossoms);
+  this.load.image('kenney-shrub', shrub);
+  this.load.image('kenney-sprout', sprout);
+ }
+ private storybookOpening(s: RunState) {
+  return this.storybook && s.elapsed < MIDDLE_BOSS_WAVES[1].at;
+ }
  create() {
   this.audio.preloadBattle();
-  createArt(this); this.ground = this.add.tileSprite(216, 384, 432, 768, 'terrain').setDepth(-10);
+  createArt(this, this.storybook, this.previewPack); this.ground = this.add.tileSprite(216, 384, 432, 768, 'terrain').setDepth(-10);
   this.shadows = this.add.graphics().setDepth(5); this.fx = this.add.graphics().setDepth(2000); this.joystick = this.add.graphics().setDepth(3000);
-  for (let i = 0; i < 24; i++) { const row = Math.floor(i / 2), left = i % 2 === 0; const x = left ? 8 + Math.sin(i * 41) * 28 : 417 + Math.sin(i * 17) * 25; const y = row * 102 - 120; const image = this.add.image(x, y, i % 4 === 0 ? 'pine' : 'tree').setOrigin(.5, 1).setScale(i % 4 === 0 ? 1.25 : 1.35); this.scenery.push({ image, x, y }); }
-  for (let i = 0; i < 22; i++) { const x = i % 2 ? 323 + (i * 17 % 59) : 48 + (i * 17 % 58), y = i * 56; const key = ['bush', 'rock', 'bush', 'mushroom', 'stump'][i % 5]; const image = this.add.image(x, y, key).setOrigin(.5, 1).setScale(1.7); this.scenery.push({ image, x, y }); }
-  for (const [x, y] of [[133, 480], [299, 1010]]) { const image = this.add.image(x, y, 'lantern').setOrigin(.5, 1).setScale(1.8); this.scenery.push({ image, x, y }); }
+  if (!this.previewPack || !this.textures.exists('pack-terrain')) {
+   for (let i = 0; i < 24; i++) { const row = Math.floor(i / 2), left = i % 2 === 0; const x = left ? 8 + Math.sin(i * 41) * 28 : 417 + Math.sin(i * 17) * 25; const y = row * 102 - 120; const image = this.add.image(x, y, i % 4 === 0 ? 'pine' : 'tree').setOrigin(.5, 1).setScale(i % 4 === 0 ? 1.25 : 1.35); this.scenery.push({ image, x, y }); }
+   const props = ['bush', 'rock', 'bush', 'mushroom', 'stump'];
+   const cc0Props = ['kenney-shrub', 'kenney-sprout', 'kenney-blossoms', 'mushroom', 'stump'];
+   for (let i = 0; i < 22; i++) {
+    const x = i % 2 ? 323 + (i * 17 % 59) : 48 + (i * 17 % 58), y = i * 56;
+    const slot = i % props.length;
+    const candidate = cc0Props[slot];
+    const key = this.cc0 && this.textures.exists(candidate) ? candidate : props[slot];
+    const image = this.add.image(x, y, key).setOrigin(.5, 1).setScale(1.7);
+    this.scenery.push({ image, x, y });
+   }
+   for (const [x, y] of [[133, 480], [299, 1010]]) { const image = this.add.image(x, y, 'lantern').setOrigin(.5, 1).setScale(1.8); this.scenery.push({ image, x, y }); }
+  }
   this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.addFieldHero(216, 515, 'warrior');
   this.fallenWarden = this.add.image(0, 0, 'warden').setOrigin(.5, .8).setVisible(false);
   this.companions = [this.addFieldHero(174, 559, 'archer'), this.addFieldHero(263, 548, 'mage')];
@@ -42,10 +75,14 @@ export class ForestScene extends Phaser.Scene {
   this.events.once('shutdown', () => this.controls.destroy()); this.onReady?.();
  }
  setRun(sim?: GameSimulation) {
-  if (this.simulation) this.simulation.onSound = undefined;
+  if (this.simulation) {
+   this.simulation.onSound = undefined;
+   this.simulation.onBasicAttack = undefined;
+  }
   this.simulation = sim;
   if (sim) {
-   sim.onSound = cue => this.audio.playCue(cue);
+   sim.onSound = cue => this.audio.playCue(cue, this.storybookOpening(sim.state));
+   if (this.previewPack === 'mini') sim.onBasicAttack = angle => { this.miniStrike = { angle, time: this.clock }; };
    this.audio.beginRun();
   } else {
    this.audio.syncMusic();
@@ -55,23 +92,40 @@ export class ForestScene extends Phaser.Scene {
   this.endFxTime = 0;
   this.announcedBosses.clear();
   this.lastShotSound = 0;
+  this.miniStrike = undefined;
+  this.miniWalkTime = 0;
+  this.miniIsWalking = false;
  }
  update(_time: number, delta: number) {
-  const dt = Math.min(delta / 1000, .05); const sim = this.simulation; if (!sim || sim.state.status === 'running') this.clock += dt * (sim?.speedMultiplier ?? 1);
-  if (sim) { const direction = this.controls.direction(); if (sim.state.status === 'running') this.onInputFrame?.(performance.now()); sim.update(dt, direction); } else this.titleScroll += dt * 9;
+  const dt = Math.min(delta / 1000, .05); const sim = this.simulation;
+  const visualStep = dt * (sim?.speedMultiplier ?? 1);
+  if (!sim || sim.state.status === 'running') this.clock += visualStep;
+  if (sim) {
+   const direction = this.controls.direction();
+   const { x, y } = sim.state.player;
+   if (sim.state.status === 'running') {
+    this.onInputFrame?.(performance.now());
+    sim.update(dt, direction);
+    if (this.previewPack === 'mini') {
+     this.miniIsWalking = x !== sim.state.player.x || y !== sim.state.player.y;
+     this.miniWalkTime = this.miniIsWalking ? this.miniWalkTime + visualStep : 0;
+    }
+   }
+  } else this.titleScroll += dt * 9;
   if (sim?.state.status === 'victory' || sim?.state.status === 'gameover') this.endFxTime += dt;
   const s = sim?.state, scroll = s?.scroll ?? this.titleScroll; this.ground.tilePositionY = -scroll;
   for (const prop of this.scenery) { const y = ((prop.y + scroll) % 1240 + 1240) % 1240 - 175; prop.image.setPosition(prop.x, y).setDepth(50 + y); }
   this.shadows.clear(); this.fx.clear();
   const defeated = s?.status === 'gameover';
   const p = s?.player ?? { x: 216, y: 480, invincible: 0, facing: 0, shield: 0 };
-  const facingLeft = Math.cos(p.facing) < -.2;
+  const motion = s && this.previewPack === 'mini' ? this.miniMotion(s) : undefined;
+  const facingLeft = motion?.left ?? Math.cos(p.facing) < -.2;
   const moving = s?.status === 'running' && Math.hypot(this.controls.direction().x, this.controls.direction().y) > .01;
   const fall = defeated ? 1 - Math.pow(1 - clamp(this.endFxTime / .36, 0, 1), 3) : 0;
-  const bob = defeated ? 0 : moving ? Math.sin(this.clock * 18) * 1.5 : Math.sin(this.clock * 2) * .7;
-  const heroTexture = `field-${s?.hero ?? 'warrior'}`;
-  if (this.hero.texture.key !== heroTexture) {
-   this.hero.setTexture(heroTexture).setOrigin(heroPivotX / this.hero.width, 1);
+  const bob = defeated || motion ? 0 : moving ? Math.sin(this.clock * 18) * 1.5 : Math.sin(this.clock * 2) * .7;
+  const heroTexture = motion?.key ?? `field-${s?.hero ?? 'warrior'}`;
+  if (this.hero.texture.key !== heroTexture || (motion && Number(this.hero.frame.name) !== motion.frame)) {
+   this.hero.setTexture(heroTexture, motion?.frame).setOrigin(this.heroOrigin(this.hero), 1);
   }
   this.hero.setTint(defeated ? 0xd7b3a5 : s?.evolved ? 0xffe9a8 : 0xffffff);
   this.hero.setPosition(p.x, p.y + bob + fall * 5).setDepth(100 + p.y).setScale(facingLeft ? -heroScale : heroScale, heroScale)
@@ -100,15 +154,32 @@ export class ForestScene extends Phaser.Scene {
   // Small drifting spores are bounded and deterministic, rather than particle emitters.
   for (let i = 0; i < 17; i++) { const x = ((i * 107 + Math.sin(this.clock * .6 + i) * 18) % 430 + 430) % 430, y = (i * 61 + this.clock * (6 + i % 4)) % 768; this.fx.fillStyle(0xf5dca0, .15 + (Math.sin(this.clock * 1.3 + i) + 1) * .15); this.fx.fillRect(x, y, 2, 2); }
   if (s?.status === 'running') {
-   for (const e of s.enemies) if (isBoss(e.kind) && !this.announcedBosses.has(e.id)) { this.announcedBosses.add(e.id); this.audio.boss(); }
+   for (const e of s.enemies) if (isBoss(e.kind) && !this.announcedBosses.has(e.id)) { this.announcedBosses.add(e.id); this.audio.boss(this.storybook && e.middleWave === MIDDLE_BOSS_WAVES[0].at); }
    const newestBasicShot = s.projectiles.reduce((latest, shot) => shot.kind === 'enemy' || shot.skillShot ? latest : Math.max(latest, shot.id), this.lastShotSound);
    if (newestBasicShot > this.lastShotSound) { this.lastShotSound = newestBasicShot; this.audio.attack(s.hero); }
   }
   this.renderJoystick(s); this.audio.syncMusic(s?.status, s?.finalSpawned); this.onFrame?.(s, this.endFxTime);
  }
+ private miniMotion(s: RunState) {
+  if (s.status === 'gameover' || s.status === 'victory') return;
+  const key = 'mini-motion-' + s.hero;
+  if (!this.textures.exists(key)) return;
+  const strike = this.miniStrike;
+  const attackTime = strike ? this.clock - strike.time : Infinity;
+  const striking = !!strike && attackTime < .27;
+  if (!striking && !this.miniIsWalking) return;
+  const angle = striking ? strike.angle : s.player.facing;
+  const x = Math.cos(angle), y = Math.sin(angle);
+  const row = Math.abs(x) >= Math.abs(y) ? 0 : y > 0 ? 1 : 2;
+  const column = striking ? 4 + Math.floor(attackTime / .09) : Math.floor(this.miniWalkTime * 11) % 4;
+  return { key, frame: row * 7 + column, left: row === 0 && x < 0 };
+ }
  private addFieldHero(x: number, y: number, hero: RunState['hero']) {
   const image = this.add.image(x, y, `field-${hero}`);
-  return image.setScale(heroScale).setOrigin(heroPivotX / image.width, 1);
+  return image.setScale(heroScale).setOrigin(this.heroOrigin(image), 1);
+ }
+ private heroOrigin(image: Phaser.GameObjects.Image) {
+  return this.previewPack && this.textures.exists('pack-warrior') ? .5 : heroPivotX / image.width;
  }
  private heroShadow(image: Phaser.GameObjects.Image, groundY: number, fall = 0) {
   const direction = image.scaleX < 0 ? -1 : 1;
@@ -117,9 +188,9 @@ export class ForestScene extends Phaser.Scene {
  private shadow(x: number, y: number, w: number, h: number) { this.shadows.fillStyle(0x34475d, .26); this.shadows.fillEllipse(x, y, w * 2, h * 2); }
  private renderEnemies(s: RunState) {
   const living = s.enemies.filter(enemy => enemy.hp > 0);
-  living.forEach((e, i) => { const image = this.actors.at(i, e.kind); image.setPosition(e.x, e.y + (s.timeStopRemaining > 0 ? 0 : Math.sin(this.clock * (e.kind === 'bat' ? 15 : 7) + e.seed) * (e.kind === 'bat' ? 4 : 1))).setOrigin(.5, .8).setDepth(100 + e.y).setScale(isBoss(e.kind) ? 2.9 : e.elite ? 2.6 : 2.2).setFlipX(e.x > s.player.x); image.setTint(s.timeStopRemaining > 0 ? 0xb7e2ff : e.hitFlash > 0 ? 0xffffff : e.elite ? 0xffdc98 : 0xffffff);
+  living.forEach((e, i) => { const texture = this.storybook && e.middleWave === MIDDLE_BOSS_WAVES[0].at ? 'storybook-grorm' : e.kind; const image = this.actors.at(i, texture); image.setPosition(e.x, e.y + (s.timeStopRemaining > 0 ? 0 : Math.sin(this.clock * (e.kind === 'bat' ? 15 : 7) + e.seed) * (e.kind === 'bat' ? 4 : 1))).setOrigin(.5, .8).setDepth(100 + e.y).setScale(isBoss(e.kind) ? 2.9 : e.elite ? 2.6 : 2.2).setFlipX(e.x > s.player.x); image.setTint(s.timeStopRemaining > 0 ? 0xb7e2ff : e.hitFlash > 0 ? 0xffffff : e.elite ? 0xffdc98 : 0xffffff);
    image.setAlpha(e.hitFlash > 0 ? .6 : 1); this.shadow(e.x, e.y + 5, e.radius * 1.2, 5);
-   if (isBoss(e.kind)) this.renderBossHealth(e);
+   if (isBoss(e.kind)) this.renderBossHealth(e, image.height);
    else if (e.hp < e.maxHp) {
     this.fx.fillStyle(0x172824, .8).fillRect(e.x - 13, e.y - 35, 26, 3);
     this.fx.fillStyle(e.elite ? 0xe1b46b : 0xaec17d).fillRect(e.x - 13, e.y - 35, 26 * Math.max(0, e.hp / e.maxHp), 3);
@@ -139,6 +210,15 @@ export class ForestScene extends Phaser.Scene {
     this.fx.fillStyle(0xe58165, .2 + Math.sin(this.clock * 16) * .05).fillPoints(lane, true);
     this.fx.lineStyle(2, 0xffba8f, .8).strokePoints(lane, true);
     this.fx.lineStyle(1, 0xffd6a6, .7).lineBetween(e.x, e.y, end.x, end.y);
+    if (texture === 'storybook-grorm') {
+     for (const step of [.26, .50, .74]) {
+      const x = e.x + (end.x - e.x) * step, y = e.y + (end.y - e.y) * step;
+      const tipX = x + e.aim.x * 10, tipY = y + e.aim.y * 10;
+      this.fx.lineStyle(3, 0x9a493e, .92)
+       .lineBetween(x + side.x * .31, y + side.y * .31, tipX, tipY)
+       .lineBetween(x - side.x * .31, y - side.y * .31, tipX, tipY);
+     }
+    }
    }
   }); this.actors.trim(living.length);
  }
@@ -154,9 +234,8 @@ export class ForestScene extends Phaser.Scene {
    .setTint(progress < .14 ? 0xffecbc : 0xd1a6a1).setAlpha(1 - .28 * drop);
   this.shadow(impact.x + direction * drop * 23, impact.y + 5, 34 + drop * 17, 12);
  }
- private renderBossHealth(boss: RunState['enemies'][number]) {
+ private renderBossHealth(boss: RunState['enemies'][number], height: number) {
   // Same origin and scale as the sprite; the bar enters the field with its boss.
-  const height = this.textures.getFrame(boss.kind).height;
   const head = boss.y - height * 2.9 * .8 - 12;
   if (boss.entryTarget && head < 0) return;
   const y = Math.max(3, head);
@@ -176,6 +255,10 @@ export class ForestScene extends Phaser.Scene {
    if (shot.skillShot) {
     image.setTint(shot.skillShot === 'blade' ? 0xa8ffea : 0xffd281);
     renderSkillShot(this.fx, shot, angle);
+    return;
+   }
+   if (this.storybookOpening(s)) {
+    storybookShot(this.fx, shot, angle);
     return;
    }
    const length = shot.kind === 'arrow' ? 29 : 19;
@@ -296,6 +379,13 @@ export class ForestScene extends Phaser.Scene {
    }
    if (e.kind === 'chestPickup') {
     const radius = 14 + e.radius * (1 - f * f);
+    if (this.storybookOpening(s)) {
+     g.lineStyle(1.5, 0xfff4bc, f * .85).strokeEllipse(e.x, e.y, radius * 1.56, radius * .70);
+     for (let i = 0; i < 5; i++) {
+      const angle = i * 2.4;
+      this.drawPickupSpark(e.x + Math.cos(angle) * radius * .52, e.y + Math.sin(angle) * radius * .26 - 18 * progress, 6 * f, f);
+     }
+    }
     g.fillStyle(e.color, f * .2).fillEllipse(e.x, e.y, radius * 2, radius);
     g.lineStyle(3, e.color, f).strokeEllipse(e.x, e.y, radius * 2, radius);
     for (let i = 0; i < 10; i++) {
@@ -313,6 +403,10 @@ export class ForestScene extends Phaser.Scene {
    if (renderSkillEffect(g, e, f)) continue;
    g.lineStyle(2, e.color, f);
    if (e.kind === 'slash') {
+    if (this.storybookOpening(s)) {
+     storybookSlash(g, e, f);
+     continue;
+    }
     const span = e.halfAngle ?? Math.PI / 4;
     const radius = e.radius * (.85 + progress * .15);
     const segments = 18;

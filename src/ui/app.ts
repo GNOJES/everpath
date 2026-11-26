@@ -6,7 +6,7 @@ import { ForestScene } from '../game/scene';
 import { SaveStore, upgradeCost } from '../game/save';
 import { GameSimulation } from '../game/simulation';
 import { DEFAULT_SFX_VOLUME, HEROES, SKILLS, PASSIVES, PERMANENT, WORLD, permanentLimit, EVOLUTIONS, CAMPAIGN } from '../game/config';
-import { portrait } from '../game/art';
+import { isPreviewPack, portrait } from '../game/art';
 import { formatTime } from '../game/math';
 import { icon } from './icons';
 import { DiagnosticsMonitor } from '../diagnostics/monitor';
@@ -22,11 +22,17 @@ export class App {
  private historyReturn: Screen = 'settings';
  private rank = 0; private refundConfirm = false;
  private diagnostics = new DiagnosticsMonitor(); private diagnosticReturn: Screen = 'settings'; private diagnosticExporting = false; private diagnosticMessage = '';
- private scene = new ForestScene(); private game: Phaser.Game;
+ private scene: ForestScene; private game: Phaser.Game;
  private screen: Screen = 'title'; private hero: HeroId; private sim?: GameSimulation;
  private root: HTMLElement; private overlay: HTMLElement; private hud: HTMLElement; private previousStatus = ''; private lastHud = 0;
  private settingsReturn: Screen = 'title'; private shopReturn: Screen = 'title'; private lastResult?: RunResult; private newRecord = false;
  constructor(element: HTMLElement, private readonly store = new SaveStore()) {
+  const art = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('art') : null;
+  const pack = isPreviewPack(art) ? art : art === null ? 'mini' : undefined;
+  const storybook = !!pack || art === 'storybook' || art === 'storybook-cc0';
+  this.scene = new ForestScene(storybook, art === 'storybook-cc0', pack);
+  element.classList.toggle('storybook-preview', storybook);
+  element.classList.toggle('mini-world', pack === 'mini');
   this.hero = store.data.lastHero;
   this.root = element;
   element.innerHTML = `<div class="shell"><header class="site-header"><a class="brand" href="/" aria-label="EVERPATH 타이틀">EVERPATH</a><button class="icon-button" data-action="sound" aria-label="효과음 켜기 / 끄기">${icon('sound')}</button></header>

@@ -125,11 +125,15 @@ test('each combat cue renders a different audible waveform', async ({ page }) =>
  await page.goto('/');
  const values = await page.evaluate(async () => {
   const {GameAudio} = await import('/src/game/audio.ts' as string) as typeof import('../src/game/audio');
-  const {COMBAT_SOUNDS} = await import('/src/game/combat-sounds.ts' as string) as typeof import('../src/game/combat-sounds');
+  const {COMBAT_SOUNDS, STORYBOOK_CUES} = await import('/src/game/combat-sounds.ts' as string) as typeof import('../src/game/combat-sounds');
   const Original = window.AudioContext;
   const values = [];
   try {
-   for (const cue of Object.keys(COMBAT_SOUNDS) as (keyof typeof COMBAT_SOUNDS)[]) {
+   const profiles = [
+    ...Object.keys(COMBAT_SOUNDS).map(cue => ({ cue, preview: false })),
+    ...Object.keys(STORYBOOK_CUES).map(cue => ({ cue, preview: true })),
+   ];
+   for (const {cue, preview} of profiles) {
     const render = new OfflineAudioContext(1, 44100 * 1.2, 44100);
     window.AudioContext = class {
      readonly state = 'running';
@@ -146,19 +150,19 @@ test('each combat cue renders a different audible waveform', async ({ page }) =>
     } as unknown as typeof AudioContext;
     const audio = new GameAudio();
     audio.unlock();
-    audio.playCue(cue);
+    audio.playCue(cue as keyof typeof COMBAT_SOUNDS, preview);
     const pcm = (await render.startRendering()).getChannelData(0);
     let peak = 0, signature = 0;
     for (const value of pcm) {
      peak = Math.max(peak, Math.abs(value));
      signature = (Math.imul(signature, 31) + Math.round(value * 1e6)) | 0;
     }
-    values.push({cue, peak, signature});
+    values.push({cue: preview ? 'storybook-' + cue : cue, peak, signature});
    }
   } finally { window.AudioContext = Original; }
   return values;
  });
- expect(values).toHaveLength(40);
+ expect(values).toHaveLength(46);
  for (const {cue,peak} of values) {
   expect(peak, cue).toBeGreaterThan(.005);
   expect(peak, cue).toBeLessThan(1);
