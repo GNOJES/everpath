@@ -1,6 +1,22 @@
 # EVERPATH 작업 현황
 
-## 현재 작업 · 텍스트 없는 전투 피드백·청은 기사 적용 및 웹 배포
+## 현재 작업 · 폭발화살·장판 깊이·해골 화살·음악 페이드·모르바 패턴·레벨업 회복 개편 및 배포
+
+- **요구사항·목표** — (1) 궁수 `폭발 화살` 범위 70% 축소 및 최대 강화 기준 동시 중첩 최대 2개 제한 (2) 장판을 캐릭터·투사체 아래로 내리고 아군/적 색상 구분·투명도 완화 (3) 해골 궁수 적 화살 텍스처 적용 (4) 10분 보스 음악 전환 시 기존 곡 페이드아웃 (5) 10분 보스 모르바 4패턴 다양화 및 부채꼴 예고 종료 시 즉시 피격 수준 강화 (6) `생명의 뿌리` 최대 체력 증가 제거 및 고정 `+120 HP` 즉시 회복·HP 30% 미만 확정 보장. 로컬 검증 후 `main` 푸시로 Vercel 운영 웹에 배포한다.
+- **구현 계획·완료 조건** — [설계 문서](docs/superpowers/specs/2026-11-27-combat-fields-boss-audio-polish-design.md) · [구현 계획](docs/superpowers/plans/2026-11-27-combat-fields-boss-audio-polish.md). (1) 6가지 요구사항의 실패 테스트 작성·확인 (2) 시뮬레이션·렌더링·오디오·에셋 구현 (3) `npm run build`·Vitest·Playwright 모바일 Chrome 확인 및 캡처 육안 검증 (4) `main` 커밋·푸시 후 Vercel `READY`·누적 버전 증가·동일 Chrome 프로필 저장 보존 확인. (사용자 승인 및 웹 배포 요청 완료)
+
+| 단계 | 상태 |
+| --- | --- |
+| 설계·구현 계획 및 작업 현황 기록 | 완료 |
+| 선행 실패 테스트 작성 및 확인 (TDD RED) | 완료 |
+| 6가지 전투·렌더링·오디오·회복 구현 (TDD GREEN) | 완료 |
+| 전체 빌드·검증 및 Vercel 운영 배포·저장 확인 | 진행 중 |
+
+- **로컬 변경 요약** — [config.ts](src/game/config.ts)·[progression.ts](src/game/progression.ts)·[simulation.ts](src/game/simulation.ts)에서 `폭발 화살` 반경을 `74+41*lvl`→`52+29*lvl`·쿨다운을 `6.0s`(`haste` 레벨당 `+15%`)로 조정해 최대 강화 기준 `5s` 장판 동시 중첩을 2개 이하로 제한하고, `생명의 뿌리` 최대 체력 증가를 제거해 고정 `+120 HP` 즉시 회복·만피 시 선택지 제외·체력 30% 미만 확정 보장을 적용했다. 모르바는 4패턴 순환(`방사→부채꼴 예고 sweep+즉시 판정+고속 볼트 5발→방사→3연 뿌리 slam+2발`)으로 개편했다. [scene.ts](src/game/scene.ts)·[mini-enemies.ts](src/game/mini-enemies.ts)·[art.ts](src/game/art.ts)·[types.ts](src/game/types.ts)에서 아군 장판(`groundFx`, 깊이 10)·적 위험(`hazardFx`, 깊이 20)을 영웅·적·투사체 아래로 분리하고 옅은 호박색/세이지/하늘색 점선으로 구분했으며 해골 궁수에 `19×7` 적 화살 텍스처(`enemy-arrow`)를 연결했다. [audio.ts](src/game/audio.ts)는 10분 보스 전환 시 기존 곡을 전용 게인으로 `0.85s` 페이드아웃한 뒤 `'warden'`을 `0.25s` 페이드인으로 재생한다.
+- **로컬 검증 결과** — `npm run build` 성공(`ver. 20261127-31`). 장기 밸런스 4개 파일(`balance.test.ts`, `campaign-balance.test.ts`, `retry-economy.test.ts`, `skill-build.test.ts`)을 제외한 Vitest 20개 파일 246개 테스트 통과. Playwright Chrome 9개 파일 35개 테스트 통과, `320×568` 모바일 캡처에서 아군 장판·적 예고·모르바 부채꼴 sweep·해골 적 화살의 깊이와 시인성을 확인했다. (실기기 확인과 장기 10분 밸런스 4종은 미실행)
+- **배포 전 운영 기준** — `https://everpath-roan.vercel.app/` 기준 `ver. 20261126-38`, 격리 프로필(`artifacts/local/release-39-profile`) 저장 기준 보유 골드 `355`, 영구 강화 `attack: 2, hp: 1, speed: 1, gold: 0, timeStop: 0`, `BGM 2`, 최근 원정 1건(`04:11 · 처치 134 · 놓침 66 (33.0%) · 골드 274`).
+
+## 최근 완료 작업 · 텍스트 없는 전투 피드백·청은 기사 적용 및 웹 배포
 
 - **요구사항·목표** — 첫 2분·그롬전 전투 피드백(`돌진 · 옆으로 피하기`, `보물 상자 · 다가가기`, 피격 원인 문구 박스, 보물 획득 박스)의 텍스트 박스를 모두 제거하고 그래픽·음향 연출과 `+150G`만 남긴 채 기본 미니 월드(`/`)에 적용한다. 전사 에셋을 시안 C · 청은 기사(18px)로 교체해 초상화·유휴·4방향 이동·3프레임 공격 모션을 연결하고, 로컬 검증 후 `main` 푸시로 Vercel 운영 웹에 배포한다.
 - **구현 계획·완료 조건** — [설계 문서](docs/superpowers/specs/2026-11-26-opening-feedback-and-knight-warrior-design.md) · [구현 계획](docs/superpowers/plans/2026-11-26-opening-feedback-and-knight-warrior.md). (1) `build-knight-assets.py`로 `mini/warrior.png`와 `280×120` 규격 `mini/warrior-motion.png` 제작 (2) `tests/opening-feedback.test.ts`·`e2e/opening-feedback.spec.ts` 선행 실패 확인 (3) `opening-feedback.ts` 텍스트 박스 제거·원인별 그래픽 구분·`app.ts` 기본 활성화 및 테스트 통과 (4) `npm run build`·Vitest·Playwright 모바일 Chrome 확인 후 커밋·푸시 및 운영 버전(`20261126-38`)·동일 프로필 저장 보존 검증. (구현 및 웹 배포 사용자 승인 완료)
@@ -10,11 +26,11 @@
 | 설계·구현 계획 및 작업 현황 기록 | 완료 |
 | 전사 시안 C(청은 기사) 정지·이동·공격 에셋 제작 | 완료 |
 | 텍스트 없는 피드백 코드 수정 및 단위·E2E 테스트 통과 | 완료 |
-| 전체 빌드·검증 및 Vercel 운영 배포·저장 확인 | 진행 중 |
+| 전체 빌드·검증 및 Vercel 운영 배포·저장 확인 | 완료 |
 
 - **로컬 변경 요약** — [opening-feedback.ts](src/game/opening-feedback.ts)에서 박스형 텍스트 4종(`돌진 · 옆으로 피하기`, `보물 상자 · 다가가기`, 피격 원인 문구, 보물 획득 박스)을 모두 제거하고 원인별 피격 방향 그래픽·직업별 타격 섬광·상자 펄스/화살표 마커·부유 `+150G`만 남겼다. [app.ts](src/ui/app.ts)와 [scene.ts](src/game/scene.ts)에서 기본 미니 월드(`/`)에 즉시 활성화했다. [build-knight-assets.py](docs/art/opening-polish/warrior/build-knight-assets.py)로 시안 C 청은 기사 유휴·초상화(`20×18`, 18px 높이)와 방향별 이동·공격 시트(`280×120`, 40×40 셀)를 생성해 [mini/warrior.png](src/game/assets/preview-packs/mini/warrior.png)·[mini/warrior-motion.png](src/game/assets/preview-packs/mini/warrior-motion.png)에 연결했다.
 - **로컬 검증 결과** — `npm run build` 성공. 장기 밸런스 4개 파일(`balance.test.ts`, `campaign-balance.test.ts`, `retry-economy.test.ts`, `skill-build.test.ts`)을 제외한 Vitest 20개 파일 242개 테스트 통과(`tests/opening-feedback.test.ts` 5개 포함). Chrome Playwright 9개 파일 35개 테스트 통과(`e2e/opening-feedback.spec.ts` 5개·`e2e/storybook-preview.spec.ts` 6개 등 포함), 320×568 모바일 화면에서 영웅 선택 초상화·돌진 예고·피격 그래픽·상자 마커·`+150G` 캡처([opening-scenes.png](docs/art/opening-polish/reference/opening-scenes.png))를 육안 확인했다.
-- **배포 전 기준 확인** — 동일 Chrome 격리 프로필(`artifacts/local/release-38-profile`)로 `https://everpath-roan.vercel.app/`에서 `ver. 20261126-37` (`/version.json` 일치), 보유 골드 `355G`, 공격 2·체력 1·이동 1단계, 최근 원정 `04:11 · 처치 134 · 놓침 66 (33.0%) · 골드 274`, `BGM 2` 설정을 확인했다.
+- **운영 배포 및 저장 검증** — `cfe9c36` 커밋·`main` 푸시 후 Vercel `READY` 확인. [고정 웹 주소](https://everpath-roan.vercel.app/) 타이틀과 `/version.json`이 `20261126-37` → `20261126-38`로 갱신됐다. 동일 Chrome 격리 프로필(`artifacts/local/release-38-profile`)에서 배포 전후 저장 원문, 보유 골드 `355G`, 공격 2·체력 1·이동 1단계, 최근 원정 `04:11 · 처치 134 · 놓침 66 (33.0%) · 골드 274`, `BGM 2` 설정이 일치했고, 영웅 선택 초상화 3종(`20×18`·`23×19`·`15×20`)과 원정 진입 및 우측 이동이 오류 없이 동작함을 확인했다. (실기기 터치·스피커 체감 및 장기 10분 밸런스 4종은 이번 범위 밖)
 
 ## 최근 완료 작업 · 첫 원정·전사 시안 인수인계
 

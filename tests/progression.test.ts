@@ -17,10 +17,21 @@ describe('upgrade choices', () => {
  });
 });
 
-it('offers a recovery choice at critical HP rather than leaving survival entirely to the draw', () => {
- const run = createRun('archer', parseSave(null)); run.player.hp = 20;
- expect(rollUpgrades(run, () => 0).map(x => x.id)).toContain('passive:vitality');
- const picks = rollUpgrades(run, () => 0); expect(new Set(picks.map(x => x.id)).size).toBe(picks.length);
+it('offers a fixed-heal vitality card only when injured and guarantees it below 30% HP', () => {
+ const full = createRun('archer', parseSave(null));
+ expect(availableUpgrades(full).some(x => x.id === 'passive:vitality')).toBe(false);
+
+ const midLow = createRun('archer', parseSave(null));
+ midLow.player.hp = Math.ceil(midLow.player.maxHp * .35);
+ expect(availableUpgrades(midLow).some(x => x.id === 'passive:vitality')).toBe(true);
+ expect(rollUpgrades(midLow, () => 0).map(x => x.id)).not.toContain('passive:vitality');
+
+ const critical = createRun('archer', parseSave(null));
+ critical.player.hp = Math.floor(critical.player.maxHp * .29);
+ expect(rollUpgrades(critical, () => 0).map(x => x.id)).toContain('passive:vitality');
+ expect(rollUpgrades(critical, () => .99).map(x => x.id)).toContain('passive:vitality');
+ const picks = rollUpgrades(critical, () => 0);
+ expect(new Set(picks.map(x => x.id)).size).toBe(picks.length);
 });
 
 it.each([

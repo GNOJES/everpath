@@ -169,7 +169,7 @@ it('gives Briar staggered artillery and a recovery window without a dash', () =>
  expect(zones.every(zone => zone.fired)).toBe(true);
 });
 
-it('cycles through warning circles, a targeted fan and a radial volley in the Warden fight', () => {
+it('cycles through four Warden patterns and punishes staying inside the fan cone when its windup ends', () => {
  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
  const s = sim.state;
  s.elapsed = 600; s.finalSpawned = true;
@@ -178,14 +178,30 @@ it('cycles through warning circles, a targeted fan and a radial volley in the Wa
  boss.speed = 0; boss.timer = 0;
  sim.update(.025);
  expect(s.hazards.filter(zone => zone.owner === 'enemy')).toHaveLength(2);
+ // Pattern 1: fan warn -> instant cone punish if player stays inside 245px cone + 5 fast bolts
+ s.player.x = 216; s.player.y = 330; s.player.invincible = 0;
  boss.timer = 0;
  sim.update(.025);
  expect(boss.phase).toBe('warn');
+ const hpBeforeFan = s.player.hp;
  boss.timer = 0;
  sim.update(.025);
- expect(s.projectiles.filter(shot => shot.kind === 'enemy')).toHaveLength(5);
+ expect(s.player.hp).toBeLessThan(hpBeforeFan);
+ const fanShots = s.projectiles.filter(shot => shot.kind === 'enemy');
+ expect(fanShots).toHaveLength(5);
+ expect(Math.hypot(fanShots[0].vx, fanShots[0].vy)).toBeGreaterThan(450);
+
+ // Pattern 2 (enraged): radial volley + slam hazard
  boss.hp = boss.maxHp / 2; boss.timer = 0;
  sim.update(.025);
  expect(s.projectiles.filter(shot => shot.kind === 'enemy')).toHaveLength(19);
  expect(s.hazards.filter(zone => zone.owner === 'enemy')).toHaveLength(3);
+
+ // Pattern 3: 3-zone root cross/corridor + twin aimed bolts
+ const hazardsBefore = s.hazards.length;
+ const shotsBefore = s.projectiles.length;
+ boss.timer = 0;
+ sim.update(.025);
+ expect(s.hazards.length - hazardsBefore).toBe(3);
+ expect(s.projectiles.length - shotsBefore).toBe(2);
 });

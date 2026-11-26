@@ -39,7 +39,7 @@ export class ForestScene extends Phaser.Scene {
  private enemyAttacks = new WeakMap<Enemy, number>();
  private opening?: OpeningFeedback;
  private ground!: Phaser.GameObjects.TileSprite; private actors!: ImagePool; private shots!: ImagePool;
- private shadows!: Phaser.GameObjects.Graphics; private fx!: Phaser.GameObjects.Graphics; private joystick!: Phaser.GameObjects.Graphics;
+ private shadows!: Phaser.GameObjects.Graphics; private groundFx!: Phaser.GameObjects.Graphics; private hazardFx!: Phaser.GameObjects.Graphics; private fx!: Phaser.GameObjects.Graphics; private joystick!: Phaser.GameObjects.Graphics;
  private hero!: Phaser.GameObjects.Image; private fallenWarden!: Phaser.GameObjects.Image; private companions: Phaser.GameObjects.Image[] = []; private scenery: { image: Phaser.GameObjects.Image; y: number; x: number }[] = [];
  private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private endFxTime = 0;
  constructor(private readonly storybook = false, private readonly cc0 = false, private readonly previewPack?: PreviewPack, private readonly miniEnemies = false, miniAudio = false, private readonly openingPreview = false) {
@@ -60,7 +60,7 @@ export class ForestScene extends Phaser.Scene {
  create() {
   this.audio.preloadBattle();
   createArt(this, this.storybook, this.previewPack); this.ground = this.add.tileSprite(216, 384, 432, 768, 'terrain').setDepth(-10);
-  this.shadows = this.add.graphics().setDepth(5); this.fx = this.add.graphics().setDepth(2000); this.joystick = this.add.graphics().setDepth(3000);
+  this.shadows = this.add.graphics().setDepth(5); this.groundFx = this.add.graphics().setDepth(10); this.hazardFx = this.add.graphics().setDepth(20); this.fx = this.add.graphics().setDepth(2000); this.joystick = this.add.graphics().setDepth(3000);
   if (!this.previewPack || !this.textures.exists('pack-terrain')) {
    for (let i = 0; i < 24; i++) { const row = Math.floor(i / 2), left = i % 2 === 0; const x = left ? 8 + Math.sin(i * 41) * 28 : 417 + Math.sin(i * 17) * 25; const y = row * 102 - 120; const image = this.add.image(x, y, i % 4 === 0 ? 'pine' : 'tree').setOrigin(.5, 1).setScale(i % 4 === 0 ? 1.25 : 1.35); this.scenery.push({ image, x, y }); }
    const props = ['bush', 'rock', 'bush', 'mushroom', 'stump'];
@@ -139,7 +139,7 @@ export class ForestScene extends Phaser.Scene {
   if (sim?.state.status === 'victory' || sim?.state.status === 'gameover') this.endFxTime += dt;
   const s = sim?.state, scroll = s?.scroll ?? this.titleScroll; this.ground.tilePositionY = -scroll;
   for (const prop of this.scenery) { const y = ((prop.y + scroll) % 1240 + 1240) % 1240 - 175; prop.image.setPosition(prop.x, y).setDepth(50 + y); }
-  this.shadows.clear(); this.fx.clear();
+  this.shadows.clear(); this.groundFx.clear(); this.hazardFx.clear(); this.fx.clear();
   const defeated = s?.status === 'gameover';
   const p = s?.player ?? { x: 216, y: 480, invincible: 0, facing: 0, shield: 0 };
   const motion = s && this.previewPack === 'mini' ? this.miniMotion(s) : undefined;
@@ -171,8 +171,8 @@ export class ForestScene extends Phaser.Scene {
    if (p.shield) renderShield(this.fx, p.x, p.y - 12, SKILLS.shield.radius, .9);
    if (s.skills.frost) {
     const radius = FROST_AURA.radius[s.skills.frost - 1];
-    this.fx.fillStyle(0x78ddef, .065).fillCircle(p.x, p.y, radius);
-    this.fx.lineStyle(1.5, 0xb7f4f5, .55).strokeCircle(p.x, p.y, radius);
+    this.groundFx.fillStyle(0x78ddef, .04).fillCircle(p.x, p.y, radius);
+    this.groundFx.lineStyle(1.5, 0xb7f4f5, .38).strokeCircle(p.x, p.y, radius);
    }
   }
   else { this.actors.trim(0); this.shots.trim(0); for (const label of this.labels) label.setVisible(false); }
@@ -232,29 +232,29 @@ export class ForestScene extends Phaser.Scene {
     this.fx.fillStyle(e.elite ? 0xe1b46b : 0xaec17d).fillRect(e.x - 13, e.y - 35, 26 * Math.max(0, e.hp / e.maxHp), 3);
    }
    if (this.miniEnemies) {
-    renderMiniBossTell(this.fx, e, Boolean(this.opening));
+    renderMiniBossTell(this.hazardFx, e, Boolean(this.opening));
     return;
    }
-   if (e.kind === 'warden') this.fx.lineStyle(2, 0xd0a3e9, .6).strokeCircle(e.x, e.y - 12, e.radius + 12 + Math.sin(this.clock * 3) * 4);
-   if (e.kind === 'briar' && e.phase === 'warn') this.fx.lineStyle(2, 0xffcf91, .65).strokeEllipse(e.x, e.y - 3, e.radius * 2.2, e.radius);
+   if (e.kind === 'warden') this.hazardFx.lineStyle(2, 0xd0a3e9, .6).strokeCircle(e.x, e.y - 12, e.radius + 12 + Math.sin(this.clock * 3) * 4);
+   if (e.kind === 'briar' && e.phase === 'warn') this.hazardFx.lineStyle(2, 0xffcf91, .65).strokeEllipse(e.x, e.y - 3, e.radius * 2.2, e.radius);
    if (e.kind === 'warden' && e.phase === 'warn') {
     const angle = Math.atan2(e.aim.y, e.aim.x);
-    const cone = [new Phaser.Math.Vector2(e.x, e.y), ...[-.41, .41].map(offset =>
+    const cone = [new Phaser.Math.Vector2(e.x, e.y), ...[-.42, .42].map(offset =>
      new Phaser.Math.Vector2(e.x + Math.cos(angle + offset) * 245, e.y + Math.sin(angle + offset) * 245))];
-    this.fx.fillStyle(0xd681b9, .17).fillPoints(cone, true);
-    this.fx.lineStyle(2, 0xffc8f2, .75).strokePoints(cone, true);
+    this.hazardFx.fillStyle(0xd681b9, .2).fillPoints(cone, true);
+    this.hazardFx.lineStyle(2, 0xffc8f2, .8).strokePoints(cone, true);
    } else if (e.kind === 'boss' && e.phase === 'warn') {
     const travel = BOSS_PATTERN.dashSpeed * BOSS_PATTERN.dashDuration, side = { x: -e.aim.y * e.radius, y: e.aim.x * e.radius };
     const start = { x: e.x - e.aim.x * e.radius, y: e.y - e.aim.y * e.radius }, end = { x: e.x + e.aim.x * (travel + e.radius), y: e.y + e.aim.y * (travel + e.radius) };
     const lane = [new Phaser.Math.Vector2(start.x + side.x, start.y + side.y), new Phaser.Math.Vector2(end.x + side.x, end.y + side.y), new Phaser.Math.Vector2(end.x - side.x, end.y - side.y), new Phaser.Math.Vector2(start.x - side.x, start.y - side.y)];
-    this.fx.fillStyle(0xe58165, .2 + Math.sin(this.clock * 16) * .05).fillPoints(lane, true);
-    this.fx.lineStyle(2, 0xffba8f, .8).strokePoints(lane, true);
-    this.fx.lineStyle(1, 0xffd6a6, .7).lineBetween(e.x, e.y, end.x, end.y);
+    this.hazardFx.fillStyle(0xe58165, .2 + Math.sin(this.clock * 16) * .05).fillPoints(lane, true);
+    this.hazardFx.lineStyle(2, 0xffba8f, .8).strokePoints(lane, true);
+    this.hazardFx.lineStyle(1, 0xffd6a6, .7).lineBetween(e.x, e.y, end.x, end.y);
     if (texture === 'storybook-grorm') {
      for (const step of [.26, .50, .74]) {
       const x = e.x + (end.x - e.x) * step, y = e.y + (end.y - e.y) * step;
       const tipX = x + e.aim.x * 10, tipY = y + e.aim.y * 10;
-      this.fx.lineStyle(3, 0x9a493e, .92)
+      this.hazardFx.lineStyle(3, 0x9a493e, .92)
        .lineBetween(x + side.x * .31, y + side.y * .31, tipX, tipY)
        .lineBetween(x - side.x * .31, y - side.y * .31, tipX, tipY);
      }
@@ -286,7 +286,7 @@ export class ForestScene extends Phaser.Scene {
  }
  private renderShots(s: RunState) {
   s.projectiles.forEach((shot, i) => {
-   const image = this.shots.at(i, shot.kind);
+   const image = this.shots.at(i, shot.sprite ?? shot.kind);
    const angle = Math.atan2(shot.vy, shot.vx);
    image.setPosition(shot.x, shot.y).setDepth(1600).setRotation(angle).setScale(shot.kind === 'blade' ? 1.8 : 1.45).clearTint();
    if (shot.kind === 'enemy') return;
@@ -312,46 +312,59 @@ export class ForestScene extends Phaser.Scene {
   });
   this.shots.trim(s.projectiles.length);
  }
+ private strokeDashedCircle(g: Phaser.GameObjects.Graphics, x: number, y: number, radius: number, segments = 16) {
+  const step = Math.PI * 2 / segments;
+  for (let i = 0; i < segments; i++) {
+   const a = i * step;
+   g.beginPath().arc(x, y, radius, a, a + step * .55).strokePath();
+  }
+ }
  private renderHazards(s: RunState) {
-  const g = this.fx;
+  const ally = this.groundFx, foe = this.hazardFx;
   for (const field of s.groundFields) {
    const { x, radius } = field, y = field.groundY + s.scroll;
    const fade = Math.min(1, field.remaining * 3), burn = field.kind === 'burn';
-   const edge = burn ? 0xffb953 : 0x8cf4cd;
-   g.fillStyle(burn ? 0x953b23 : 0x185750, .24 * fade).fillCircle(x, y, radius);
-   g.lineStyle(3, burn ? 0x7b3220 : 0x23504a, .74 * fade).strokeCircle(x, y, radius);
-   g.lineStyle(1.5, edge, .92 * fade).strokeCircle(x, y, radius - 3);
+   const rim = burn ? 0xffd17a : 0xb8f29c;
+   ally.fillStyle(burn ? 0xffa947 : 0x7ad678, (burn ? .09 : .08) * fade).fillCircle(x, y, radius);
+   ally.lineStyle(1.5, rim, .36 * fade);
+   this.strokeDashedCircle(ally, x, y, radius - 1);
    if (burn) {
-    for (let i = 0; i < 13; i++) {
-     const angle = i * 2.399, reach = radius * (.16 + (i % 5) * .16);
-     const lift = 2 + 5 * (.5 + .5 * Math.sin(this.clock * 11 + i));
-     g.fillStyle(i % 2 ? edge : 0xf77738, .83 * fade)
-      .fillRect(x + Math.cos(angle) * reach - 1, y + Math.sin(angle) * reach - lift, 3, lift);
+    for (let i = 0; i < 7; i++) {
+     const angle = i * 2.399, reach = radius * (.22 + (i % 4) * .17);
+     const lift = 1 + 3 * (.5 + .5 * Math.sin(this.clock * 9 + i));
+     ally.fillStyle(i % 2 ? rim : 0xff9b4a, .45 * fade)
+      .fillRect(x + Math.cos(angle) * reach - 1, y + Math.sin(angle) * reach - lift, 2, 3);
     }
    } else {
-    g.lineStyle(1.5, edge, .6 * fade);
-    for (let i = -2; i <= 2; i++) {
-     const offset = i * radius * .29, half = Math.sqrt((radius - 5) ** 2 - offset ** 2);
-     g.lineBetween(x - half, y + offset, x + half, y + offset);
-     g.lineBetween(x + offset, y - half, x + offset, y + half);
+    ally.lineStyle(1.5, rim, .32 * fade);
+    for (let i = 0; i < 4; i++) {
+     const a = i * Math.PI / 2 + Math.PI / 4, dx = Math.cos(a), dy = Math.sin(a);
+     ally.lineBetween(x + dx * (radius - 9), y + dy * (radius - 9), x + dx * (radius - 3), y + dy * (radius - 3));
     }
    }
   }
   for (const h of s.hazards) {
-   const hostile = h.owner === 'enemy', color = hostile ? 0xd92e61 : 0x1b8cba;
+   const hostile = h.owner === 'enemy', color = hostile ? 0xd92e61 : 0x4fc3f7;
    const progress = h.fired ? 1 : clamp(1 - h.delay / (h.windup ?? .65), 0, 1);
-   if (this.miniEnemies && hostile && renderMiniBossHazard(g, h, progress)) continue;
-   g.fillStyle(color, h.fired ? .31 : .10 + progress * .10).fillCircle(h.x, h.y, h.radius);
-   g.lineStyle(hostile ? 2.5 : 5, hostile ? 0x652b57 : 0x235477, hostile ? .40 : .77).strokeCircle(h.x, h.y, h.radius);
-   g.lineStyle(hostile ? 1 : 2, hostile ? 0xffe2cf : 0xccfdff, hostile ? .63 : .95).strokeCircle(h.x, h.y, h.radius);
+   if (this.miniEnemies && hostile && renderMiniBossHazard(foe, h, progress)) continue;
+   const target = hostile ? foe : ally;
+   if (hostile) {
+    target.fillStyle(color, h.fired ? .31 : .10 + progress * .10).fillCircle(h.x, h.y, h.radius);
+    target.lineStyle(2.5, 0x652b57, .40).strokeCircle(h.x, h.y, h.radius);
+    target.lineStyle(1, 0xffe2cf, .63).strokeCircle(h.x, h.y, h.radius);
+   } else {
+    target.fillStyle(color, h.fired ? .12 : .06 + progress * .04).fillCircle(h.x, h.y, h.radius);
+    target.lineStyle(1.5, 0x9be7ff, .38);
+    this.strokeDashedCircle(target, h.x, h.y, h.radius);
+   }
    if (!h.fired) {
-    g.lineStyle(hostile ? 2.5 : 4, color, hostile ? .72 : 1).beginPath().arc(h.x, h.y, h.radius + 3, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2).strokePath();
-    if (hostile) g.lineStyle(3, 0x82274e, .92).lineBetween(h.x, h.y - 11, h.x, h.y + 2).fillStyle(0x82274e, 1).fillCircle(h.x, h.y + 8, 2);
+    target.lineStyle(hostile ? 2.5 : 2, color, hostile ? .72 : .48).beginPath().arc(h.x, h.y, h.radius + 3, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2).strokePath();
+    if (hostile) target.lineStyle(3, 0x82274e, .92).lineBetween(h.x, h.y - 11, h.x, h.y + 2).fillStyle(0x82274e, 1).fillCircle(h.x, h.y + 8, 2);
    } else if (!hostile) {
     for (let i = 0; i < 15; i++) {
      const a = i * 2.399, radius = Math.sqrt(i / 15) * h.radius;
      const x = h.x + Math.cos(a) * radius, y = h.y + Math.sin(a) * radius;
-     g.lineStyle(3, i % 2 ? 0x247fa4 : 0xf3feff, .8).lineBetween(x + 13, y - 27, x, y);
+     this.fx.lineStyle(3, i % 2 ? 0x247fa4 : 0xf3feff, .8).lineBetween(x + 13, y - 27, x, y);
     }
    }
   }

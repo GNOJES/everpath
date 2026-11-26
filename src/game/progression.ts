@@ -28,6 +28,7 @@ export function availableUpgrades(run: RunState): Upgrade[] {
   options.push({ id: `skill:${id}`, ...skill, level, max, description });
  }
  for (const id of Object.keys(PASSIVES) as PassiveId[]) {
+  if (id === 'vitality' && run.player.hp >= run.player.maxHp) continue;
   const max = id === 'speed' ? BALANCE.speedMax : BALANCE.passiveMax;
   if (run.passives[id] < max) options.push({ id: `passive:${id}`, ...PASSIVES[id], level: run.passives[id], max, color: '#c7c2a0' });
  }

@@ -87,6 +87,17 @@ export function createArt(scene: Phaser.Scene, storybook = false, pack?: Preview
   '      oao  oao', '      odd  ddo', '     ohho  ohho', '     oooo  oooo',
  ], { o: '#30284a', h: '#80534c', a: '#9775bd', A: '#d0aff0', d: '#564976', g: '#396260', G: '#78ad92', c: '#e99545', L: '#fff3ab', l: '#fcbd65', s: '#ae765d' }));
  add('arrow', canvas(19, 5, c => { rect(c, '#e5d7a3', 0, 2, 16, 1); rect(c, '#a6cdb7', 14, 1, 3, 3); rect(c, '#edf0cf', 17, 2, 2, 1); rect(c, '#cbd2b1', 0, 0, 4, 1); rect(c, '#cbd2b1', 0, 4, 4, 1); }));
+ add('enemy-arrow', canvas(19, 7, c => {
+  rect(c, '#2b1620', 0, 2, 16, 3);
+  rect(c, '#2b1620', 12, 0, 5, 7);
+  rect(c, '#2b1620', 0, 0, 5, 7);
+  rect(c, '#efe3cf', 2, 3, 12, 1);
+  rect(c, '#b82e3d', 0, 1, 4, 1);
+  rect(c, '#b82e3d', 0, 5, 4, 1);
+  rect(c, '#ff5a48', 13, 1, 3, 5);
+  rect(c, '#ffd4b8', 14, 2, 4, 3);
+  rect(c, '#fff2e4', 17, 3, 2, 1);
+ }));
  add('magic', canvas(13, 13, c => { rect(c, '#554875', 2, 2, 9, 9); rect(c, '#a89de0', 1, 4, 11, 5); rect(c, '#b5b1ee', 4, 1, 5, 11); rect(c, '#e0d9ff', 3, 3, 7, 7); rect(c, '#f4f0d4', 5, 4, 3, 4); }));
  add('blade', canvas(20, 13, c => { rect(c, '#a8e8da', 0, 5, 20, 3); rect(c, '#d5fff0', 3, 3, 13, 7); rect(c, '#efffe0', 7, 1, 4, 11); }));
  add('enemy', canvas(10, 10, c => { rect(c, '#a5564f', 0, 3, 10, 4); rect(c, '#e49c79', 2, 1, 6, 8); rect(c, '#ffd8a2', 4, 3, 3, 4); }));

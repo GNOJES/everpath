@@ -14,6 +14,9 @@ export class GameAudio {
  private battleTrack: BattleTrack = 'battle';
  private track: MusicTrack = 'battle';
  private musicSource?: AudioBufferSourceNode;
+ private trackGain?: GainNode;
+ private outgoingTracks = new Set<{ source: AudioBufferSourceNode; gain: GainNode; timer: ReturnType<typeof setTimeout> }>();
+ private fadeTimer?: ReturnType<typeof setTimeout>;
  private musicOffset = 0;
  private musicStarted = 0;
  private musicLevel = 0;
@@ -228,34 +231,76 @@ export class GameAudio {
   })().catch(() => { /* Failed music downloads leave sound effects available. */ })
    .finally(() => this.soundtrackLoading.delete(track));
  }
- private startMusic() {
+ private clearFade() {
+  for (const entry of this.outgoingTracks) {
+   clearTimeout(entry.timer);
+   try { entry.source.onended = () => { entry.source.disconnect(); entry.gain.disconnect(); }; entry.source.stop(); } catch {}
+  }
+  this.outgoingTracks.clear();
+  this.fadeTimer = undefined;
+ }
+ private startMusic(fadeIn = false) {
   const context = this.context;
   const buffer = this.soundtracks[this.track];
-  if (this.suspended || !context || context.state !== 'running' || !buffer || this.musicSource || !this.musicLevel) return;
+  if (this.fadeTimer || this.suspended || !context || context.state !== 'running' || !buffer || this.musicSource || !this.musicLevel) return;
   const source = context.createBufferSource();
+  const gain = context.createGain();
   source.buffer = buffer;
   source.loop = true;
-  source.connect(this.musicGate!);
+  source.connect(gain);
+  gain.connect(this.musicGate!);
   this.musicStarted = context.currentTime;
+  if (fadeIn) {
+   gain.gain.setValueAtTime(.001, this.musicStarted);
+   gain.gain.linearRampToValueAtTime(1, this.musicStarted + .25);
+  } else {
+   gain.gain.setValueAtTime(1, this.musicStarted);
+  }
   const offset = this.musicOffset % buffer.duration;
   source.start(this.musicStarted, offset);
   this.musicSource = source;
+  this.trackGain = gain;
  }
  private stopMusic() {
-  const context = this.context, source = this.musicSource;
+  this.clearFade();
+  const context = this.context, source = this.musicSource, gain = this.trackGain;
   if (!context || !source) return;
   this.musicOffset += Math.max(0, context.currentTime - this.musicStarted);
-  source.onended = () => source.disconnect();
+  source.onended = () => { source.disconnect(); gain?.disconnect(); };
   source.stop();
   this.musicSource = undefined;
+  this.trackGain = undefined;
  }
  syncMusic(status?: RunState['status'], finalBoss = false) {
   const level = status === 'running' ? 1 : status === 'upgrade' ? .3 : 0;
   const desiredTrack = finalBoss ? 'warden' : this.battleTrack;
   if (this.track !== desiredTrack) {
-   this.stopMusic();
-   this.track = desiredTrack;
-   this.musicOffset = 0;
+   const context = this.context;
+   if (desiredTrack === 'warden' && context && this.musicSource && this.trackGain && level > 0) {
+    this.clearFade();
+    const source = this.musicSource, gain = this.trackGain;
+    this.musicSource = undefined;
+    this.trackGain = undefined;
+    this.track = desiredTrack;
+    this.musicOffset = 0;
+    const fadeSeconds = .85, now = context.currentTime;
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(gain.gain.value || 1, now);
+    gain.gain.linearRampToValueAtTime(0, now + fadeSeconds);
+    const entry = { source, gain, timer: undefined as unknown as ReturnType<typeof setTimeout> };
+    entry.timer = setTimeout(() => {
+     this.outgoingTracks.delete(entry);
+     try { source.onended = () => { source.disconnect(); gain.disconnect(); }; source.stop(); } catch {}
+     if (this.fadeTimer === entry.timer) this.fadeTimer = undefined;
+     if (this.musicLevel > 0 && !this.suspended) this.startMusic(true);
+    }, fadeSeconds * 1000);
+    this.outgoingTracks.add(entry);
+    this.fadeTimer = entry.timer;
+   } else {
+    this.stopMusic();
+    this.track = desiredTrack;
+    this.musicOffset = 0;
+   }
   }
   const context = this.context;
   if (this.musicLevel !== level) {

@@ -20,7 +20,7 @@ export type CombatSound = Exclude<SkillId, 'frost'> | 'shieldBlock' | 'rainImpac
 export type SkillEffect = 'whirl' | 'shieldRaise' | 'shieldBreak' | 'bash' | 'bashImpact' | 'lance' | 'quake' | 'sunder' | 'ricochet' | 'blast' | 'deadeye' | 'gravity' | 'prism' | 'runeCross';
 export interface MeteorShower { elapsed: number; waves: number; damage: number }
 export type FieldShot = { radius: number; duration: number } & ({ kind: 'snare'; slow: number } | { kind: 'burn' });
-export interface Projectile extends Vec { id: number; vx: number; vy: number; radius: number; damage: number; life: number; kind: 'arrow' | 'magic' | 'blade' | 'enemy'; pierce: number; hit: Set<number>; target?: number; pierceScale?: number; skillShot?: SkillShot; field?: FieldShot }
+export interface Projectile extends Vec { id: number; vx: number; vy: number; radius: number; damage: number; life: number; kind: 'arrow' | 'magic' | 'blade' | 'enemy'; pierce: number; hit: Set<number>; target?: number; pierceScale?: number; skillShot?: SkillShot; field?: FieldShot; sprite?: 'enemy-arrow' }
 export type GroundField = { x: number; groundY: number; radius: number; remaining: number }
  & ({ kind: 'snare'; slow: number } | { kind: 'burn'; damage: number });
 export interface Effect extends Vec { id: number; kind: SkillEffect | 'slash' | 'crystal' | 'ring' | 'fire' | 'lightning' | 'hit' | 'death' | 'boss-death' | 'chestPickup' | 'heal' | 'text'; color: number; life: number; duration: number; radius: number; angle: number; halfAngle?: number; x2?: number; y2?: number; text?: string }

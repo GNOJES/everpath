@@ -71,16 +71,22 @@ function renderChargeLane(g: Graphics, {x, y, aim, radius, timer}: Enemy, clearC
  }
 }
 
-function renderFan(g: Graphics, {x, y, aim}: Enemy) {
+function renderFan(g: Graphics, { x, y, aim, timer, hp, maxHp }: Enemy) {
  const { ink, light, fill } = telegraphs.warden;
+ const windup = hp <= maxHp / 2 ? .78 : .90;
+ const progress = clamp(1 - timer / windup, 0, 1);
  const angle = Math.atan2(aim.y, aim.x);
  const fan = [new Phaser.Math.Vector2(x, y)];
+ const sweep = [new Phaser.Math.Vector2(x, y)];
+ const reach = 245;
  for (let i = -2; i <= 2; i++) {
-  const spoke = angle + i * .19;
-  fan.push(new Phaser.Math.Vector2(x + Math.cos(spoke) * 245, y + Math.sin(spoke) * 245));
+  const spoke = angle + i * .21;
+  fan.push(new Phaser.Math.Vector2(x + Math.cos(spoke) * reach, y + Math.sin(spoke) * reach));
+  sweep.push(new Phaser.Math.Vector2(x + Math.cos(spoke) * reach * progress, y + Math.sin(spoke) * reach * progress));
  }
- g.fillStyle(fill, .22).fillPoints(fan, true);
- g.lineStyle(3, ink, .75).strokePoints(fan, true);
+ g.fillStyle(fill, .18 + progress * .18).fillPoints(fan, true);
+ if (progress > .04) g.fillStyle(ink, .22 + progress * .2).fillPoints(sweep, true);
+ g.lineStyle(3, ink, .82).strokePoints(fan, true);
  for (const point of fan.slice(1)) {
   g.lineStyle(1.5, light, .95).lineBetween(x, y, point.x, point.y);
  }

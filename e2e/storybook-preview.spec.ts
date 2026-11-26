@@ -263,6 +263,20 @@ test('Mini World enemy preview follows the existing attack and freeze states', a
   const {frame, projectileCount} = await observe();
   return frame % 7 >= 4 && projectileCount === 1;
  }, fresh).toBe(true);
+ const skeletonShotTexture = await page.evaluate(() => {
+  const { scene } = (window as unknown as { enemyArtFixture: { scene: import('phaser').Scene } }).enemyArtFixture;
+  const arrow = scene.children.list.find(child => (child as Phaser.GameObjects.Image).visible && (child as Phaser.GameObjects.Image).texture?.key === 'enemy-arrow') as Phaser.GameObjects.Image | undefined;
+  return arrow ? { key: arrow.texture.key, depth: arrow.depth } : null;
+ });
+ expect(skeletonShotTexture).toEqual({ key: 'enemy-arrow', depth: 1600 });
+
+ const layerDepths = await page.evaluate(() => {
+  const { scene } = (window as unknown as { enemyArtFixture: { scene: { groundFx: Phaser.GameObjects.Graphics; hazardFx: Phaser.GameObjects.Graphics; fx: Phaser.GameObjects.Graphics; hero: Phaser.GameObjects.Image } } }).enemyArtFixture;
+  return { groundFx: scene.groundFx?.depth, hazardFx: scene.hazardFx?.depth, fx: scene.fx?.depth, hero: scene.hero?.depth };
+ });
+ expect(layerDepths.groundFx).toBeLessThan(layerDepths.hazardFx);
+ expect(layerDepths.hazardFx).toBeLessThan(layerDepths.hero);
+ expect(layerDepths.hero).toBeLessThan(layerDepths.fx);
 
  await setup('boss');
  await expect.poll(async () => (await observe()).phase, fresh).toBe('warn');

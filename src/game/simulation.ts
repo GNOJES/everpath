@@ -255,7 +255,7 @@ export class GameSimulation {
    } else if (e.kind === 'skeleton') {
     if (distance(e, p) < 220 && distance(e, p) > 140) { dir = { x: Math.sin(s.elapsed + e.seed) * .5, y: 0 }; }
     if (e.timer <= 0 && e.y > 70) {
-     const fired = this.shoot(e, p, 'enemy', e.damage, 155, 1); e.timer = 2.65;
+     const fired = this.shoot(e, p, 'enemy', e.damage, 155, 1, 0, undefined, 1, undefined, undefined, 'enemy-arrow'); e.timer = 2.65;
      if (fired) this.onEnemyAttack?.(e);
     }
    } else if (e.kind === 'bat') { dir.x += Math.sin(s.elapsed * 5 + e.seed) * .65; dir = normalize(dir.x, dir.y); }
@@ -289,36 +289,51 @@ export class GameSimulation {
   const enraged = e.hp <= e.maxHp / 2;
   if (e.phase === 'warn') {
    if (e.timer <= 0) {
-    for (let i = -2; i <= 2; i++) this.shoot(e, { x: e.x + e.aim.x, y: e.y + e.aim.y }, 'enemy', e.damage * .72, enraged ? 205 : 170, 1, i * .19);
+    const aimAngle = Math.atan2(e.aim.y, e.aim.x);
+    if (distance(e, player) <= 245 + W.playerRadius && this.inSweep(e, player, aimAngle, .42)) {
+     this.damagePlayer(e.damage * .9, 'projectile', e);
+    }
+    for (let i = -2; i <= 2; i++) this.shoot(e, { x: e.x + e.aim.x, y: e.y + e.aim.y }, 'enemy', e.damage * .72, enraged ? 620 : 520, 1, i * .21);
     this.onEnemyAttack?.(e);
     this.onSound?.('wardenFan');
-    e.phase = 'chase'; e.timer = enraged ? 1.55 : 2.05;
+    e.phase = 'chase'; e.timer = enraged ? 1.35 : 1.75;
    }
    return 0;
   }
   if (e.timer <= 0) {
-   const attack = (e.wardenAttack ?? 0) % 3;
+   const attack = (e.wardenAttack ?? 0) % 4;
    e.wardenAttack = attack + 1;
-   e.timer = enraged ? 2.1 : 2.7;
+   e.timer = enraged ? 1.85 : 2.35;
    if (attack === 0) {
     this.onSound?.('wardenRoots');
-    this.addHazard(player, 51, 1.15, e.damage * 1.25, 'enemy', 'slam', 'wardenSlam');
+    this.addHazard(player, 51, 1.05, e.damage * 1.25, 'enemy', 'slam', 'wardenSlam');
     const offset = player.x < W.width / 2 ? 85 : -85;
-    this.addHazard({ x: player.x + offset, y: player.y - 38 }, 43, 1.52, e.damage, 'enemy', 'slam', 'wardenSlam');
-    if (enraged) this.addHazard({ x: player.x + offset / 2, y: player.y + 89 }, 39, 1.76, e.damage, 'enemy', 'slam', 'wardenSlam');
+    this.addHazard({ x: player.x + offset, y: player.y - 38 }, 43, 1.35, e.damage, 'enemy', 'slam', 'wardenSlam');
+    if (enraged) this.addHazard({ x: player.x + offset / 2, y: player.y + 89 }, 39, 1.55, e.damage, 'enemy', 'slam', 'wardenSlam');
     this.onEnemyAttack?.(e);
    } else if (attack === 1) {
-    e.phase = 'warn'; e.timer = .74; e.aim = unit(e, player);
+    e.phase = 'warn'; e.timer = enraged ? .78 : .90; e.aim = unit(e, player);
     this.onSound?.('wardenAim');
     return 0;
-   } else {
+   } else if (attack === 2) {
     const count = enraged ? 14 : 10;
     for (let i = 0; i < count; i++) {
      const angle = e.seed + i * 2 * Math.PI / count;
-     this.shoot(e, { x: e.x + Math.cos(angle), y: e.y + Math.sin(angle) }, 'enemy', e.damage * .67, enraged ? 154 : 128, 1);
+     this.shoot(e, { x: e.x + Math.cos(angle), y: e.y + Math.sin(angle) }, 'enemy', e.damage * .67, enraged ? 205 : 165, 1);
     }
     this.onSound?.('wardenRing');
-    if (enraged) this.addHazard(player, 41, 1.18, e.damage, 'enemy', 'slam', 'wardenSlam');
+    if (enraged) this.addHazard(player, 41, 1.05, e.damage, 'enemy', 'slam', 'wardenSlam');
+    this.onEnemyAttack?.(e);
+   } else {
+    this.onSound?.('wardenRoots');
+    const step = 68, dropY = 36;
+    for (const [ox, oy] of [[0, 0], [-step, -dropY], [step, dropY]]) {
+     this.addHazard({ x: clamp(player.x + ox, W.margin, W.width - W.margin), y: clamp(player.y + oy, W.minY, W.height - W.margin) },
+      42, .95, e.damage * 1.1, 'enemy', 'slam', 'wardenSlam');
+    }
+    for (const spread of [-.16, .16]) {
+     this.shoot(e, player, 'enemy', e.damage * .72, enraged ? 310 : 260, 1, spread);
+    }
     this.onEnemyAttack?.(e);
    }
   }
@@ -422,11 +437,11 @@ export class GameSimulation {
   }
   return true;
  }
- private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number, pierceScale = 1, skillShot?: SkillShot, field?: FieldShot) {
+ private shoot(from: Vec, to: Vec, kind: Projectile['kind'], damage: number, speed: number, pierce: number, spread = 0, target?: number, pierceScale = 1, skillShot?: SkillShot, field?: FieldShot, sprite?: Projectile['sprite']) {
   const s = this.state; if (s.projectiles.length >= W.maxProjectiles) return false;
   const a = Math.atan2(to.y - from.y, to.x - from.x) + spread;
   const radius = skillShot === 'pierce' ? SKILLS.pierce.radius : kind === 'magic' ? 7 : kind === 'blade' ? 11 : kind === 'arrow' && skillShot ? 6 : 4;
-  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius, damage, kind, life: 3.5, pierce, hit: new Set(), target, pierceScale, skillShot, field });
+  s.projectiles.push({ id: ++this.serial, x: from.x, y: from.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, radius, damage, kind, life: 3.5, pierce, hit: new Set(), target, pierceScale, skillShot, field, sprite });
   return true;
  }
  private castSkill(id: Exclude<SkillId, 'frost'>, level: number, finalRank: boolean): boolean {
@@ -808,7 +823,7 @@ export class GameSimulation {
     this.skillTimers[key] = key === 'shield' ? Math.min(remaining, SHIELD_RECHARGE[s.skills[key] - 1] / this.haste) : 0;
    }
   }
-  else { const key = id.slice(8) as PassiveId; s.passives[key]++; if (key === 'vitality') { const extra = HEROES[s.hero].hp * B.vitalityStep; s.player.maxHp += extra; s.player.hp = Math.min(s.player.maxHp, s.player.hp + extra * 1.6); } else if (key === 'speed') s.player.speed += HEROES[s.hero].speed * B.speedStep; }
+  else { const key = id.slice(8) as PassiveId; s.passives[key]++; if (key === 'vitality') s.player.hp = Math.min(s.player.maxHp, s.player.hp + B.vitalityHeal); else if (key === 'speed') s.player.speed += HEROES[s.hero].speed * B.speedStep; }
   this.pendingChoices--; this.nextChoice(); return true;
  }
  private effect(kind: Effect['kind'], at: Vec, color: number, radius: number, duration: number, angle = 0, text?: string, to?: Vec, halfAngle?: number) {

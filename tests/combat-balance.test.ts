@@ -657,13 +657,52 @@ it('keeps single-target and area spells distinct with the same damage rules', ()
  for (const multiplier of area) expect(multiplier).toBeCloseTo(1);
 });
 
-it('retains the bow pierce with falloff on each subsequent target', () => {
- const sim = new GameSimulation('archer', parseSave(null), () => .5);
- sim.state.weaponLevel = 2;
- const front = sim.spawnEnemy('brute', 216, 460)!;
- const back = sim.spawnEnemy('brute', 216, 398)!;
- for (const enemy of [front, back]) enemy.speed = 0;
- frames(sim, .4);
- expect(front.maxHp - front.hp).toBeCloseTo(sim.damage);
- expect(back.maxHp - back.hp).toBeCloseTo(sim.damage * .94);
-});
+ it('retains the bow pierce with falloff on each subsequent target', () => {
+  const sim = new GameSimulation('archer', parseSave(null), () => .5);
+  sim.state.weaponLevel = 2;
+  const front = sim.spawnEnemy('brute', 216, 460)!;
+  const back = sim.spawnEnemy('brute', 216, 398)!;
+  for (const enemy of [front, back]) enemy.speed = 0;
+  frames(sim, .4);
+  expect(front.maxHp - front.hp).toBeCloseTo(sim.damage);
+  expect(back.maxHp - back.hp).toBeCloseTo(sim.damage * .94);
+ });
+
+ it('scales blastArrow to 70% radius and limits maxed haste builds to at most 2 overlapping burn fields', () => {
+  expect(SKILLS.blastArrow.radius).toBe(52);
+  expect(SKILLS.blastArrow.radiusPerLevel).toBe(29);
+  const sim = new GameSimulation('archer', parseSave(null), () => .5);
+  sim.state.skills.blastArrow = 4;
+  sim.state.passives.haste = 5;
+  sim.state.timeStopRemaining = 20;
+  let maxFields = 0;
+  for (let step = 0; step < 300; step++) {
+   const target = sim.spawnEnemy('brute', 216, 420)!;
+   target.hp = target.maxHp = 10000;
+   sim.update(.05);
+   maxFields = Math.max(maxFields, sim.state.groundFields.filter(f => f.kind === 'burn').length);
+   sim.state.enemies = [];
+  }
+  expect(maxFields).toBeLessThanOrEqual(2);
+ });
+
+ it('tags skeleton shots with the enemy-arrow sprite while keeping enemy projectile collisions', () => {
+  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+  const { player } = sim.state;
+  const skeleton = sim.spawnEnemy('skeleton', player.x, player.y - 120)!;
+  skeleton.timer = 0;
+  sim.update(.025);
+  const arrow = sim.state.projectiles.find(shot => shot.kind === 'enemy');
+  expect(arrow?.sprite).toBe('enemy-arrow');
+ });
+
+ it('heals a fixed +120 HP from vitality without raising maxHp', () => {
+  const sim = new GameSimulation('mage', parseSave(null), () => .5);
+  const baseMax = sim.state.player.maxHp;
+  sim.state.player.hp = 40;
+  sim.state.status = 'upgrade';
+  sim.state.choices = [{ id: 'passive:vitality', name: '생명의 뿌리', subtitle: '', description: '', icon: 'heart', level: 0, max: 5, color: '#c7c2a0' }];
+  expect(sim.chooseUpgrade('passive:vitality')).toBe(true);
+  expect(sim.state.player.maxHp).toBe(baseMax);
+  expect(sim.state.player.hp).toBe(160);
+ });
