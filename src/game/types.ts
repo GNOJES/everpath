@@ -1,4 +1,4 @@
-export type BattleMusic = 1 | 2;
+export type BattleMusic = 1 | 2 | 3;
 export type HeroId = 'warrior' | 'archer' | 'mage';
 export type EnemyKind = 'slime' | 'goblin' | 'bat' | 'skeleton' | 'brute' | 'shaman' | 'boss' | 'briar' | 'warden';
 export type PermanentId = 'attack' | 'hp' | 'speed' | 'gold' | 'timeStop';

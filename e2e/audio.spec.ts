@@ -179,7 +179,7 @@ test('each combat cue renders a different audible waveform', async ({ page }) =>
  expect(new Set(values.map(value => value.signature)).size).toBe(values.length);
 });
 
-test('chooses either exploration track from pause settings and retains the choice', async ({ browser }) => {
+test('chooses all three exploration tracks from pause settings and retains the choice', async ({ browser }) => {
  const context = await browser.newContext({viewport:{width:320,height:568},isMobile:true,hasTouch:true});
  try {
   const page = await context.newPage();
@@ -217,12 +217,22 @@ test('chooses either exploration track from pause settings and retains the choic
   await page.getByRole('button',{name:'설정 완료'}).tap();
   await page.getByRole('button',{name:'모험 계속하기'}).tap();
   await expect.poll(duration).toBeCloseTo(80,1);
+  await page.getByRole('button',{name:'일시정지',exact:true}).tap();
+  await page.getByRole('button',{name:'설정',exact:true}).tap();
+  const bgm3 = page.getByRole('button',{name:/BGM 3/});
+  const original = page.waitForResponse(response => response.url().endsWith('/audio/everpath-battle.m4a') && response.ok());
+  await bgm3.tap();
+  await original;
+  await expect(bgm3).toHaveAttribute('aria-pressed','true');
+  await page.getByRole('button',{name:'설정 완료'}).tap();
+  await page.getByRole('button',{name:'모험 계속하기'}).tap();
+  await expect.poll(duration).toBeCloseTo(74.8,1);
   await page.reload();
   await page.getByRole('button',{name:'설정',exact:true}).tap();
-  await expect(bgm2).toHaveAttribute('aria-pressed','true');
+  await expect(bgm3).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'설정 완료'}).tap();
   await start();
-  await expect.poll(duration).toBeCloseTo(80,1);
+  await expect.poll(duration).toBeCloseTo(74.8,1);
   await page.getByRole('button',{name:'일시정지',exact:true}).tap();
   await page.getByRole('button',{name:'설정',exact:true}).tap();
   await page.getByRole('button',{name:/BGM 1/}).tap();

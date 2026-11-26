@@ -3,7 +3,8 @@ import { DEFAULT_SFX_VOLUME } from './config';
 import { COMBAT_SOUNDS, MINI_WORLD_CUES, STORYBOOK_CUES } from './combat-sounds';
 
 const volume=(v:number)=>Number.isFinite(v)?Math.max(0,Math.min(1,v)):0;
-type BattleTrack = 'battle' | 'reprise';
+const battleTracks = { 1: 'battle', 2: 'reprise', 3: 'original' } as const;
+type BattleTrack = typeof battleTracks[BattleMusic];
 type MusicTrack = BattleTrack | 'warden';
 export class GameAudio {
  private context?:AudioContext;private musicBus?:GainNode;private sfxBus?:GainNode;private musicGate?:GainNode;
@@ -30,9 +31,9 @@ export class GameAudio {
  }
  get music(){return this.musicVolume;}set music(v:number){this.musicVolume=volume(v);if(this.musicBus)this.musicBus.gain.setTargetAtTime(this.musicVolume,this.context!.currentTime,.015);}
  get sfx(){return this.sfxVolume;}set sfx(v:number){this.sfxVolume=volume(v);if(this.sfxBus)this.sfxBus.gain.setTargetAtTime(this.sfxVolume * 1.6,this.context!.currentTime,.015);}
- get bgm(): BattleMusic { return this.battleTrack === 'reprise' ? 2 : 1; }
+ get bgm(): BattleMusic { return this.battleTrack === 'original' ? 3 : this.battleTrack === 'reprise' ? 2 : 1; }
  set bgm(value: BattleMusic) {
-  const track = this.miniWorld && value === 2 ? 'reprise' : 'battle';
+  const track = this.miniWorld ? battleTracks[value] : 'battle';
   if (track === this.battleTrack) return;
   this.battleTrack = track;
   if (this.track !== 'warden') {
@@ -185,7 +186,7 @@ export class GameAudio {
   if (noise) this.noise(...noise);
  }
  private async fetchSoundtrack(track: MusicTrack) {
-  const file = `${this.miniWorld ? 'mini-' : ''}${track}`;
+  const file = track === 'original' ? 'battle' : `${this.miniWorld ? 'mini-' : ''}${track}`;
   const response = await fetch(`${import.meta.env.BASE_URL}audio/everpath-${file}.m4a`);
   return response.ok ? response.arrayBuffer() : undefined;
  }

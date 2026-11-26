@@ -11,9 +11,10 @@ import { formatTime } from '../game/math';
 import { icon } from './icons';
 import { DiagnosticsMonitor } from '../diagnostics/monitor';
 import { exportDiagnosticLog } from '../diagnostics/export';
-import type { BattleMusic, HeroId, PermanentId, RunState, RunResult } from '../game/types';
+import type { HeroId, PermanentId, RunState, RunResult } from '../game/types';
 
 type Screen = 'title' | 'select' | 'run' | 'result' | 'shop' | 'settings' | 'diagnostics' | 'history';
+const battleMusicOptions = [[1, '미니 월드'], [2, '후렴 편곡'], [3, '예전 원곡']] as const;
 export class App {
  private backupMessage = '';
  private backupBusy = false;
@@ -120,7 +121,8 @@ export class App {
   }
   else if (action === 'settings') { this.settingsReturn = this.screen; this.pendingBackup = undefined; this.backupMessage = ''; this.screen = 'settings'; this.render(); }
   else if (action === 'bgm' && this.miniPolish) {
-   const choice: BattleMusic = button.dataset.bgm === '2' ? 2 : 1;
+   const choice = Number(button.dataset.bgm);
+   if (choice !== 1 && choice !== 2 && choice !== 3) return;
    this.scene.audio.bgm = choice;
    this.store.data.settings.bgm = choice;
    this.store.write();
@@ -350,8 +352,7 @@ export class App {
    <div class="menu-heading"><h2>${this.miniPolish ? '소리와 저장' : '설정'}</h2></div>
    ${sliders}
    ${this.miniPolish ? `<div class="bgm-picker" role="group" aria-label="탐험곡 선택">
-    <button type="button" data-action="bgm" data-bgm="1" aria-pressed="${this.scene.audio.bgm === 1}"><b>BGM 1</b> <span>미니 월드</span></button>
-    <button type="button" data-action="bgm" data-bgm="2" aria-pressed="${this.scene.audio.bgm === 2}"><b>BGM 2</b> <span>후렴 편곡</span></button>
+    ${battleMusicOptions.map(([id, name]) => `<button type="button" data-action="bgm" data-bgm="${id}" aria-pressed="${this.scene.audio.bgm === id}"><b>BGM ${id}</b><span>${name}</span></button>`).join('')}
    </div>` : ''}
    <details class="settings-controls"><summary>${this.miniPolish ? '조작 방법' : '이동 방법'}</summary>
     <p>PC · WASD, 방향키, 마우스 드래그</p><p>모바일 · 화면을 끌어서 이동</p>
