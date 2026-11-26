@@ -11,6 +11,7 @@ import { WORLD as W, BOSS_PATTERN, HEROES, ENEMIES, FROST_AURA, SKILLS, isBoss }
 import { PlayerInput } from './input';
 import { GameSimulation } from './simulation';
 import { GameAudio } from './audio';
+import { OpeningFeedback } from './opening-feedback';
 import { clamp } from './math';
 import { renderMeteorShower, renderShield, renderSkillEffect, renderSkillShot } from './skill-effects';
 import type { InputObservation } from '../diagnostics/types';
@@ -36,11 +37,12 @@ export class ForestScene extends Phaser.Scene {
  private miniIsWalking = false;
  private enemyClock = 0;
  private enemyAttacks = new WeakMap<Enemy, number>();
+ private opening?: OpeningFeedback;
  private ground!: Phaser.GameObjects.TileSprite; private actors!: ImagePool; private shots!: ImagePool;
  private shadows!: Phaser.GameObjects.Graphics; private fx!: Phaser.GameObjects.Graphics; private joystick!: Phaser.GameObjects.Graphics;
  private hero!: Phaser.GameObjects.Image; private fallenWarden!: Phaser.GameObjects.Image; private companions: Phaser.GameObjects.Image[] = []; private scenery: { image: Phaser.GameObjects.Image; y: number; x: number }[] = [];
  private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private endFxTime = 0;
- constructor(private readonly storybook = false, private readonly cc0 = false, private readonly previewPack?: PreviewPack, private readonly miniEnemies = false, miniAudio = false) {
+ constructor(private readonly storybook = false, private readonly cc0 = false, private readonly previewPack?: PreviewPack, private readonly miniEnemies = false, miniAudio = false, private readonly openingPreview = false) {
   super('forest');
   this.audio = new GameAudio(cc0 ? clickSample : undefined, miniAudio);
  }
@@ -74,6 +76,7 @@ export class ForestScene extends Phaser.Scene {
    for (const [x, y] of [[133, 480], [299, 1010]]) { const image = this.add.image(x, y, 'lantern').setOrigin(.5, 1).setScale(1.8); this.scenery.push({ image, x, y }); }
   }
   this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.addFieldHero(216, 515, 'warrior');
+  if (this.openingPreview) this.opening = new OpeningFeedback();
   this.fallenWarden = this.add.image(0, 0, 'warden').setOrigin(.5, .8).setVisible(false);
   if (this.miniEnemies) this.fallenWarden.setTexture(miniEnemyTexture, miniWardenRest.frame).setOrigin(.5, 22 / 24);
   this.companions = [this.addFieldHero(174, 559, 'archer'), this.addFieldHero(263, 548, 'mage')];
@@ -85,12 +88,21 @@ export class ForestScene extends Phaser.Scene {
    this.simulation.onSound = undefined;
    this.simulation.onBasicAttack = undefined;
    this.simulation.onEnemyAttack = undefined;
+   this.simulation.onFeedback = undefined;
   }
   this.simulation = sim;
   if (sim) {
    sim.onSound = cue => this.audio.playCue(cue, this.storybookOpening(sim.state));
    if (this.previewPack === 'mini') sim.onBasicAttack = angle => { this.miniStrike = { angle, time: this.clock }; };
    if (this.miniEnemies) sim.onEnemyAttack = enemy => this.enemyAttacks.set(enemy, this.enemyClock);
+   if (this.opening) {
+    const opening = this.opening;
+    sim.onFeedback = event => {
+     if (event.kind !== 'firstChest' && event.kind !== 'chestCollected' && !opening.relevant(sim.state)) return;
+     if (opening.record(event, this.clock)) this.audio.openingTreasure();
+     if (event.kind === 'strike') this.audio.openingImpact(event.style);
+    };
+   }
    this.audio.beginRun();
   } else {
    this.audio.syncMusic();
@@ -105,6 +117,7 @@ export class ForestScene extends Phaser.Scene {
   this.miniIsWalking = false;
   this.enemyClock = 0;
   this.enemyAttacks = new WeakMap();
+  this.opening?.reset();
  }
  update(_time: number, delta: number) {
   const dt = Math.min(delta / 1000, .05); const sim = this.simulation;
@@ -153,6 +166,7 @@ export class ForestScene extends Phaser.Scene {
   this.renderWardenFall(s);
   if (s) {
    this.renderEnemies(s); this.renderShots(s); this.renderHazards(s); this.renderPickups(s); this.renderEffects(s);
+   this.opening?.draw(this.fx, s, this.clock + this.endFxTime);
    if (s.meteorShower && !defeated) renderMeteorShower(this.fx, s.meteorShower.elapsed);
    if (p.shield) renderShield(this.fx, p.x, p.y - 12, SKILLS.shield.radius, .9);
    if (s.skills.frost) {
@@ -218,7 +232,7 @@ export class ForestScene extends Phaser.Scene {
     this.fx.fillStyle(e.elite ? 0xe1b46b : 0xaec17d).fillRect(e.x - 13, e.y - 35, 26 * Math.max(0, e.hp / e.maxHp), 3);
    }
    if (this.miniEnemies) {
-    renderMiniBossTell(this.fx, e);
+    renderMiniBossTell(this.fx, e, Boolean(this.opening));
     return;
    }
    if (e.kind === 'warden') this.fx.lineStyle(2, 0xd0a3e9, .6).strokeCircle(e.x, e.y - 12, e.radius + 12 + Math.sin(this.clock * 3) * 4);
@@ -420,7 +434,19 @@ export class ForestScene extends Phaser.Scene {
     }
     continue;
    }
-   if (e.kind === 'text') { if (labelIndex >= 32) continue; let label = this.labels[labelIndex++]; if (!label) { label = this.add.text(0, 0, '', { fontFamily: 'monospace', fontSize: '17px', color: '#fff0cd', stroke: '#27372c', strokeThickness: 3, fontStyle: 'bold' }).setOrigin(.5).setDepth(2100); this.labels.push(label); } label.setText(e.text ?? '').setPosition(e.x, e.y - progress * 27).setAlpha(Math.min(1, f * 2)).setVisible(true); continue; }
+   if (e.kind === 'text') {
+    if (labelIndex >= 32) continue;
+    let label = this.labels[labelIndex++];
+    if (!label) {
+     label = this.add.text(0, 0, '', { fontFamily: 'monospace', fontSize: '17px', color: '#fff0cd', stroke: '#27372c', strokeThickness: 3, fontStyle: 'bold' }).setOrigin(.5).setDepth(2100);
+     this.labels.push(label);
+    }
+    const text = this.opening ? this.opening.formatWorldText(e.text) : (e.text ?? '');
+    const chestGold = Boolean(this.opening && e.text?.startsWith('중간보스 보물 · '));
+    label.setColor(chestGold ? '#ffea94' : '#fff0cd').setFontSize(chestGold ? 21 : 17)
+     .setText(text).setPosition(e.x, e.y - progress * 27).setAlpha(Math.min(1, f * 2)).setVisible(true);
+    continue;
+   }
    if (e.id > this.lastEffect && e.kind === 'hit' && s.status !== 'gameover' && s.status !== 'victory') {
     if (e.color === 0xf2937e) this.audio.hurt(); else this.audio.hit();
    }

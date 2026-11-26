@@ -35,7 +35,8 @@ export class App {
   const storybook = !!pack || art === 'storybook' || art === 'storybook-cc0';
   this.miniPolish = pack === 'mini' && preview?.get('polish') !== 'classic';
   this.scene = new ForestScene(storybook, art === 'storybook-cc0', pack,
-   pack === 'mini' && (this.miniPolish || preview?.get('enemies') === 'mini'), this.miniPolish);
+   pack === 'mini' && (this.miniPolish || preview?.get('enemies') === 'mini'), this.miniPolish,
+   this.miniPolish);
   this.scene.audio.bgm = preview?.get('music') === 'reprise' ? 2 : this.store.data.settings.bgm ?? 1;
   element.classList.toggle('storybook-preview', storybook);
   element.classList.toggle('mini-world', pack === 'mini');

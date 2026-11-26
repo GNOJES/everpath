@@ -1,4 +1,4 @@
-import type { BattleMusic, CombatSound, HeroId, RunState } from './types';
+import type { BattleMusic, CombatSound, HeroId, RunState, StrikeFeedback } from './types';
 import { DEFAULT_SFX_VOLUME } from './config';
 import { COMBAT_SOUNDS, MINI_WORLD_CUES, STORYBOOK_CUES } from './combat-sounds';
 
@@ -17,6 +17,7 @@ export class GameAudio {
  private musicOffset = 0;
  private musicStarted = 0;
  private musicLevel = 0;
+ private lastOpeningHit = -Infinity;
  private suspended = false;
  private musicVolume=1;private sfxVolume=DEFAULT_SFX_VOLUME;private lastFx=-Infinity;private lastAttack=-Infinity;
  private voices = new Set<AudioScheduledSourceNode>();
@@ -168,6 +169,28 @@ export class GameAudio {
  levelUp(){
   const notes = this.miniWorld ? [587, 740, 880, 1175] : [523, 659, 784];
   notes.forEach((f,i)=>this.tone(f,.28,.065,this.miniWorld && i % 2 ? 'sine' : 'triangle',i*.07));
+ }
+ openingImpact(style: StrikeFeedback) {
+  const context = this.context;
+  if (!this.canPlay(context) || context.currentTime - this.lastOpeningHit < .052) return;
+  this.lastOpeningHit = context.currentTime;
+  if (style === 'parry') {
+   this.tone(1175, .14, .073, 'triangle');
+   this.tone(1680, .09, .04, 'sine', .02, 860);
+  } else if (style === 'sword') {
+   this.tone(218, .105, .075, 'triangle', 0, 94);
+   this.noise(1230, .09, .075);
+  } else if (style === 'magic') {
+   this.tone(510, .16, .052, 'sine', 0, 805);
+   this.tone(910, .14, .033, 'triangle', .023, 600);
+  } else {
+   this.noise(2620, .065, .06);
+   this.tone(style === 'pierce' ? 640 : 420, .083, .042, 'triangle', 0, 240);
+  }
+ }
+ openingTreasure() {
+  this.tone(660, .17, .061, 'triangle');
+  this.tone(1319, .22, .048, 'sine', .24);
  }
  boss(storybook = false) {
   const notes = storybook ? [196, 262, 220] : [164, 155, 130];

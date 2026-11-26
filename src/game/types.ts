@@ -26,6 +26,13 @@ export type GroundField = { x: number; groundY: number; radius: number; remainin
 export interface Effect extends Vec { id: number; kind: SkillEffect | 'slash' | 'crystal' | 'ring' | 'fire' | 'lightning' | 'hit' | 'death' | 'boss-death' | 'chestPickup' | 'heal' | 'text'; color: number; life: number; duration: number; radius: number; angle: number; halfAngle?: number; x2?: number; y2?: number; text?: string }
 export interface Hazard extends Vec { id: number; radius: number; delay: number; life: number; damage: number; owner: 'enemy' | 'player'; kind: 'rain' | 'slam'; fired: boolean; windup?: number; impactSound?: CombatSound }
 export interface Pickup { x: number; groundY: number; kind: 'coin' | 'heal' | 'chest'; gold: number }
+export type DamageCause = 'contact' | 'projectile' | 'ground' | 'charge' | 'slam';
+export type StrikeFeedback = 'sword' | 'parry' | 'arrow' | 'pierce' | 'magic';
+export type CombatFeedback =
+ | { kind: 'hurt'; cause: DamageCause; source: Vec; amount: number }
+ | { kind: 'strike'; style: StrikeFeedback; at: Vec; angle: number }
+ | { kind: 'firstChest'; pickup: Pickup }
+ | { kind: 'chestCollected'; pickup: Pickup; amount: number };
 export interface RunState { runId: string; hero: HeroId; status: 'running' | 'paused' | 'upgrade' | 'gameover' | 'victory'; elapsed: number; rank: number; evolved: boolean; finalSpawned: boolean; timeStopCharges: number; timeStopRemaining: number; pickups: Pickup[]; scroll: number; player: Player; enemies: Enemy[]; projectiles: Projectile[]; effects: Effect[]; hazards: Hazard[]; groundFields: GroundField[]; meteorShower?: MeteorShower; level: number; xp: number; xpNext: number; kills: number; spawned: number; escaped: number; withdrawn: number; bosses: number; gold: number; weaponLevel: number; skills: Record<string, number>; passives: Record<PassiveId, number>; choices: Upgrade[]; nextBoss: number }
 export interface HeroConfig { id: HeroId; name: string; title: string; role: string; description: string; weapon: string; upgradeDescription: string; icon: string; color: string; hp: number; speed: number; weaponDamage: number; skillPower: number; cooldown: number; range: number; projectileSpeed: number; skills: SkillId[]; bars: [number, number, number] }
 export interface SkillConfig { name: string; subtitle: string; description: string; icon: string; color: string; cooldown: number; damage: number; radius: number; count: number; hastePerLevel?: number; radiusPerLevel?: number; unlockLevel?: number; maxRank?: number }

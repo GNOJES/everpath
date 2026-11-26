@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BOSS_PATTERN } from './config';
+import { BOSS_PATTERN, WORLD as W } from './config';
 import { clamp } from './math';
 import type { Enemy, EnemyKind, Hazard, Vec } from './types';
 
@@ -38,30 +38,36 @@ export function miniEnemyPose(enemy: Enemy, player: Vec, clock: number, attackAt
 }
 
 type Graphics = Phaser.GameObjects.Graphics;
-export function renderMiniBossTell(g: Graphics, e: Enemy) {
+export function renderMiniBossTell(g: Graphics, e: Enemy, clearCharge = false) {
  if (e.entryTarget) return;
- if (e.kind === 'boss' && e.phase === 'warn') renderChargeLane(g, e);
+ if (e.kind === 'boss' && e.phase === 'warn') renderChargeLane(g, e, clearCharge);
  if (e.kind !== 'warden') return;
  if (e.phase === 'warn') renderFan(g, e);
  else if (e.phase === 'chase' && (e.wardenAttack ?? 0) % 3 === 2 && e.timer < .55) renderRing(g, e);
 }
 
-function renderChargeLane(g: Graphics, {x, y, aim, radius, timer}: Enemy) {
+function renderChargeLane(g: Graphics, {x, y, aim, radius, timer}: Enemy, clearCharge: boolean) {
  const { ink, light, fill } = telegraphs.grorm;
  const reach = BOSS_PATTERN.dashSpeed * BOSS_PATTERN.dashDuration + radius;
  const progress = clamp(1 - timer / BOSS_PATTERN.windup, 0, 1);
  const at = (along: number, across: number) => new Phaser.Math.Vector2(
   x + aim.x * along - aim.y * across, y + aim.y * along + aim.x * across,
  );
- const lane = [at(-radius, -radius), at(reach, -radius), at(reach, radius), at(-radius, radius)];
- g.fillStyle(fill, .18 + .18 * progress).fillPoints(lane, true);
- g.lineStyle(3, ink, .8).strokePoints(lane, true);
+ const width = radius + (clearCharge ? W.playerRadius : 0);
+ const extent = reach + (clearCharge ? W.playerRadius : 0);
+ const lane = [at(-width, -width), at(extent, -width), at(extent, width), at(-width, width)];
+ g.fillStyle(fill, (clearCharge ? .27 : .18) + .18 * progress).fillPoints(lane, true);
+ g.lineStyle(clearCharge ? 4 : 3, ink, clearCharge ? .98 : .8).strokePoints(lane, true);
  g.lineStyle(1.5, light, .95).strokePoints(lane, true);
  for (let i = 1; i <= 4; i++) {
   const center = reach * i / 5;
-  const arrow = [at(center - 10, -radius * .5), at(center + 8, 0), at(center - 10, radius * .5)];
-  g.lineStyle(5, ink, .94).strokePoints(arrow, false);
-  g.lineStyle(2, light, .96).strokePoints(arrow, false);
+  const arrow = [at(center - 10, -width * .5), at(center + 8, 0), at(center - 10, width * .5)];
+  g.lineStyle(clearCharge ? 7 : 5, ink, .94).strokePoints(arrow, false);
+  g.lineStyle(clearCharge ? 3 : 2, light, .96).strokePoints(arrow, false);
+ }
+ if (clearCharge) {
+  const from = at(-width, -width - 5), to = at(-width + (extent + width) * progress, -width - 5);
+  g.lineStyle(3, ink, .95).lineBetween(from.x, from.y, to.x, to.y);
  }
 }
 

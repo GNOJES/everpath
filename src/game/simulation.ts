@@ -2,7 +2,7 @@ import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATT
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind, MIDDLE_BOSS_WAVES, openingProgress } from './encounters';
-import type { CombatSound, FieldShot, GroundField, Hazard, HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Pickup, Effect, PassiveId, RunResult, SkillId, SkillShot } from './types';
+import type { CombatFeedback, CombatSound, DamageCause, FieldShot, GroundField, Hazard, HeroId, SaveData, RunState, Vec, EnemyKind, Enemy, Projectile, Pickup, Effect, PassiveId, RunResult, SkillId, SkillShot } from './types';
 const SHIELD_FX_COLOR = 0x8ce6ff;
 let runCounter = 0;
 export function createRun(hero: HeroId, save: SaveData, rank = 0): RunState {
@@ -17,6 +17,7 @@ export class GameSimulation {
  onSound?: (cue: CombatSound) => void;
  onBasicAttack?: (angle: number) => void;
  onEnemyAttack?: (enemy: Enemy) => void;
+ onFeedback?: (event: CombatFeedback) => void;
  private regularSpawns = 0; private sideSpawns = 0;
  private healDrops = 0;
  private rewardedMiddleWaves = new Set<number>();
@@ -328,7 +329,7 @@ export class GameSimulation {
   let damage = enemy.damage;
   if (enemy.paired && enemy.phase !== 'dash') damage *= .68;
   if (enemy.kind === 'warden' && enemy.phase === 'recover') damage *= .65;
-  this.damagePlayer(damage);
+  this.damagePlayer(damage, enemy.kind === 'boss' && enemy.phase === 'dash' ? 'charge' : 'contact', enemy);
   if (vulnerable && this.state.player.invincible > 0 && !isBoss(enemy.kind) && enemy.kind !== 'skeleton' && enemy.kind !== 'shaman') {
    this.onEnemyAttack?.(enemy);
   }
@@ -357,6 +358,7 @@ export class GameSimulation {
   this.effect(style, origin, color, radius, style === 'slash' ? .24 : .42, angle, undefined, undefined, halfAngle);
   for (const enemy of [...this.state.enemies]) {
    if (distance(origin, enemy) <= radius + enemy.radius && this.inSweep(origin, enemy, angle, halfAngle)) {
+    if (style === 'slash' && enemy.hp > 0) this.onFeedback?.({ kind: 'strike', style: 'sword', at: enemy, angle });
     this.damageEnemy(enemy, damage);
     if (knockback && enemy.hp > 0 && !isBoss(enemy.kind) && this.state.timeStopRemaining <= 0) {
      const away = unit(origin, enemy);
@@ -388,6 +390,7 @@ export class GameSimulation {
   const blockLimit = evolved ? 4 : 1 + Math.floor((weaponLevel - 1) / 2);
   for (const blocked of threats.filter(shot => this.inSweep(player, shot, angle, halfAngle)).slice(0, blockLimit)) {
    blocked.life = 0;
+   this.onFeedback?.({ kind: 'strike', style: 'parry', at: blocked, angle });
    this.effect('crystal', blocked, 0xffd982, 17, .24);
    this.parryTimer = WARRIOR_PARRY.cooldown;
   }
@@ -579,7 +582,12 @@ export class GameSimulation {
    const startX = shot.x, startY = shot.y, dx = shot.vx * dt, dy = shot.vy * dt;
    shot.x += dx; shot.y += dy;
    const lengthSquared = dx * dx + dy * dy;
-   if (shot.kind === 'enemy') { if (distance(shot, s.player) < shot.radius + W.playerRadius) { this.damagePlayer(shot.damage); shot.life = 0; } }
+   if (shot.kind === 'enemy') {
+    if (distance(shot, s.player) < shot.radius + W.playerRadius) {
+     this.damagePlayer(shot.damage, 'projectile', { x: shot.x - shot.vx * .12, y: shot.y - shot.vy * .12 });
+     shot.life = 0;
+    }
+   }
    else for (const e of s.enemies) {
     if (shot.life <= 0 || e.hp <= 0 || shot.hit.has(e.id)) continue;
     const radius = shot.radius + e.radius;
@@ -591,6 +599,10 @@ export class GameSimulation {
      this.landFieldShot(shot.damage, e, shot.field);
      shot.life = 0;
      break;
+    }
+    if (!shot.skillShot && shot.kind !== 'blade') {
+     const style = shot.kind === 'magic' ? 'magic' : shot.hit.size > 0 ? 'pierce' : 'arrow';
+     this.onFeedback?.({ kind: 'strike', style, at: e, angle: Math.atan2(shot.vy, shot.vx) });
     }
     shot.hit.add(e.id); this.damageEnemy(e, shot.damage); shot.damage *= shot.pierceScale ?? 1; if (shot.kind === 'magic') this.effect('crystal', shot, 0xad8dff, 20, .24); shot.pierce--; if (shot.pierce <= 0) shot.life = 0;
    }
@@ -671,7 +683,7 @@ export class GameSimulation {
     if (h.owner === 'player') this.aoe(h, h.radius, h.damage, 'ring', 0xdcecc3);
     else {
      this.effect('ring', h, 0xee936d, h.radius, .4);
-     if (distance(h, this.state.player) < h.radius) this.damagePlayer(h.damage);
+     if (distance(h, this.state.player) < h.radius) this.damagePlayer(h.damage, h.impactSound === 'grormSlam' ? 'slam' : 'ground', h);
     }
    }
   }
@@ -725,8 +737,10 @@ export class GameSimulation {
    } else return;
   }
   // Ground-space Y remains fixed while the camera scrolls down the field.
-  s.pickups.push({ kind, gold,
-   x: clamp(enemy.x, W.margin, W.width - W.margin), groundY: clamp(enemy.y, W.minY, W.height - W.margin) - s.scroll });
+  const pickup = { kind, gold,
+   x: clamp(enemy.x, W.margin, W.width - W.margin), groundY: clamp(enemy.y, W.minY, W.height - W.margin) - s.scroll };
+  s.pickups.push(pickup);
+  if (kind === 'chest' && enemy.middleWave === MIDDLE_BOSS_WAVES[0].at) this.onFeedback?.({ kind: 'firstChest', pickup });
  }
  private collectPickups() {
   const s = this.state, p = s.player;
@@ -746,6 +760,7 @@ export class GameSimulation {
     const chest = pickup.kind === 'chest';
     const label = chest ? '중간보스 보물 · ' : '';
     if (chest) {
+     this.onFeedback?.({ kind: 'chestCollected', pickup, amount: s.gold - before });
      this.effect('chestPickup', { x: pickup.x, y }, 0xffce63, 58, .8);
      this.onSound?.('chestPickup');
     }
@@ -754,7 +769,7 @@ export class GameSimulation {
    return false;
   });
  }
- damagePlayer(amount: number) {
+ damagePlayer(amount: number, cause?: DamageCause, source?: Vec) {
   const s = this.state, p = s.player; if (p.invincible > 0 || s.status !== 'running') return;
   p.invincible = W.invincibility;
   if (p.shield > 0) {
@@ -764,7 +779,9 @@ export class GameSimulation {
    this.onSound?.('shieldBlock');
    return;
   }
+  const previousHp = p.hp;
   p.hp = Math.max(0, p.hp - amount); this.effect('hit', p, 0xf2937e, 27, .25);
+  if (cause && source && p.hp < previousHp) this.onFeedback?.({ kind: 'hurt', cause, source, amount: previousHp - p.hp });
   if (p.hp <= 0) { s.status = 'gameover'; this.onSound?.('defeat'); }
  }
  gainXp(amount: number) {
