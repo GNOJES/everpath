@@ -3,27 +3,14 @@ import json
 import sys
 from pathlib import Path
 
+from classic_theme import CLASSIC_CHORDS as chords, CLASSIC_THEME as themes
+
 warden = len(sys.argv) > 2 and sys.argv[2] == "warden"
 TEMPO = 166 if warden else 154
 BAR_COUNT = 32 if warden else 48
 events = []
 # Note order follows the sampler program order in render.swift.
 STRINGS, LOW_STRINGS, HORNS, TRUMPETS, WOODS, TIMPANI, HARP, FLUTE, PIZZ, CHOIR, BELLS, BRASS, VIOLA, CLARINET, BASSOON, CELESTA, KIT = range(17)
-chords = [
-    (38, 50, 53, 57), (34, 50, 53, 58), (41, 48, 53, 57), (36, 48, 52, 55),
-    (38, 50, 53, 57), (34, 50, 53, 58), (31, 50, 55, 58), (33, 49, 52, 57),
-]
-# Four-beat phrases, written as (beat, length, MIDI note).
-themes = [
-    [(0, 1.5, 62), (1.5, .5, 65), (2, 1, 69), (3, .5, 72), (3.5, .5, 69)],
-    [(0, 1, 70), (1, .5, 69), (1.5, .5, 65), (2, 1.5, 62), (3.5, .5, 65)],
-    [(0, 1.5, 69), (1.5, .5, 72), (2, 1, 77), (3, .5, 76), (3.5, .5, 72)],
-    [(0, 1, 67), (1, 1, 72), (2, .75, 76), (2.75, .75, 74), (3.5, .5, 72)],
-    [(0, 1.5, 74), (1.5, .5, 72), (2, 1, 69), (3, .5, 65), (3.5, .5, 69)],
-    [(0, 1, 70), (1, .5, 72), (1.5, .5, 74), (2, 1.5, 77), (3.5, .5, 74)],
-    [(0, 1.5, 79), (1.5, .5, 77), (2, .75, 74), (2.75, .75, 70), (3.5, .5, 67)],
-    [(0, 1, 69), (1, .5, 73), (1.5, .5, 76), (2, 1.65, 69)],
-]
 
 def play(part, beat, length, pitch, velocity):
     events.append([part, beat * 60 / TEMPO, length * 60 / TEMPO, pitch, velocity])

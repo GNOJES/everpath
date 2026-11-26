@@ -11,7 +11,7 @@
  h2 { margin:0 0 8px; font-size:17px; }
  section { margin:9px 0; padding:12px; border:1px solid #a7ccba; border-radius:8px; background:#fafffa; }
  .buttons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
- .music { grid-template-columns:repeat(3,minmax(0,1fr)); }
+ .music, .versions { grid-template-columns:repeat(3,minmax(0,1fr)); }
  button, a { font:inherit; font-weight:700; }
  button { min-height:38px; padding:4px; border:1px solid #7bad95; border-radius:5px; background:#fcfffc; color:inherit; cursor:pointer; font-size:14px; }
  button[aria-pressed="true"] { background:#14624c; border-color:#14624c; color:#fff; }
@@ -19,9 +19,10 @@
 </style>
 <main>
  <h1>미니 월드 사운드 비교</h1>
- <div class="buttons" role="group" aria-label="사운드 버전">
-  <button data-style="old" aria-pressed="false">기존</button>
-  <button data-style="mini" aria-pressed="true">미니 월드</button>
+ <div class="buttons versions" role="group" aria-label="사운드 버전">
+  <button data-style="old" aria-pressed="false">기존 탐험곡</button>
+  <button data-style="mini" aria-pressed="false">미니 월드</button>
+  <button data-style="reprise" aria-pressed="true">후렴 편곡</button>
  </div>
  <section>
   <h2>배경음악</h2>
@@ -48,7 +49,7 @@
    <button data-cue="victory">원정 클리어</button>
   </div>
  </section>
- <a href="/?polish=mini">시안으로 원정 시작</a>
+ <a href="/?music=reprise">후렴 편곡으로 원정 시작</a>
 </main>
 <script type="module" src="./mini-sound.ts"></script>
 </html>

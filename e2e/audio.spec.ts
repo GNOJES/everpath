@@ -178,3 +178,56 @@ test('each combat cue renders a different audible waveform', async ({ page }) =>
  }
  expect(new Set(values.map(value => value.signature)).size).toBe(values.length);
 });
+
+test('chooses either exploration track from pause settings and retains the choice', async ({ browser }) => {
+ const context = await browser.newContext({viewport:{width:320,height:568},isMobile:true,hasTouch:true});
+ try {
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+   const Original = window.AudioContext;
+   const probe = window as unknown as { musicDuration: number };
+   window.AudioContext = class extends Original {
+    createBufferSource() {
+     const source = super.createBufferSource();
+     const start = source.start.bind(source);
+     source.start = (...args) => {
+      if (source.loop && source.buffer) probe.musicDuration = source.buffer.duration;
+      start(...args);
+     };
+     return source;
+    }
+   };
+  });
+  const duration = () => page.evaluate(() => (window as unknown as {musicDuration:number}).musicDuration);
+  const start = async () => {
+   await page.getByRole('button',{name:'모험 시작'}).tap();
+   await page.getByRole('button',{name:'숲으로 떠나기'}).tap();
+  };
+  await page.goto('/');
+  await start();
+  await expect.poll(duration).toBeCloseTo(66.67,1);
+  await page.getByRole('button',{name:'일시정지',exact:true}).tap();
+  await page.getByRole('button',{name:'설정',exact:true}).tap();
+  const bgm2 = page.getByRole('button',{name:/BGM 2/});
+  await bgm2.tap();
+  await expect(bgm2).toHaveAttribute('aria-pressed','true');
+  expect(await page.locator('.settings-panel').evaluate(el=>el.scrollHeight-el.clientHeight)).toBeLessThanOrEqual(1);
+  expect(await duration()).toBeCloseTo(66.67,1);
+
+  await page.getByRole('button',{name:'설정 완료'}).tap();
+  await page.getByRole('button',{name:'모험 계속하기'}).tap();
+  await expect.poll(duration).toBeCloseTo(80,1);
+  await page.reload();
+  await page.getByRole('button',{name:'설정',exact:true}).tap();
+  await expect(bgm2).toHaveAttribute('aria-pressed','true');
+  await page.getByRole('button',{name:'설정 완료'}).tap();
+  await start();
+  await expect.poll(duration).toBeCloseTo(80,1);
+  await page.getByRole('button',{name:'일시정지',exact:true}).tap();
+  await page.getByRole('button',{name:'설정',exact:true}).tap();
+  await page.getByRole('button',{name:/BGM 1/}).tap();
+  await page.getByRole('button',{name:'설정 완료'}).tap();
+  await page.getByRole('button',{name:'모험 계속하기'}).tap();
+  await expect.poll(duration).toBeCloseTo(66.67,1);
+ } finally { await context.close(); }
+});

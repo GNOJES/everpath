@@ -11,7 +11,7 @@ import { formatTime } from '../game/math';
 import { icon } from './icons';
 import { DiagnosticsMonitor } from '../diagnostics/monitor';
 import { exportDiagnosticLog } from '../diagnostics/export';
-import type { HeroId, PermanentId, RunState, RunResult } from '../game/types';
+import type { BattleMusic, HeroId, PermanentId, RunState, RunResult } from '../game/types';
 
 type Screen = 'title' | 'select' | 'run' | 'result' | 'shop' | 'settings' | 'diagnostics' | 'history';
 export class App {
@@ -35,6 +35,7 @@ export class App {
   this.miniPolish = pack === 'mini' && preview?.get('polish') !== 'classic';
   this.scene = new ForestScene(storybook, art === 'storybook-cc0', pack,
    pack === 'mini' && (this.miniPolish || preview?.get('enemies') === 'mini'), this.miniPolish);
+  this.scene.audio.bgm = preview?.get('music') === 'reprise' ? 2 : this.store.data.settings.bgm ?? 1;
   element.classList.toggle('storybook-preview', storybook);
   element.classList.toggle('mini-world', pack === 'mini');
   element.classList.toggle('mini-polish', this.miniPolish);
@@ -118,6 +119,15 @@ export class App {
    }
   }
   else if (action === 'settings') { this.settingsReturn = this.screen; this.pendingBackup = undefined; this.backupMessage = ''; this.screen = 'settings'; this.render(); }
+  else if (action === 'bgm' && this.miniPolish) {
+   const choice: BattleMusic = button.dataset.bgm === '2' ? 2 : 1;
+   this.scene.audio.bgm = choice;
+   this.store.data.settings.bgm = choice;
+   this.store.write();
+   for (const option of this.overlay.querySelectorAll<HTMLButtonElement>('[data-bgm]')) {
+    option.setAttribute('aria-pressed', String(option === button));
+   }
+  }
   else if (action === 'backup-export') void this.backupAction(async () => exportBackupFile(encodeBackup(this.store.data)));
   else if (action === 'backup-select') this.overlay.querySelector<HTMLInputElement>('#backup-file')?.click();
   else if (action === 'backup-cancel') { this.pendingBackup = undefined; this.backupMessage = '복원을 취소했습니다.'; this.render(); }
@@ -312,6 +322,7 @@ export class App {
    this.rank = Math.min(this.rank, save.challengeUnlocked);
    this.scene.audio.music = save.settings.music;
    this.scene.audio.sfx = save.settings.sfx;
+   this.scene.audio.bgm = save.settings.bgm ?? 1;
    this.syncSound();
    this.syncRecords();
    return '백업에서 저장 데이터를 복원했습니다.';
@@ -338,6 +349,10 @@ export class App {
   this.overlay.innerHTML = `<div class="menu-panel settings-panel">${this.topbar('설정', 'settings-back')}
    <div class="menu-heading"><h2>${this.miniPolish ? '소리와 저장' : '설정'}</h2></div>
    ${sliders}
+   ${this.miniPolish ? `<div class="bgm-picker" role="group" aria-label="탐험곡 선택">
+    <button type="button" data-action="bgm" data-bgm="1" aria-pressed="${this.scene.audio.bgm === 1}"><b>BGM 1</b> <span>미니 월드</span></button>
+    <button type="button" data-action="bgm" data-bgm="2" aria-pressed="${this.scene.audio.bgm === 2}"><b>BGM 2</b> <span>후렴 편곡</span></button>
+   </div>` : ''}
    <details class="settings-controls"><summary>${this.miniPolish ? '조작 방법' : '이동 방법'}</summary>
     <p>PC · WASD, 방향키, 마우스 드래그</p><p>모바일 · 화면을 끌어서 이동</p>
     <p>${this.miniPolish ? '자동 공격 · 일시정지는 상단 버튼 또는 ESC' : '일시정지 · ESC 또는 상단 버튼'}</p>

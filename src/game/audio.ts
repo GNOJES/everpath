@@ -1,14 +1,16 @@
-import type { CombatSound, HeroId, RunState } from './types';
+import type { BattleMusic, CombatSound, HeroId, RunState } from './types';
 import { DEFAULT_SFX_VOLUME } from './config';
 import { COMBAT_SOUNDS, MINI_WORLD_CUES, STORYBOOK_CUES } from './combat-sounds';
 
 const volume=(v:number)=>Number.isFinite(v)?Math.max(0,Math.min(1,v)):0;
-type MusicTrack = 'battle' | 'warden';
+type BattleTrack = 'battle' | 'reprise';
+type MusicTrack = BattleTrack | 'warden';
 export class GameAudio {
  private context?:AudioContext;private musicBus?:GainNode;private sfxBus?:GainNode;private musicGate?:GainNode;
  private soundtracks: Partial<Record<MusicTrack, AudioBuffer>> = {};
  private soundtrackLoading = new Set<MusicTrack>();
- private battleDownload?: Promise<ArrayBuffer | undefined>;
+ private battleDownload?: { track: BattleTrack; data: Promise<ArrayBuffer | undefined> };
+ private battleTrack: BattleTrack = 'battle';
  private track: MusicTrack = 'battle';
  private musicSource?: AudioBufferSourceNode;
  private musicOffset = 0;
@@ -28,14 +30,28 @@ export class GameAudio {
  }
  get music(){return this.musicVolume;}set music(v:number){this.musicVolume=volume(v);if(this.musicBus)this.musicBus.gain.setTargetAtTime(this.musicVolume,this.context!.currentTime,.015);}
  get sfx(){return this.sfxVolume;}set sfx(v:number){this.sfxVolume=volume(v);if(this.sfxBus)this.sfxBus.gain.setTargetAtTime(this.sfxVolume * 1.6,this.context!.currentTime,.015);}
+ get bgm(): BattleMusic { return this.battleTrack === 'reprise' ? 2 : 1; }
+ set bgm(value: BattleMusic) {
+  const track = this.miniWorld && value === 2 ? 'reprise' : 'battle';
+  if (track === this.battleTrack) return;
+  this.battleTrack = track;
+  if (this.track !== 'warden') {
+   this.stopMusic();
+   this.track = track;
+   this.musicOffset = 0;
+  }
+  this.loadSoundtrack(track);
+  this.startMusic();
+ }
  preloadBattle() {
-  if (!this.soundtracks.battle && !this.soundtrackLoading.has('battle')) {
-   this.battleDownload ??= this.fetchSoundtrack('battle').catch(() => undefined);
+  const track = this.battleTrack;
+  if (!this.soundtracks[track] && !this.soundtrackLoading.has(track) && this.battleDownload?.track !== track) {
+   this.battleDownload = { track, data: this.fetchSoundtrack(track).catch(() => undefined) };
   }
  }
  beginRun(finalBoss = false) {
   this.stopMusic();
-  this.track = finalBoss ? 'warden' : 'battle';
+  this.track = finalBoss ? 'warden' : this.battleTrack;
   this.musicOffset = 0;
   this.musicLevel = 1;
   if (this.context && this.musicGate) {
@@ -53,7 +69,7 @@ export class GameAudio {
    this.sfxBus=c.createGain();this.sfxBus.gain.value=this.sfxVolume * 1.6;this.sfxBus.connect(master);
    this.musicGate=c.createGain();this.musicGate.gain.value=this.musicLevel;this.musicGate.connect(this.musicBus);
  }void this.context.resume().then(()=>this.startMusic()).catch(()=>{});
-  this.loadSoundtrack('battle');
+  this.loadSoundtrack(this.battleTrack);
   this.loadSoundtrack('warden');
  }catch{/* Sound remains optional if audio is unavailable. */}}
  suspend(){
@@ -169,7 +185,8 @@ export class GameAudio {
   if (noise) this.noise(...noise);
  }
  private async fetchSoundtrack(track: MusicTrack) {
-  const response = await fetch(`${import.meta.env.BASE_URL}audio/everpath-${this.miniWorld ? 'mini-' : ''}${track}.m4a`);
+  const file = `${this.miniWorld ? 'mini-' : ''}${track}`;
+  const response = await fetch(`${import.meta.env.BASE_URL}audio/everpath-${file}.m4a`);
   return response.ok ? response.arrayBuffer() : undefined;
  }
  private loadSoundtrack(track: MusicTrack) {
@@ -177,8 +194,9 @@ export class GameAudio {
   if (!context?.decodeAudioData || this.soundtrackLoading.has(track) || this.soundtracks[track]) return;
   this.soundtrackLoading.add(track);
   void (async () => {
-   let data = track === 'battle' ? await this.battleDownload : undefined;
-   if (track === 'battle') this.battleDownload = undefined;
+   const download = this.battleDownload?.track === track ? this.battleDownload : undefined;
+   if (download) this.battleDownload = undefined;
+   let data = await download?.data;
    data ??= await this.fetchSoundtrack(track);
    if (!data) return;
    this.soundtracks[track] = await context.decodeAudioData(data);
@@ -209,7 +227,7 @@ export class GameAudio {
  }
  syncMusic(status?: RunState['status'], finalBoss = false) {
   const level = status === 'running' ? 1 : status === 'upgrade' ? .3 : 0;
-  const desiredTrack = finalBoss ? 'warden' : 'battle';
+  const desiredTrack = finalBoss ? 'warden' : this.battleTrack;
   if (this.track !== desiredTrack) {
    this.stopMusic();
    this.track = desiredTrack;

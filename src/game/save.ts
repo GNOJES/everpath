@@ -46,6 +46,7 @@ export function parseSave(raw: string | null): SaveData {
   defaults.challengeUnlocked = number(data.challengeUnlocked, 3);
   if (typeof data.lastHero === 'string' && Object.hasOwn(HEROES, data.lastHero)) defaults.lastHero = data.lastHero;
   for (const key of ['music', 'sfx'] as const) if (typeof data.settings?.[key] === 'number') defaults.settings[key] = number(data.settings[key], 1, true);
+  if (data.settings?.bgm === 1 || data.settings?.bgm === 2) defaults.settings.bgm = data.settings.bgm;
   if (Array.isArray(data.settledRuns)) defaults.settledRuns = data.settledRuns.filter((x: unknown) => typeof x === 'string' && x.length < 160).slice(-128);
  } catch { /* A corrupt save must never prevent boot. */ }
  return defaults;

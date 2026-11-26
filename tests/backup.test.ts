@@ -19,3 +19,9 @@ it('restores a backup from before watch purchases without changing its old payme
  delete legacy.save.upgradePayments.timeStop;
  expect(decodeBackup(JSON.stringify(legacy))).toEqual(old);
 });
+
+it('preserves the chosen BGM while keeping backups without a choice valid', () => {
+ const withChoice = { ...save, settings: { ...save.settings, bgm: 2 as const } };
+ expect(decodeBackup(encodeBackup(withChoice))).toEqual(withChoice);
+ expect(decodeBackup(encodeBackup(save)).settings.bgm).toBeUndefined();
+});

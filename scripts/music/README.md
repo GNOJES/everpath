@@ -23,3 +23,5 @@ afconvert -f m4af -d 'aac ' -b 144000 -q 127 /tmp/everpath-mini.wav public/audio
 ```
 
 모르바 곡은 작곡 인자를 `warden`으로, 파일명을 `everpath-mini-warden.m4a`로 바꿉니다. 개발 서버 `/dev/mini-sound.html`에서 기존 곡과 시안을 비교합니다.
+
+작곡 인자 `reprise`로 기존 탐험곡의 8마디 주선율과 화성이 약 13초 지점에 나오는 80초 편곡을 만들 수 있습니다. 공통 악보는 `classic_theme.py`에 있습니다. 렌더링한 파일명은 `everpath-mini-reprise.m4a`입니다. 게임 설정에서 BGM 1(미니 월드)과 BGM 2(후렴 편곡)를 선택할 수 있으며 선택은 저장됩니다. 모르바전에서는 전용곡이 재생됩니다.

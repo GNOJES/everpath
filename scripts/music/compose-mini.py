@@ -3,7 +3,11 @@ import json
 import sys
 from pathlib import Path
 
-warden = sys.argv[2] == 'warden'
+from classic_theme import CLASSIC_CHORDS, CLASSIC_THEME
+
+variant = sys.argv[2]
+warden = variant == 'warden'
+reprise = variant == 'reprise'
 tempo, beats, bars = (156, 6, 20) if warden else (144, 4, 40)
 events = []
 STRINGS, CELLO, HORNS, TRUMPET, OBOE, TIMPANI, HARP, FLUTE, PIZZ, CHOIR, BELLS, BRASS, VIOLA, CLARINET, BASSOON, CELESTA, KIT = range(17)
@@ -27,7 +31,7 @@ warden_harmony = [
     (43, 50, 55, 58), (39, 55, 58, 63), (38, 53, 57, 62), (33, 49, 57, 64),
     (34, 53, 58, 65), (33, 49, 55, 64),
 ]
-for bar in range(bars):
+for bar in range(bars + (8 if reprise else 0)):
     beat = bar * beats
     if warden:
         root, third, fifth, top = warden_harmony[bar % len(warden_harmony)]
@@ -51,7 +55,25 @@ for bar in range(bars):
             play(KIT, beat, .9, 49, 104)
         continue
 
-    section, phrase = divmod(bar, 8)
+    if reprise and 8 <= bar < 16:
+        phrase = bar - 8
+        root, low, mid, high = CLASSIC_CHORDS[phrase]
+        for at, length, note in CLASSIC_THEME[phrase]:
+            play(HORNS, beat + at, length * .88, note, 102)
+            if length >= .75:
+                play(TRUMPET, beat + at, length * .8, note + 12, 80)
+        for i, note in enumerate((low, high, mid, high, low + 12, mid, high + 12, mid + 12)):
+            play(STRINGS, beat + i * .5, .31, note, 81 + 10 * (i % 3 == 0))
+        for at in (0, 1.5, 2, 3.25):
+            play(CELLO, beat + at, .42, root + (12 if at == 1.5 else 0), 95 if at == 0 else 79)
+        for at, note in ((.5, mid + 12), (2.5, low + 12), (3.75, high + 12)):
+            play(HARP, beat + at, .22, note, 76)
+        for at, note in ((0, 36), (1, 38), (2, 36), (3, 38)):
+            play(KIT, beat + at, .19, note, 101 if at in (0, 2) else 86)
+        play(TIMPANI, beat, .32, root + 12, 93)
+        continue
+
+    section, phrase = divmod(bar - (8 if reprise and bar >= 16 else 0), 8)
     root, low, mid, high = forest_harmony[phrase if section != 2 else (phrase + 4) % 8]
     full = section in (1, 3, 4)
     lead = (FLUTE, HORNS, CLARINET, OBOE, TRUMPET)[section]
@@ -79,4 +101,4 @@ for bar in range(bars):
         for i, note in enumerate((high + 12, mid + 12, high + 24)):
             play(BELLS, beat + 2.9 + i * .31, .2, note, 70)
 
-Path(sys.argv[1]).write_text(json.dumps({'duration': bars * beats * 60 / tempo, 'events': events}))
+Path(sys.argv[1]).write_text(json.dumps({'duration': (bars + (8 if reprise else 0)) * beats * 60 / tempo, 'events': events}))

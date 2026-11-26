@@ -1,8 +1,9 @@
 import { GameAudio } from '../src/game/audio';
 import type { CombatSound, HeroId } from '../src/game/types';
 
-const themes = { old: new GameAudio(), mini: new GameAudio(undefined, true) };
-let selected: keyof typeof themes = 'mini';
+const themes = { old: new GameAudio(), mini: new GameAudio(undefined, true), reprise: new GameAudio(undefined, true) };
+themes.reprise.bgm = 2;
+let selected: keyof typeof themes = 'reprise';
 let track: 'battle' | 'warden' | undefined;
 const audio = () => themes[selected];
 const styleButtons = document.querySelectorAll<HTMLButtonElement>('[data-style]');
@@ -16,7 +17,7 @@ document.querySelector('main')!.addEventListener('click', event => {
  const button = (event.target as Element).closest('button');
  if (!button) return;
  const { style, music, hero, cue, ui } = button.dataset;
- if (style === 'old' || style === 'mini') {
+ if (style === 'old' || style === 'mini' || style === 'reprise') {
   if (style === selected) return;
   audio().suspend();
   selected = style;
