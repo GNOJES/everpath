@@ -11,3 +11,15 @@ afconvert -f m4af -d 'aac ' -b 144000 -q 127 /tmp/everpath-battle.wav public/aud
 ```
 
 모르바 전투의 전용곡은 166 BPM, 약 46초입니다. 낮은 바순 리듬과 후반의 클라리넷 응답, 중간 구간의 비올라·첼레스타를 추가했습니다. 같은 명령에서 작곡 단계의 마지막 인자로 `warden`을 주고 최종 파일명을 `public/audio/everpath-warden.m4a`로 지정하면 됩니다.
+
+## 미니 월드 로컬 시안
+
+`compose-mini.py`는 144 BPM의 숲 탐험곡과 6박 단위의 모르바전 음악을 만듭니다. 기존과 같은 GeneralUser GS 샘플러를 사용합니다. 제작자 사이트와 라이선스는 위 링크에서 확인할 수 있습니다.
+
+```sh
+python3 scripts/music/compose-mini.py /tmp/everpath-mini-score.json battle
+swift scripts/music/render.swift /tmp/everpath-mini-score.json /tmp/GeneralUser-GS.sf2 /tmp/everpath-mini.wav
+afconvert -f m4af -d 'aac ' -b 144000 -q 127 /tmp/everpath-mini.wav public/audio/everpath-mini-battle.m4a
+```
+
+모르바 곡은 작곡 인자를 `warden`으로, 파일명을 `everpath-mini-warden.m4a`로 바꿉니다. 개발 서버 `/dev/mini-sound.html`에서 기존 곡과 시안을 비교합니다.

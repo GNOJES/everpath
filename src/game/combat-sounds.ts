@@ -60,3 +60,19 @@ export const STORYBOOK_CUES: Partial<Record<CombatSound, SoundProfile>> = {
  grormDefeat: { tones: [[164, 70, .24, .11, 'triangle'], [330, 330, .21, .09, 'triangle', .14], [440, 440, .31, .08, 'sine', .24]], noise: [610, .19, .10] },
  chestPickup: { tones: [[523, 683, .13, .10, 'triangle'], [880, 880, .20, .095, 'triangle', .055], [1175, 1175, .25, .105, 'sine', .12], [1568, 1568, .21, .042, 'sine', .16]] },
 };
+
+export const MINI_WORLD_CUES: Partial<Record<CombatSound, SoundProfile>> = {
+ grormWarn: { tones: [[126, 145, .20, .13, 'triangle'], [126, 178, .24, .12, 'triangle', .22]], noise: [380, .31, .12] },
+ grormDash: { tones: [[188, 75, .24, .12, 'sine']], noise: [1040, .21, .18] },
+ grormSlam: { tones: [[112, 49, .29, .20, 'sine'], [302, 98, .16, .071, 'triangle']], noise: [500, .24, .20] },
+ briarWarn: { tones: [[698, 598, .11, .10, 'triangle'], [784, 682, .14, .12, 'sine', .18]], noise: [2900, .09, .075] },
+ briarImpact: { tones: [[254, 105, .19, .12, 'sine'], [506, 290, .14, .062, 'triangle']], noise: [1200, .18, .16] },
+ wardenRoots: { tones: [[164, 174, .45, .095, 'triangle'], [247, 233, .44, .095, 'sine', .08]], noise: [690, .35, .10] },
+ wardenAim: { tones: [[293, 574, .50, .10, 'sine'], [392, 766, .47, .079, 'triangle', .09]], noise: [1550, .20, .063, .18] },
+ wardenFan: { tones: [[682, 325, .22, .10, 'triangle'], [461, 208, .25, .077, 'sine', .06]], noise: [1950, .20, .14] },
+ wardenRing: { tones: [[224, 95, .24, .13, 'sine'], [449, 634, .24, .087, 'triangle'], [600, 881, .26, .082, 'sine', .115]], noise: [1550, .19, .12] },
+ wardenSlam: { tones: [[139, 42, .32, .19, 'sine'], [207, 112, .24, .093, 'triangle']], noise: [500, .28, .18] },
+ chestPickup: { tones: [[587, 587, .22, .10, 'triangle'], [740, 740, .24, .10, 'sine', .07], [880, 880, .29, .096, 'triangle', .14], [1175, 1175, .29, .065, 'sine', .20]], noise: [2320, .09, .065] },
+ defeat: { tones: [[494, 494, .23, .076, 'sine'], [392, 392, .29, .080, 'triangle', .15], [294, 268, .48, .083, 'sine', .32]], noise: [610, .22, .11] },
+ victory: { tones: [[392, 392, .29, .11, 'triangle'], [494, 494, .33, .09, 'sine', .15], [587, 587, .32, .10, 'triangle', .28], [784, 784, .48, .12, 'triangle', .43], [1175, 1175, .36, .065, 'sine', .47]], noise: [1160, .23, .11, .38] },
+};

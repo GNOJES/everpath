@@ -3,7 +3,7 @@ test('a naturally ended run shows accurate totals and rates, then persists in sm
  const context=await browser.newContext({viewport:{width:320,height:568},isMobile:true,hasTouch:true});const page=await context.newPage();const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');
  await page.locator('[data-action="embark"]').click();await page.locator('[data-action="start"]').click();
  for(let i=0;i<100;i++){if(await page.locator('.result-panel').isVisible())break;if(await page.locator('.upgrade-card').count())await page.locator('.upgrade-card').first().click();await page.clock.runFor(5000);}
- await expect(page.locator('.result-panel')).toBeVisible();await expect(page.getByRole('heading',{name:'원정이 종료되었습니다.'})).toBeVisible();
+ await expect(page.locator('.result-panel')).toBeVisible();await expect(page.getByRole('heading',{name:'원정 종료'})).toBeVisible();
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('everpath.save.v1')!));expect(saved.history).toHaveLength(1);const r=saved.history[0],c=r.combat;expect(c.spawned).toBe(c.killed+c.missed);expect(c.missed).toBe(c.escaped+c.withdrawn+c.remaining);expect(c.missRate).toBeCloseTo(100*c.missed/c.spawned);expect(c.missed).toBeGreaterThan(0);
  await expect(page.locator('[data-record-killed]')).toContainText(`${c.killed}마리`);await expect(page.locator('[data-record-missed]')).toContainText(`${c.missed}마리 · ${c.missRate.toFixed(1)}%`);
  const overflow = await page.locator('.result-panel').evaluate(panel => panel.scrollHeight - panel.clientHeight);
@@ -75,7 +75,7 @@ test('bosses descend into the field with their own bars before the final result'
  expect(fallen.angle).toBeGreaterThan(70);
  await page.screenshot({ path: 'test-results/warden-victory-effect.png' });
  await page.clock.runFor(530);
- await expect(page.locator('.result-panel')).toContainText('뿌리의 군주를 쓰러뜨렸습니다');
+ await expect(page.locator('.result-panel')).toContainText('모르바 격파');
  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('everpath.save.v1')!).history.length)).toBe(1);
 });
 

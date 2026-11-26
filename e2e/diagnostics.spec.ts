@@ -57,6 +57,6 @@ test('small phone diagnostics scrolls without horizontal overflow', async ({ bro
  await page.locator('#overlay [data-action="diagnostics"]').click();
  const downloadPromise = page.waitForEvent('download'); await page.locator('[data-action="diagnostics-export"]').click(); await downloadPromise;
  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
- await page.locator('[data-action="diagnostics-back"]').last().click(); await expect(page.getByRole('heading', { name: '설정', exact: true })).toBeVisible();
+ await page.locator('[data-action="diagnostics-back"]').last().click(); await expect(page.getByRole('heading', { name: '소리와 저장' })).toBeVisible();
  await context.close();
 });

@@ -12,4 +12,6 @@
 
 `mini/*-motion.png`는 위 영웅 원본 시트에서 이동 네 프레임과 기본공격 세 프레임을 뽑아 40×40 셀에 발을 기준으로 배치했다. 위에서부터 측면·정면·후면 순서이며 좌측 측면은 Phaser에서 반전한다. 궁수와 마법사의 이동 프레임에는 같은 활과 지팡이를 합성했다. 마법사의 공격 자세에도 보라색 복장과 푸른 지팡이 보석을 적용했다.
 
+적 시안 `mini/enemy-motion.png`는 24×24 셀을 사용한다. 미니 월드의 `Slime`, `ClubGoblin`, `Skeleton-Soldier`, `ArmouredRedDemon`, `OrcShaman`, `Minotaur`, `OrcMage`, `Wendigo`와 Ninja Adventure의 `BlueBat`, `Bow`를 조합했다. 바르크는 청록 로브와 지팡이, 모르바는 나무색 몸체와 보라색 뿔로 다듬었다. 게임 기본 화면에 적용된다. 개발 서버의 `/dev/mini-enemies.html`에서 보스를 골라 볼 수 있고, `/?polish=classic`에서 이전 미니 월드와 비교할 수 있다.
+
 [CC0 1.0 원문](https://creativecommons.org/publicdomain/zero/1.0/)

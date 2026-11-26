@@ -25,14 +25,19 @@ export class App {
  private scene: ForestScene; private game: Phaser.Game;
  private screen: Screen = 'title'; private hero: HeroId; private sim?: GameSimulation;
  private root: HTMLElement; private overlay: HTMLElement; private hud: HTMLElement; private previousStatus = ''; private lastHud = 0;
+ private readonly miniPolish: boolean;
  private settingsReturn: Screen = 'title'; private shopReturn: Screen = 'title'; private lastResult?: RunResult; private newRecord = false;
  constructor(element: HTMLElement, private readonly store = new SaveStore()) {
-  const art = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('art') : null;
+  const preview = import.meta.env.DEV ? new URLSearchParams(window.location.search) : undefined;
+  const art = preview?.get('art') ?? null;
   const pack = isPreviewPack(art) ? art : art === null ? 'mini' : undefined;
   const storybook = !!pack || art === 'storybook' || art === 'storybook-cc0';
-  this.scene = new ForestScene(storybook, art === 'storybook-cc0', pack);
+  this.miniPolish = pack === 'mini' && preview?.get('polish') !== 'classic';
+  this.scene = new ForestScene(storybook, art === 'storybook-cc0', pack,
+   pack === 'mini' && (this.miniPolish || preview?.get('enemies') === 'mini'), this.miniPolish);
   element.classList.toggle('storybook-preview', storybook);
   element.classList.toggle('mini-world', pack === 'mini');
+  element.classList.toggle('mini-polish', this.miniPolish);
   this.hero = store.data.lastHero;
   this.root = element;
   element.innerHTML = `<div class="shell"><header class="site-header"><a class="brand" href="/" aria-label="EVERPATH 타이틀">EVERPATH</a><button class="icon-button" data-action="sound" aria-label="효과음 켜기 / 끄기">${icon('sound')}</button></header>
@@ -68,7 +73,10 @@ export class App {
  private onClick(event: MouseEvent) {
   if (this.backupBusy) return;
   const button = (event.target as Element).closest<HTMLButtonElement>('[data-action]'); if (!button || button.disabled) return;
-  this.scene.audio.unlock(); this.scene.audio.click(); const action = button.dataset.action!;
+  const action = button.dataset.action!;
+  this.scene.audio.unlock();
+  this.scene.audio.click(action.endsWith('-back') ? 'back'
+   : action === 'start' || action === 'upgrade' || action === 'buy' || action === 'retry' ? 'confirm' : 'touch');
   if (action === 'embark') { this.screen = 'select'; this.render(); }
   else if (action === 'hero') { const id = button.dataset.hero as HeroId; if (!Object.hasOwn(HEROES, id)) return; this.hero = id; this.store.data.lastHero = id; this.store.write(); this.render(); }
   else if (action === 'start') this.startRun();
@@ -202,12 +210,54 @@ export class App {
   this.updateDiagnostics();
  }
  private renderTitle() {
-  this.overlay.innerHTML = `<div class="title-screen"><div class="title-logo"><span class="title-version"></span><h1>EVERPATH</h1><div class="title-subtitle">푸른 숲 원정</div></div><div class="title-actions"><button class="button primary embark-button" data-action="embark">${icon('compass')}<span>모험 시작</span>${icon('right')}</button><div class="secondary-actions"><button class="button secondary" data-action="shop">${icon('leaf')} 영구 강화 <span class="mini-coin">${this.store.data.gold}</span></button><button class="button secondary settings-button" data-action="settings" aria-label="설정">${icon('settings')}</button></div><p class="title-footnote">10분 동안 생존하고 모르바를 처치하세요.</p></div></div>`;
+  const objective = this.miniPolish
+   ? `<div class="title-objective">${icon('watch')}<span><b>첫 목표</b> 10분에 등장하는 모르바 격파</span></div>`
+   : '<p class="title-footnote">10분 동안 생존하고 모르바를 처치하세요.</p>';
+  this.overlay.innerHTML = `<div class="title-screen">
+   <div class="title-logo"><span class="title-version"></span><h1>EVERPATH</h1><div class="title-subtitle">푸른 숲 원정</div></div>
+   <div class="title-actions">
+    ${this.miniPolish ? objective : ''}
+    <button class="button primary embark-button" data-action="embark">${icon('compass')}<span>모험 시작</span>${icon('right')}</button>
+    <div class="secondary-actions">
+     <button class="button secondary" data-action="shop">${icon('leaf')} 영구 강화 <span class="mini-coin">${this.store.data.gold.toLocaleString()}</span></button>
+     <button class="button secondary settings-button" data-action="settings" aria-label="설정">${icon('settings')}</button>
+    </div>
+    ${this.miniPolish ? '' : objective}
+   </div>
+  </div>`;
   this.overlay.querySelector('.title-version')!.textContent = `ver. ${import.meta.env.VITE_BUILD_VERSION ?? 'dev'}`;
  }
  private renderSelect() {
   const selected = HEROES[this.hero];
-  this.overlay.innerHTML = `<div class="menu-panel">${this.topbar('영웅 선택', 'title')}<div class="menu-heading"><h2>누구와 떠날까요?</h2></div><div class="hero-cards">${Object.values(HEROES).map(h => `<button class="hero-card ${this.hero === h.id ? 'selected' : ''}" data-action="hero" data-hero="${h.id}" aria-pressed="${this.hero === h.id}" style="--hero-color:${h.color}"><span class="hero-role">${h.role}</span><div class="hero-portrait-scene">${portrait(h.id)}</div><strong>${h.name}</strong></button>`).join('')}</div><div class="hero-detail" style="--hero-color:${selected.color}"><div class="hero-detail-title"><span class="skill-icon">${icon(selected.icon)}</span><div><h3>${selected.name} <small>· ${selected.role}</small></h3></div></div><p>${selected.description}</p><p class="hero-clear-record">클리어 ${this.store.data.clears[this.hero]}회 · 무기 진화: ${EVOLUTIONS[this.hero].name}<br>조건: 기본무기 5 + ${EVOLUTIONS[this.hero].passive === 'power' ? '강인한 일격' : '신속한 손놀림'} 2</p><div class="hero-base-stats"><span>HP <b>${selected.hp}</b></span><span>이동 <b>${selected.speed}</b></span><span>무기 <b>${selected.weapon}</b></span></div><div class="starting-skills">${selected.skills.map(id => { const skill = SKILLS[id]; return `<span title="${skill.unlockLevel ? `Lv.${skill.unlockLevel}부터 · ` : ''}${skill.description}">${icon(skill.icon)} ${skill.name}</span>`; }).join('')}</div></div><div class="menu-bottom"><div class="challenge-selector" aria-label="도전 단계">${[0, 1, 2, 3].map(rank => `<button data-action="rank" data-rank="${rank}" aria-pressed="${rank === this.rank}" ${rank > this.store.data.challengeUnlocked ? 'disabled' : ''}>${rank === 0 ? '첫 원정' : `도전 ${rank}${rank > this.store.data.challengeUnlocked ? ' · 잠김' : ''}`}</button>`).join('')}</div><button class="button primary" data-action="start">${icon('play')} 숲으로 떠나기 ${icon('right')}</button></div></div>`;
+  const approach = {
+   warrior: '가까이 붙어 전방을 베고, 다가오는 탄환을 쳐내세요.',
+   archer: '거리를 유지하세요. 활을 강화하면 줄지어 오는 적을 관통합니다.',
+   mage: '유도탄으로 적을 하나씩 줄이고, 냉기 오라로 거리를 벌리세요.',
+  }[this.hero];
+  const evolution = `<p class="hero-clear-record">클리어 ${this.store.data.clears[this.hero]}회 · 무기 진화: ${EVOLUTIONS[this.hero].name}
+   <br>조건: 기본무기 5 + ${EVOLUTIONS[this.hero].passive === 'power' ? '강인한 일격' : '신속한 손놀림'} 2</p>`;
+  const skills = `<div class="starting-skills">${selected.skills.map(id => {
+   const skill = SKILLS[id];
+   return `<span title="${skill.unlockLevel ? `Lv.${skill.unlockLevel}부터 · ` : ''}${skill.description}">${icon(skill.icon)} ${skill.name}</span>`;
+  }).join('')}</div>`;
+  this.overlay.innerHTML = `<div class="menu-panel">${this.topbar('영웅 선택', 'title')}
+   <div class="menu-heading"><h2>누구와 떠날까요?</h2></div>
+   <div class="hero-cards">${Object.values(HEROES).map(h => `<button class="hero-card ${this.hero === h.id ? 'selected' : ''}" data-action="hero" data-hero="${h.id}" aria-pressed="${this.hero === h.id}" style="--hero-color:${h.color}">
+    <span class="hero-role">${h.role}</span><div class="hero-portrait-scene">${portrait(h.id)}</div><strong>${h.name}</strong>
+   </button>`).join('')}</div>
+   <div class="hero-detail" style="--hero-color:${selected.color}">
+    <div class="hero-detail-title"><span class="skill-icon">${icon(selected.icon)}</span><div><h3>${selected.name} <small>· ${selected.role}</small></h3></div></div>
+    <p>${this.miniPolish ? approach : selected.description}</p>
+    ${this.miniPolish ? '' : evolution}
+    <div class="hero-base-stats"><span>HP <b>${selected.hp}</b></span><span>이동 <b>${selected.speed}</b></span><span>무기 <b>${selected.weapon}</b></span></div>
+    ${this.miniPolish ? `<details class="hero-notes"><summary>스킬과 무기 진화</summary>${skills}${evolution}</details>` : skills}
+   </div>
+   <div class="menu-bottom">
+    ${this.miniPolish && this.store.data.challengeUnlocked === 0 ? '<small class="challenge-note">모르바 격파 후 도전 단계 해금</small>' : ''}
+    <div class="challenge-selector" aria-label="도전 단계">${[0, 1, 2, 3].map(rank => `<button data-action="rank" data-rank="${rank}" aria-pressed="${rank === this.rank}" ${rank > this.store.data.challengeUnlocked ? 'disabled' : ''}>${rank === 0 ? '첫 원정' : `도전 ${rank}${rank > this.store.data.challengeUnlocked && !this.miniPolish ? ' · 잠김' : ''}`}</button>`).join('')}</div>
+    <button class="button primary" data-action="start">${icon('play')} 숲으로 떠나기 ${icon('right')}</button>
+   </div>
+  </div>`;
  }
  private renderShop() {
   const { gold, upgrades, invested } = this.store.data;
@@ -277,7 +327,27 @@ export class App {
    <p class="backup-message" role="status">${this.backupMessage}</p></section>`;
  }
  private renderSettings() {
-  this.overlay.innerHTML = `<div class="menu-panel settings-panel">${this.topbar('설정', 'settings-back')}<div class="menu-heading"><h2>설정</h2></div><div class="settings-sliders">${(['music', 'sfx'] as const).map(key => `<label><span>${icon(key === 'music' ? 'leaf' : 'sound')} ${key === 'music' ? '배경음' : '효과음'}<b id="volume-${key}">${Math.round(this.store.data.settings[key] * 100)}%</b></span><input aria-label="${key === 'music' ? '배경음' : '효과음'} 음량" type="range" min="0" max="100" value="${Math.round(this.store.data.settings[key] * 100)}" data-volume="${key}"></label>`).join('')}</div><details class="settings-controls"><summary>이동 방법</summary><p>PC · WASD, 방향키, 마우스 드래그</p><p>모바일 · 드래그</p><p>일시정지 · ESC 또는 상단 버튼</p></details><div class="save-info">${icon('shield')} ${this.store.persistent ? '진행 기록과 설정이 이 기기에 저장됩니다.' : '저장 공간에 접근할 수 없어 새로고침하면 초기화됩니다.'}</div>${this.backupControls()}<div class="menu-bottom"><button class="button secondary" data-action="diagnostics">실기기 진단 · 로그</button><button class="button secondary" data-action="history">최근 원정 기록</button><button class="button primary" data-action="settings-back">설정 완료 ${icon('check')}</button></div></div>`;
+  const sliders = `<div class="settings-sliders">${(['music', 'sfx'] as const).map(key => {
+   const name = key === 'music' ? '배경음' : '효과음';
+   const pct = Math.round(this.store.data.settings[key] * 100);
+   return `<label><span>${icon(key === 'music' ? 'leaf' : 'sound')} ${name}<b id="volume-${key}">${pct}%</b></span>
+    <input aria-label="${name} 음량" type="range" min="0" max="100" value="${pct}" data-volume="${key}"></label>`;
+  }).join('')}</div>`;
+  const utilities = `<button class="button secondary" data-action="diagnostics">실기기 진단 · 로그</button>
+   <button class="button secondary" data-action="history">최근 원정 기록</button>`;
+  this.overlay.innerHTML = `<div class="menu-panel settings-panel">${this.topbar('설정', 'settings-back')}
+   <div class="menu-heading"><h2>${this.miniPolish ? '소리와 저장' : '설정'}</h2></div>
+   ${sliders}
+   <details class="settings-controls"><summary>${this.miniPolish ? '조작 방법' : '이동 방법'}</summary>
+    <p>PC · WASD, 방향키, 마우스 드래그</p><p>모바일 · 화면을 끌어서 이동</p>
+    <p>${this.miniPolish ? '자동 공격 · 일시정지는 상단 버튼 또는 ESC' : '일시정지 · ESC 또는 상단 버튼'}</p>
+   </details>
+   <div class="save-info">${icon('shield')} ${this.store.persistent ? '진행 기록과 설정이 이 기기에 저장됩니다.' : '저장 공간에 접근할 수 없어 새로고침하면 초기화됩니다.'}</div>
+   ${this.backupControls()}
+   <div class="menu-bottom">${this.miniPolish ? `<div class="menu-utility-actions">${utilities}</div>` : utilities}
+    <button class="button primary" data-action="settings-back">설정 완료 ${icon('check')}</button>
+   </div>
+  </div>`;
  }
  private renderDiagnostics() {
   this.overlay.innerHTML = `<div class="menu-panel diagnostics-panel">${this.topbar('DEVICE DIAGNOSTICS', 'diagnostics-back')}<div class="menu-heading"><span class="eyebrow">ON-DEVICE TEST LOG</span><h2>실기기 진단</h2><p>FPS · 프레임 지연 · 게임 입력 상태</p></div>
@@ -321,7 +391,12 @@ export class App {
    <span id="hp-text"></span><span id="campaign-goal" hidden></span>
   </div>${new URLSearchParams(location.search).has('debug') ? '<output id="debug-stats" class="debug-stats"></output>' : ''}`;
   this.updateHud(s);
-  if (s.status === 'running') { this.overlay.innerHTML = ''; this.overlay.classList.add('inactive'); }
+  if (s.status === 'running') {
+   const firstSteps = this.miniPolish && this.store.data.totalRuns === 0 && s.elapsed < 7;
+   const move = navigator.maxTouchPoints ? '화면을 끌어서 이동' : '방향키 또는 WASD로 이동';
+   this.overlay.innerHTML = firstSteps ? `<div class="first-steps">${icon('compass')}<span>${move}<small>공격은 자동으로 나갑니다.</small></span></div>` : '';
+   this.overlay.classList.add('inactive');
+  }
   else if (s.status === 'gameover') {
    this.overlay.classList.add('inactive', 'defeat-scene');
    this.overlay.innerHTML = `<div class="defeat-banner" role="status">${icon('skull')}<strong>영웅이 쓰러졌습니다</strong></div>`;
@@ -347,7 +422,9 @@ export class App {
   ];
   this.overlay.innerHTML = `<section class="pause-panel" aria-labelledby="pause-title">
    <h2 id="pause-title">일시정지</h2>
-   <div class="pause-run-summary">${formatTime(s.elapsed)} · ${s.kills}처치 · ${s.gold}G</div>
+   <div class="pause-run-summary">${this.miniPolish
+    ? `<span>시간 <b>${formatTime(s.elapsed)}</b></span><span>처치 <b>${s.kills}</b></span><span>골드 <b>${s.gold}G</b></span>`
+    : `${formatTime(s.elapsed)} · ${s.kills}처치 · ${s.gold}G`}</div>
    <div class="pause-speed" role="group" aria-label="게임 속도">
     <span>게임 속도</span>
     ${[1, 2].map(speed => `<button type="button" data-action="run-speed" data-speed="${speed}" aria-pressed="${this.sim?.speedMultiplier === speed}">${speed}배속</button>`).join('')}
@@ -400,6 +477,7 @@ export class App {
  private updateHud(s: RunState) {
   this.updateTimeStop(s);
   const text = (id: string, value: string) => { const el = this.hud.querySelector(`#${id}`); if (el && el.textContent !== value) el.textContent = value; };
+  if (this.miniPolish && s.elapsed >= 7) this.overlay.querySelector('.first-steps')?.remove();
   const goal = this.hud.querySelector<HTMLElement>('#campaign-goal');
   if (goal) goal.hidden = !s.finalSpawned && s.status !== 'victory';
   text('campaign-goal', s.status === 'victory' ? '원정 완료' :
@@ -410,7 +488,7 @@ export class App {
  }
  private combatSummary(r: RunResult) {
   const c = r.combat; if (!c) return '<p class="combat-explanation">이전 버전 원정의 상세 전투 집계는 기록되지 않았습니다.</p>';
-  return `<section class="combat-summary" aria-label="몬스터 기록"><div><span>전체 등장</span><strong data-record-spawned>${c.spawned}마리</strong></div><div><span>처치한 몬스터</span><strong data-record-killed>${c.killed}마리 · ${c.killRate.toFixed(1)}%</strong></div><div><span>놓친 몬스터 · 미처치</span><strong data-record-missed>${c.missed}마리 · ${c.missRate.toFixed(1)}%</strong></div><div><span>전투 플레이 시간</span><strong>${formatTime(r.time)}</strong></div></section><p class="combat-explanation">일반 적·보스를 모두 포함합니다. 놓친 비율 = 미처치 ÷ 전체 등장 × 100.<br>화면 밖 이탈 ${c.escaped} · 보스전 전환/상한 정리 ${c.withdrawn} · 종료 시 생존 ${c.remaining}.<br>일시정지·강화 선택 시간은 플레이 시간에서 제외합니다.</p>`;
+  return `<section class="combat-summary" aria-label="몬스터 기록"><div><span>전체 등장</span><strong data-record-spawned>${c.spawned}마리</strong></div><div><span>처치한 몬스터</span><strong data-record-killed>${c.killed}마리 · ${c.killRate.toFixed(1)}%</strong></div><div><span>${this.miniPolish ? '미처치' : '놓친 몬스터 · 미처치'}</span><strong data-record-missed>${c.missed}마리 · ${c.missRate.toFixed(1)}%</strong></div><div><span>전투 플레이 시간</span><strong>${formatTime(r.time)}</strong></div></section><p class="combat-explanation">일반 적·보스를 모두 포함합니다. 놓친 비율 = 미처치 ÷ 전체 등장 × 100.<br>화면 밖 이탈 ${c.escaped} · 보스전 전환/상한 정리 ${c.withdrawn} · 종료 시 생존 ${c.remaining}.<br>일시정지·강화 선택 시간은 플레이 시간에서 제외합니다.</p>`;
  }
  private renderHistory() {
   const records = [...this.store.data.history].reverse();
@@ -422,11 +500,13 @@ export class App {
  }
  private renderResult() {
   const r = this.lastResult; if (!r) { this.screen = 'title'; this.render(); return; }
+  const title = this.miniPolish ? (r.cleared ? '모르바 격파' : '원정 종료')
+   : (r.cleared ? '뿌리의 군주를 쓰러뜨렸습니다!' : '원정이 종료되었습니다.');
   this.overlay.innerHTML = `<div class="menu-panel result-panel">
-   <div class="result-heading">${portrait(r.hero)}<h2>${r.cleared ? '뿌리의 군주를 쓰러뜨렸습니다!' : '원정이 종료되었습니다.'}</h2></div>
+   <div class="result-heading">${portrait(r.hero)}<h2>${title}</h2></div>
    <div class="result-time" aria-label="전투 플레이 시간">${formatTime(r.time)}${this.newRecord ? '<span>최고 생존 기록</span>' : ''}</div>
    <div class="result-grid"><div><strong>${r.level}</strong><span>도달 레벨</span></div><div><strong>${r.kills}</strong><span>처치한 적</span></div><div><strong>${r.bosses}</strong><span>처치한 보스</span></div></div>
-   ${this.combatSummary(r)}<div class="result-reward"><span>이번 원정의 보상</span><strong>${icon('coin')} +${r.gold}</strong></div>
+   ${this.combatSummary(r)}<div class="result-reward"><span>${this.miniPolish ? '획득 골드' : '이번 원정의 보상'}</span><strong>${icon('coin')} +${r.gold}</strong></div>
    <div class="menu-bottom"><button class="button primary" data-action="retry">${icon('compass')} 숲 다시 도전 ${icon('right')}</button>
     <div class="result-actions"><button class="button secondary" data-action="shop">성장의 제단으로</button><button class="button secondary" data-action="history">최근 원정 기록</button></div>
     <button class="text-button" data-action="title">타이틀로 돌아가기</button></div></div>`;

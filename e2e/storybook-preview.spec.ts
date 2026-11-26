@@ -202,3 +202,123 @@ test('Mini World uses directional walk and strike sprites for all heroes', async
   },{intervals:[15,25,40,50],timeout:3000}).toBe(true);
  }
 });
+
+test('Mini World enemy preview follows the existing attack and freeze states', async ({ page }) => {
+ await page.setViewportSize({ width: 360, height: 640 });
+ await page.route('**/mini-enemies-check*', route => route.fulfill({
+  contentType: 'text/html',
+  body: '<meta name="viewport" content="width=device-width, initial-scale=1"><div id="app"></div><script type="module">import "/src/style.css"; import {App} from "/src/ui/app.ts"; window.enemyArtFixture = new App(document.querySelector("#app"));</script>',
+ }));
+ await page.goto('/mini-enemies-check');
+ await page.getByRole('button', { name: '모험 시작' }).click();
+ await page.getByRole('button', { name: '숲으로 떠나기' }).click();
+ await page.evaluate(() => {
+  type Fixture = {
+   sim: import('../src/game/simulation').GameSimulation;
+   scene: import('../src/game/scene').ForestScene;
+  };
+  const browser = window as unknown as {
+   enemyArtFixture: Fixture;
+   resetEnemy: (kind: import('../src/game/types').EnemyKind, attack: number, timer: number) => void;
+   observeEnemy: () => { frame: number; phase?: string; marks: string[]; projectileCount: number };
+  };
+  const {sim, scene} = browser.enemyArtFixture;
+  const s = sim.state;
+  const observe = sim.update.bind(sim);
+  let target: import('../src/game/types').Enemy | undefined;
+  sim.update = (dt, direction) => {
+   observe(dt, direction);
+   s.enemies = target ? s.enemies.filter(enemy => enemy === target) : [];
+  };
+  browser.resetEnemy = (kind, attack, timer) => {
+   s.enemies = []; s.hazards = []; s.projectiles = [];
+   s.player.x = 216; s.player.y = 515; s.timeStopRemaining = 0;
+   target = sim.spawnEnemy(kind, 216, 220)!;
+   target.timer = timer;
+   target.wardenAttack = attack;
+  };
+  browser.observeEnemy = () => {
+   const image = scene.children.list.find(child => {
+    const sprite = child as Phaser.GameObjects.Image;
+    return sprite.texture?.key === 'mini-enemy-motion' && sprite.visible && sprite.y > 0;
+   }) as Phaser.GameObjects.Image | undefined;
+   return {
+    frame: Number(image?.frame.name), phase: target?.phase,
+    marks: s.hazards.filter(hazard => !hazard.fired).map(hazard => hazard.impactSound ?? 'slam'),
+    projectileCount: s.projectiles.filter(shot => shot.kind === 'enemy').length,
+   };
+  };
+ });
+ const setup = (kind: import('../src/game/types').EnemyKind, attack = 0, timer = .1) =>
+  page.evaluate(([kind, attack, timer]) => (window as unknown as {
+   resetEnemy: (kind: import('../src/game/types').EnemyKind, attack: number, timer: number) => void;
+  }).resetEnemy(kind, attack, timer), [kind, attack, timer] as const);
+ const observe = () => page.evaluate(() => (window as unknown as {
+  observeEnemy: () => { frame: number; phase?: string; marks: string[]; projectileCount: number };
+ }).observeEnemy());
+ const fresh = { intervals: [20, 30, 40], timeout: 3200 };
+ await setup('skeleton', 0, .35);
+ await expect.poll(async () => Math.floor((await observe()).frame / 21), fresh).toBe(3);
+ await expect.poll(async () => {
+  const {frame, projectileCount} = await observe();
+  return frame % 7 >= 4 && projectileCount === 1;
+ }, fresh).toBe(true);
+
+ await setup('boss');
+ await expect.poll(async () => (await observe()).phase, fresh).toBe('warn');
+ await expect.poll(async () => (await observe()).phase, fresh).toBe('dash');
+ await expect.poll(async () => (await observe()).marks, fresh).toEqual(['grormSlam']);
+ await setup('briar');
+ await expect.poll(async () => (await observe()).marks, fresh).toEqual(['briarImpact', 'briarImpact']);
+ await setup('warden');
+ await expect.poll(async () => (await observe()).marks, fresh).toEqual(['wardenSlam', 'wardenSlam']);
+ await setup('warden', 1);
+ await expect.poll(async () => (await observe()).phase, fresh).toBe('warn');
+ await expect.poll(async () => (await observe()).projectileCount, fresh).toBe(5);
+ await setup('warden', 2);
+ await expect.poll(async () => (await observe()).projectileCount, fresh).toBe(10);
+
+ await setup('bat', 0, 2);
+ await expect.poll(async () => Math.floor((await observe()).frame / 21), fresh).toBe(2);
+ await page.evaluate(() => {
+  const { sim } = (window as unknown as { enemyArtFixture: { sim: import('../src/game/simulation').GameSimulation } }).enemyArtFixture;
+  sim.state.timeStopRemaining = 1;
+ });
+ const frozen = (await observe()).frame;
+ await page.waitForTimeout(210);
+ expect((await observe()).frame).toBe(frozen);
+});
+
+test('Mini World polish shows compact menus and a temporary guide on a small touch screen', async ({ browser }) => {
+ const context = await browser.newContext({viewport:{width:320,height:568},isMobile:true,hasTouch:true});
+ try {
+  const page = await context.newPage();
+  await page.route('**/mini-guide-check*', route => route.fulfill({
+   contentType:'text/html',
+   body:'<meta name="viewport" content="width=device-width, initial-scale=1"><div id="app"></div><script type="module">import "/src/style.css"; import {App} from "/src/ui/app.ts"; window.guideFixture = new App(document.querySelector("#app"));</script>',
+  }));
+  await page.goto('/mini-guide-check');
+  await expect(page.locator('.title-objective')).toContainText('10분에 등장하는 모르바');
+  const noScroll = async () => {
+   expect(await page.locator('.menu-panel').evaluate(panel => panel.scrollHeight - panel.clientHeight)).toBeLessThanOrEqual(1);
+   expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(568);
+  };
+  await page.getByRole('button', {name:'설정',exact:true}).tap();
+  await expect(page.getByRole('heading',{name:'소리와 저장'})).toBeVisible();
+  await noScroll();
+  await page.getByRole('button',{name:'설정 완료'}).tap();
+  await page.getByRole('button',{name:'모험 시작'}).tap();
+  await page.locator('[data-hero="mage"]').tap();
+  await expect(page.locator('.hero-detail > p')).toContainText('냉기 오라');
+  await noScroll();
+  await page.getByText('스킬과 무기 진화',{exact:true}).tap();
+  await expect(page.getByText('집중 낙뢰',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'숲으로 떠나기'}).tap();
+  await expect(page.locator('.first-steps')).toContainText('화면을 끌어서 이동');
+  await page.evaluate(() => {
+   const { sim } = (window as unknown as { guideFixture: { sim: import('../src/game/simulation').GameSimulation } }).guideFixture;
+   sim.state.elapsed = 7;
+  });
+  await expect(page.locator('.first-steps')).toHaveCount(0);
+ } finally { await context.close(); }
+});

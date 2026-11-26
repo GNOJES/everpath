@@ -25,14 +25,16 @@ test('audio survives native suspension and resumes only on user gesture',async({
     const source = super.createBufferSource();
     const start = source.start.bind(source);
     source.start = (when, offset, duration) => {
-     probe.soundtrack.push({ duration: source.buffer!.duration, channels: source.buffer!.numberOfChannels, offset: offset ?? 0, loop: source.loop, startedAt: this.currentTime });
+     if (source.loop && source.buffer) {
+      probe.soundtrack.push({ duration: source.buffer.duration, channels: source.buffer.numberOfChannels, offset: offset ?? 0, loop: true, startedAt: this.currentTime });
+     }
      start(when, offset, duration);
     };
     return source;
    }
   };
  });
- const preload = page.waitForResponse(response => response.url().endsWith('/audio/everpath-battle.m4a') && response.ok());
+ const preload = page.waitForResponse(response => response.url().endsWith('/audio/everpath-mini-battle.m4a') && response.ok());
  await page.goto('/e2e/playtest.html');
  const battleTrack = await preload;
  await battleTrack.finished();
@@ -59,12 +61,16 @@ test('audio survives native suspension and resumes only on user gesture',async({
  expect((await music())[2].offset).toBe(0);
 });
 
-test('music pauses on pause and background, and plays at 30% during upgrades', async ({ page }) => {
- await page.route('**/music-menu-test', route => route.fulfill({
+for (const mini of [false, true]) test(`music pauses on pause and background and plays at 30% during upgrades (${mini ? 'Mini World' : 'classic'})`, async ({ page }) => {
+ await page.route('**/music-menu-test*', route => route.fulfill({
   contentType:'text/html',
   body:'<meta name="viewport" content="width=device-width"><div id="app"></div><script type="module">import "/src/style.css"; import {App} from "/src/ui/app.ts"; window.musicTest = new App(document.querySelector("#app"));</script>',
  }));
- await page.goto('/music-menu-test');
+ const prefix = mini ? 'everpath-mini-' : 'everpath-';
+ const warden = page.waitForResponse(response => response.url().endsWith('/audio/' + prefix + 'warden.m4a') && response.ok());
+ const battle = page.waitForResponse(response => response.url().endsWith('/audio/' + prefix + 'battle.m4a') && response.ok());
+ await page.goto(mini ? '/music-menu-test' : '/music-menu-test?polish=classic');
+ await battle;
  await page.getByRole('button', {name:'모험 시작'}).click();
  await page.getByRole('button', {name:'숲으로 떠나기'}).click();
  type AudioProbe = {
@@ -115,6 +121,8 @@ test('music pauses on pause and background, and plays at 30% during upgrades', a
  }, elapsed);
  await advance(179.99);
  expect((await music()).same).toBe(true);
+ await warden;
+ if (mini) expect((await music()).duration).toBeGreaterThan(66);
  await advance(599.99);
  await expect.poll(async () => (await music()).duration ?? 0).toBeGreaterThan(40);
  await expect.poll(async () => (await music()).duration ?? 0).toBeLessThan(50);
@@ -125,15 +133,16 @@ test('each combat cue renders a different audible waveform', async ({ page }) =>
  await page.goto('/');
  const values = await page.evaluate(async () => {
   const {GameAudio} = await import('/src/game/audio.ts' as string) as typeof import('../src/game/audio');
-  const {COMBAT_SOUNDS, STORYBOOK_CUES} = await import('/src/game/combat-sounds.ts' as string) as typeof import('../src/game/combat-sounds');
+  const {COMBAT_SOUNDS, STORYBOOK_CUES, MINI_WORLD_CUES} = await import('/src/game/combat-sounds.ts' as string) as typeof import('../src/game/combat-sounds');
   const Original = window.AudioContext;
   const values = [];
   try {
    const profiles = [
-    ...Object.keys(COMBAT_SOUNDS).map(cue => ({ cue, preview: false })),
-    ...Object.keys(STORYBOOK_CUES).map(cue => ({ cue, preview: true })),
+    ...Object.keys(COMBAT_SOUNDS).map(cue => ({ cue, style: 'default' })),
+    ...Object.keys(STORYBOOK_CUES).map(cue => ({ cue, style: 'storybook' })),
+    ...Object.keys(MINI_WORLD_CUES).map(cue => ({ cue, style: 'mini' })),
    ];
-   for (const {cue, preview} of profiles) {
+   for (const {cue, style} of profiles) {
     const render = new OfflineAudioContext(1, 44100 * 1.2, 44100);
     window.AudioContext = class {
      readonly state = 'running';
@@ -148,21 +157,21 @@ test('each combat cue renders a different audible waveform', async ({ page }) =>
      createBiquadFilter = render.createBiquadFilter.bind(render);
      resume = () => Promise.resolve();
     } as unknown as typeof AudioContext;
-    const audio = new GameAudio();
+    const audio = new GameAudio(undefined, style === 'mini');
     audio.unlock();
-    audio.playCue(cue as keyof typeof COMBAT_SOUNDS, preview);
+    audio.playCue(cue as keyof typeof COMBAT_SOUNDS, style === 'storybook');
     const pcm = (await render.startRendering()).getChannelData(0);
     let peak = 0, signature = 0;
     for (const value of pcm) {
      peak = Math.max(peak, Math.abs(value));
      signature = (Math.imul(signature, 31) + Math.round(value * 1e6)) | 0;
     }
-    values.push({cue: preview ? 'storybook-' + cue : cue, peak, signature});
+    values.push({cue: style + '-' + cue, peak, signature});
    }
   } finally { window.AudioContext = Original; }
   return values;
  });
- expect(values).toHaveLength(46);
+ expect(values).toHaveLength(59);
  for (const {cue,peak} of values) {
   expect(peak, cue).toBeGreaterThan(.005);
   expect(peak, cue).toBeLessThan(1);

@@ -1,6 +1,6 @@
 import type { CombatSound, HeroId, RunState } from './types';
 import { DEFAULT_SFX_VOLUME } from './config';
-import { COMBAT_SOUNDS, STORYBOOK_CUES } from './combat-sounds';
+import { COMBAT_SOUNDS, MINI_WORLD_CUES, STORYBOOK_CUES } from './combat-sounds';
 
 const volume=(v:number)=>Number.isFinite(v)?Math.max(0,Math.min(1,v)):0;
 type MusicTrack = 'battle' | 'warden';
@@ -21,7 +21,7 @@ export class GameAudio {
  private noiseBuffer?: AudioBuffer;
  private readonly clickDownload?: Promise<ArrayBuffer | undefined>;
  private clickBuffer?: Promise<AudioBuffer | undefined>;
- constructor(clickUrl?: string) {
+ constructor(clickUrl?: string, private readonly miniWorld = false) {
   if (clickUrl) this.clickDownload = fetch(clickUrl)
    .then(response => response.ok ? response.arrayBuffer() : undefined)
    .catch(() => undefined);
@@ -33,9 +33,9 @@ export class GameAudio {
    this.battleDownload ??= this.fetchSoundtrack('battle').catch(() => undefined);
   }
  }
- beginRun() {
+ beginRun(finalBoss = false) {
   this.stopMusic();
-  this.track = 'battle';
+  this.track = finalBoss ? 'warden' : 'battle';
   this.musicOffset = 0;
   this.musicLevel = 1;
   if (this.context && this.musicGate) {
@@ -43,7 +43,7 @@ export class GameAudio {
    this.musicGate.gain.cancelScheduledValues(now);
    this.musicGate.gain.setValueAtTime(1, now);
   }
-  this.loadSoundtrack('battle');
+  this.loadSoundtrack(this.track);
   this.startMusic();
  }
  unlock(){try{
@@ -112,7 +112,13 @@ export class GameAudio {
   filter.type = 'bandpass'; filter.frequency.value = center; filter.Q.value = .65;
   this.playVoice(c, source, c.currentTime + delay, duration, level, filter);
  }
- click() {
+ click(kind: 'touch' | 'back' | 'confirm' = 'touch') {
+  if (this.miniWorld) {
+   this.noise(1340, .055, .095);
+   this.tone(kind === 'back' ? 392 : 587, .105, .072, 'triangle');
+   if (kind === 'confirm') this.tone(784, .16, .056, 'sine', .048);
+   return;
+  }
   const c = this.context;
   if (!this.clickDownload || !c) {
    this.tone(523, .09, .06, 'triangle');
@@ -131,9 +137,21 @@ export class GameAudio {
   });
  }
  hit(){const now=performance.now();if(now-this.lastFx<85)return;this.lastFx=now;this.tone(215,.06,.025,'triangle');}
- hurt(){this.tone(98,.18,.1,'triangle');this.tone(73,.2,.04);}
- attack(hero:HeroId){const now=performance.now();if(now-this.lastAttack<140)return;this.lastAttack=now;this.tone(hero==='mage'?880:hero==='archer'?660:260,.07,.018,'triangle');}
- levelUp(){[523,659,784].forEach((f,i)=>this.tone(f,.28,.065,'triangle',i*.07));}
+ hurt(){
+  if (this.miniWorld) { this.noise(580, .12, .11); this.tone(190, .16, .086, 'triangle', 0, 81); return; }
+  this.tone(98,.18,.1,'triangle');this.tone(73,.2,.04);
+ }
+ attack(hero:HeroId){
+  const now=performance.now();if(now-this.lastAttack<140)return;this.lastAttack=now;
+  if (!this.miniWorld) { this.tone(hero==='mage'?880:hero==='archer'?660:260,.07,.018,'triangle'); return; }
+  if (hero === 'warrior') { this.noise(1770, .13, .09); this.tone(294, .12, .049, 'triangle', 0, 135); }
+  if (hero === 'archer') { this.noise(3130, .08, .067); this.tone(414, .095, .063, 'triangle', 0, 243); }
+  if (hero === 'mage') { this.tone(660, .13, .058, 'sine', 0, 840); this.tone(990, .16, .033, 'triangle', .024, 1320); }
+ }
+ levelUp(){
+  const notes = this.miniWorld ? [587, 740, 880, 1175] : [523, 659, 784];
+  notes.forEach((f,i)=>this.tone(f,.28,.065,this.miniWorld && i % 2 ? 'sine' : 'triangle',i*.07));
+ }
  boss(storybook = false) {
   const notes = storybook ? [196, 262, 220] : [164, 155, 130];
   notes.forEach((f, i) => this.tone(f, .38, .075, 'triangle', i * .18));
@@ -145,12 +163,13 @@ export class GameAudio {
   if (!terminal && now - (this.lastCues.get(cue) ?? -Infinity) < .07) return;
   this.lastCues.set(cue, now);
   if (terminal) this.stopVoices();
-  const {tones, noise} = (storybook ? STORYBOOK_CUES[cue] : undefined) ?? COMBAT_SOUNDS[cue];
+  const {tones, noise} = (this.miniWorld ? MINI_WORLD_CUES[cue] : undefined)
+   ?? (storybook ? STORYBOOK_CUES[cue] : undefined) ?? COMBAT_SOUNDS[cue];
   for (const [pitch, end, seconds, gain, wave, delay] of tones) this.tone(pitch, seconds, gain, wave, delay, end);
   if (noise) this.noise(...noise);
  }
  private async fetchSoundtrack(track: MusicTrack) {
-  const response = await fetch(`${import.meta.env.BASE_URL}audio/everpath-${track}.m4a`);
+  const response = await fetch(`${import.meta.env.BASE_URL}audio/everpath-${this.miniWorld ? 'mini-' : ''}${track}.m4a`);
   return response.ok ? response.arrayBuffer() : undefined;
  }
  private loadSoundtrack(track: MusicTrack) {

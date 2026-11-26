@@ -16,6 +16,7 @@ export class GameSimulation {
  speedMultiplier: 1 | 2 = 1;
  onSound?: (cue: CombatSound) => void;
  onBasicAttack?: (angle: number) => void;
+ onEnemyAttack?: (enemy: Enemy) => void;
  private regularSpawns = 0; private sideSpawns = 0;
  private healDrops = 0;
  private rewardedMiddleWaves = new Set<number>();
@@ -236,7 +237,7 @@ export class GameSimulation {
     }
     else if (e.phase === 'warn') {
      speed = 0;
-     if (e.timer <= 0) { e.phase = 'dash'; e.timer = BOSS_PATTERN.dashDuration; this.onSound?.('grormDash'); }
+     if (e.timer <= 0) { e.phase = 'dash'; e.timer = BOSS_PATTERN.dashDuration; this.onEnemyAttack?.(e); this.onSound?.('grormDash'); }
     }
     else if (e.phase === 'dash') {
      dir = e.aim; speed = BOSS_PATTERN.dashSpeed;
@@ -249,11 +250,12 @@ export class GameSimulation {
     else if (e.phase === 'recover') { speed = 0; if (e.timer <= 0) { e.phase = 'chase'; e.timer = BOSS_PATTERN.chase; } }
    } else if (e.kind === 'shaman') {
     if (distance(e, p) < 200) speed = 0;
-    if (e.timer <= 0 && e.y > 80) { this.addHazard({ ...p }, 43, 1.55, e.damage, 'enemy', 'slam'); e.timer = 4.2; }
+    if (e.timer <= 0 && e.y > 80) { this.addHazard({ ...p }, 43, 1.55, e.damage, 'enemy', 'slam'); e.timer = 4.2; this.onEnemyAttack?.(e); }
    } else if (e.kind === 'skeleton') {
     if (distance(e, p) < 220 && distance(e, p) > 140) { dir = { x: Math.sin(s.elapsed + e.seed) * .5, y: 0 }; }
     if (e.timer <= 0 && e.y > 70) {
-     this.shoot(e, p, 'enemy', e.damage, 155, 1); e.timer = 2.65;
+     const fired = this.shoot(e, p, 'enemy', e.damage, 155, 1); e.timer = 2.65;
+     if (fired) this.onEnemyAttack?.(e);
     }
    } else if (e.kind === 'bat') { dir.x += Math.sin(s.elapsed * 5 + e.seed) * .65; dir = normalize(dir.x, dir.y); }
    speed *= 1 - frost;
@@ -277,6 +279,7 @@ export class GameSimulation {
    const side = player.x < W.width / 2 ? 1 : -1;
    this.addHazard(player, 38, 1.05, enemy.damage * .88, 'enemy', 'slam', 'briarImpact');
    this.addHazard({x: player.x + side * 77, y: player.y - 46}, 35, 1.42, enemy.damage * .74, 'enemy', 'slam', 'briarImpact');
+  this.onEnemyAttack?.(enemy);
    return 0;
   }
   return distance(enemy, player) > 215 ? 1 : .18;
@@ -286,6 +289,7 @@ export class GameSimulation {
   if (e.phase === 'warn') {
    if (e.timer <= 0) {
     for (let i = -2; i <= 2; i++) this.shoot(e, { x: e.x + e.aim.x, y: e.y + e.aim.y }, 'enemy', e.damage * .72, enraged ? 205 : 170, 1, i * .19);
+    this.onEnemyAttack?.(e);
     this.onSound?.('wardenFan');
     e.phase = 'chase'; e.timer = enraged ? 1.55 : 2.05;
    }
@@ -301,6 +305,7 @@ export class GameSimulation {
     const offset = player.x < W.width / 2 ? 85 : -85;
     this.addHazard({ x: player.x + offset, y: player.y - 38 }, 43, 1.52, e.damage, 'enemy', 'slam', 'wardenSlam');
     if (enraged) this.addHazard({ x: player.x + offset / 2, y: player.y + 89 }, 39, 1.76, e.damage, 'enemy', 'slam', 'wardenSlam');
+    this.onEnemyAttack?.(e);
    } else if (attack === 1) {
     e.phase = 'warn'; e.timer = .74; e.aim = unit(e, player);
     this.onSound?.('wardenAim');
@@ -313,15 +318,20 @@ export class GameSimulation {
     }
     this.onSound?.('wardenRing');
     if (enraged) this.addHazard(player, 41, 1.18, e.damage, 'enemy', 'slam', 'wardenSlam');
+    this.onEnemyAttack?.(e);
    }
   }
   return enraged ? .95 : .80;
  }
  private damageEnemyContact(enemy: Enemy) {
+  const vulnerable = this.state.player.invincible <= 0;
   let damage = enemy.damage;
   if (enemy.paired && enemy.phase !== 'dash') damage *= .68;
   if (enemy.kind === 'warden' && enemy.phase === 'recover') damage *= .65;
   this.damagePlayer(damage);
+  if (vulnerable && this.state.player.invincible > 0 && !isBoss(enemy.kind) && enemy.kind !== 'skeleton' && enemy.kind !== 'shaman') {
+   this.onEnemyAttack?.(enemy);
+  }
  }
  private nearest(origin: Vec, range = Infinity, excluded = new Set<number>(), includeRadius = false, eligible?: (enemy: Enemy) => boolean): Enemy | undefined {
   let best: Enemy | undefined, min = range;

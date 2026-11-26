@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EVERPATH 사운드 비교</title>
+<style>
+ * { box-sizing:border-box }
+ body { margin:0; background:#eef7ed; color:#143e34; font:16px system-ui,sans-serif }
+ main { width:min(100% - 24px, 580px); margin:16px auto; }
+ h1 { margin:0 0 10px; font-size:clamp(23px,5vw,34px); }
+ h2 { margin:0 0 8px; font-size:17px; }
+ section { margin:9px 0; padding:12px; border:1px solid #a7ccba; border-radius:8px; background:#fafffa; }
+ .buttons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+ .music { grid-template-columns:repeat(3,minmax(0,1fr)); }
+ button, a { font:inherit; font-weight:700; }
+ button { min-height:38px; padding:4px; border:1px solid #7bad95; border-radius:5px; background:#fcfffc; color:inherit; cursor:pointer; font-size:14px; }
+ button[aria-pressed="true"] { background:#14624c; border-color:#14624c; color:#fff; }
+ a { color:#145542; text-underline-offset:3px; }
+</style>
+<main>
+ <h1>미니 월드 사운드 비교</h1>
+ <div class="buttons" role="group" aria-label="사운드 버전">
+  <button data-style="old" aria-pressed="false">기존</button>
+  <button data-style="mini" aria-pressed="true">미니 월드</button>
+ </div>
+ <section>
+  <h2>배경음악</h2>
+  <div class="buttons music">
+   <button data-music="battle" aria-pressed="false">숲 탐험</button>
+   <button data-music="warden" aria-pressed="false">모르바전</button>
+   <button id="stop">정지</button>
+  </div>
+ </section>
+ <section>
+  <h2>효과음</h2>
+  <div class="buttons">
+   <button data-ui="click">메뉴 선택</button>
+   <button data-ui="levelUp">레벨업</button>
+   <button data-hero="warrior">전사 기본공격</button>
+   <button data-hero="archer">궁수 기본공격</button>
+   <button data-hero="mage">마법사 기본공격</button>
+   <button data-cue="chestPickup">보물 상자</button>
+   <button data-cue="grormWarn">그롬 돌진 예고</button>
+   <button data-cue="briarWarn">바르크 포격 예고</button>
+   <button data-cue="wardenRoots">모르바 뿌리 예고</button>
+   <button data-cue="wardenAim">모르바 부채꼴 예고</button>
+   <button data-cue="defeat">원정 종료</button>
+   <button data-cue="victory">원정 클리어</button>
+  </div>
+ </section>
+ <a href="/?polish=mini">시안으로 원정 시작</a>
+</main>
+<script type="module" src="./mini-sound.ts"></script>
+</html>

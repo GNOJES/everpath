@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EVERPATH 미니 월드 적 시안</title>
+<style>
+ * { box-sizing:border-box }
+ body { margin:0; background:#eef7ed; color:#143e34; font:16px system-ui,sans-serif }
+ main { width:min(100% - 24px, 850px); margin:14px auto; display:grid; grid-template-columns:minmax(220px, 1fr) minmax(0, 432px); gap:24px; align-items:start }
+ h1 { font-size:clamp(23px,4vw,34px); margin:0 0 14px; line-height:1.2 }
+ nav { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px }
+ button, a { font:inherit; font-weight:700 }
+ button { min-height:42px; padding:5px; border:1px solid #7bad95; border-radius:5px; background:#fcfffc; color:inherit; cursor:pointer }
+ button[aria-pressed="true"] { background:#14624c; border-color:#14624c; color:#fff }
+ #replay { width:100%; margin-top:8px }
+ #description { line-height:1.5 }
+ #field { width:100%; aspect-ratio:9/16; max-height:calc(100dvh - 28px); overflow:hidden; background:#82be47; border:2px solid #184a3b; border-radius:8px; touch-action:none }
+ p { margin:10px 0 }
+ a { color:#145542; text-underline-offset:3px }
+ @media(max-width:685px) {
+  main { grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); height:calc(100dvh - 16px); gap:9px; margin:8px auto }
+  header { width:100% }
+  h1 { margin-bottom:8px }
+  nav { grid-template-columns:repeat(4,minmax(0,1fr)); gap:3px }
+  nav button, #replay { min-height:38px; font-size:13px }
+  #description, .controls { font-size:13px; margin:5px 0 }
+  #field { justify-self:center; height:100%; width:auto; max-width:100%; max-height:none }
+ }
+</style>
+<main>
+ <header>
+  <h1>미니 월드 적 시안</h1>
+  <nav aria-label="적 선택">
+   <button data-case="common" aria-pressed="true">잡몹 6종</button>
+   <button data-case="boss" aria-pressed="false">그롬</button>
+   <button data-case="briar" aria-pressed="false">바르크</button>
+   <button data-case="warden" aria-pressed="false">모르바</button>
+  </nav>
+  <p id="description">슬라임, 고블린, 박쥐, 해골 궁수, 갑주병, 주술사</p>
+  <button type="button" id="replay">다시 보기</button>
+  <p class="controls">방향키 또는 드래그로 이동 · <a href="/?enemies=mini">실제 원정으로 플레이</a></p>
+ </header>
+ <div id="field" aria-label="적 움직임과 공격 예고"></div>
+</main>
+<script type="module" src="./mini-enemies.ts"></script>
+</html>

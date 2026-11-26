@@ -5,6 +5,7 @@ import sprout from './assets/kenney/sprout.png?no-inline';
 import clickSample from './assets/kenney/click-001.mp3?no-inline';
 import { createArt, preloadPack, type PreviewPack } from './art';
 import { MIDDLE_BOSS_WAVES } from './encounters';
+import { miniEnemyPose, miniEnemyTexture, miniWardenRest, renderMiniBossHazard, renderMiniBossTell } from './mini-enemies';
 import { storybookShot, storybookSlash } from './storybook-effects';
 import { WORLD as W, BOSS_PATTERN, HEROES, ENEMIES, FROST_AURA, SKILLS, isBoss } from './config';
 import { PlayerInput } from './input';
@@ -13,7 +14,8 @@ import { GameAudio } from './audio';
 import { clamp } from './math';
 import { renderMeteorShower, renderShield, renderSkillEffect, renderSkillShot } from './skill-effects';
 import type { InputObservation } from '../diagnostics/types';
-import type { RunState } from './types';
+import type { Enemy, RunState } from './types';
+import miniEnemyAtlas from './assets/preview-packs/mini/enemy-motion.png?no-inline';
 
 const heroScale = 2;
 // These trimmed silhouettes all share the same center line through the boots.
@@ -32,16 +34,19 @@ export class ForestScene extends Phaser.Scene {
  private miniStrike?: { angle: number; time: number };
  private miniWalkTime = 0;
  private miniIsWalking = false;
+ private enemyClock = 0;
+ private enemyAttacks = new WeakMap<Enemy, number>();
  private ground!: Phaser.GameObjects.TileSprite; private actors!: ImagePool; private shots!: ImagePool;
  private shadows!: Phaser.GameObjects.Graphics; private fx!: Phaser.GameObjects.Graphics; private joystick!: Phaser.GameObjects.Graphics;
  private hero!: Phaser.GameObjects.Image; private fallenWarden!: Phaser.GameObjects.Image; private companions: Phaser.GameObjects.Image[] = []; private scenery: { image: Phaser.GameObjects.Image; y: number; x: number }[] = [];
  private labels: Phaser.GameObjects.Text[] = []; private titleScroll = 0; private clock = 0; private lastEffect = 0; private endFxTime = 0;
- constructor(private readonly storybook = false, private readonly cc0 = false, private readonly previewPack?: PreviewPack) {
+ constructor(private readonly storybook = false, private readonly cc0 = false, private readonly previewPack?: PreviewPack, private readonly miniEnemies = false, miniAudio = false) {
   super('forest');
-  this.audio = new GameAudio(cc0 ? clickSample : undefined);
+  this.audio = new GameAudio(cc0 ? clickSample : undefined, miniAudio);
  }
  preload() {
   if (this.previewPack) preloadPack(this, this.previewPack);
+  if (this.miniEnemies) this.load.spritesheet(miniEnemyTexture, miniEnemyAtlas, { frameWidth: 24, frameHeight: 24 });
   if (!this.cc0) return;
   this.load.image('kenney-blossoms', blossoms);
   this.load.image('kenney-shrub', shrub);
@@ -70,6 +75,7 @@ export class ForestScene extends Phaser.Scene {
   }
   this.actors = new ImagePool(this); this.shots = new ImagePool(this); this.hero = this.addFieldHero(216, 515, 'warrior');
   this.fallenWarden = this.add.image(0, 0, 'warden').setOrigin(.5, .8).setVisible(false);
+  if (this.miniEnemies) this.fallenWarden.setTexture(miniEnemyTexture, miniWardenRest.frame).setOrigin(.5, 22 / 24);
   this.companions = [this.addFieldHero(174, 559, 'archer'), this.addFieldHero(263, 548, 'mage')];
   this.controls = new PlayerInput(this.game.canvas, () => this.onPause?.(), event => this.onInputObservation?.(event));
   this.events.once('shutdown', () => this.controls.destroy()); this.onReady?.();
@@ -78,11 +84,13 @@ export class ForestScene extends Phaser.Scene {
   if (this.simulation) {
    this.simulation.onSound = undefined;
    this.simulation.onBasicAttack = undefined;
+   this.simulation.onEnemyAttack = undefined;
   }
   this.simulation = sim;
   if (sim) {
    sim.onSound = cue => this.audio.playCue(cue, this.storybookOpening(sim.state));
    if (this.previewPack === 'mini') sim.onBasicAttack = angle => { this.miniStrike = { angle, time: this.clock }; };
+   if (this.miniEnemies) sim.onEnemyAttack = enemy => this.enemyAttacks.set(enemy, this.enemyClock);
    this.audio.beginRun();
   } else {
    this.audio.syncMusic();
@@ -95,6 +103,8 @@ export class ForestScene extends Phaser.Scene {
   this.miniStrike = undefined;
   this.miniWalkTime = 0;
   this.miniIsWalking = false;
+  this.enemyClock = 0;
+  this.enemyAttacks = new WeakMap();
  }
  update(_time: number, delta: number) {
   const dt = Math.min(delta / 1000, .05); const sim = this.simulation;
@@ -105,6 +115,7 @@ export class ForestScene extends Phaser.Scene {
    const { x, y } = sim.state.player;
    if (sim.state.status === 'running') {
     this.onInputFrame?.(performance.now());
+    if (sim.state.timeStopRemaining <= 0) this.enemyClock += visualStep;
     sim.update(dt, direction);
     if (this.previewPack === 'mini') {
      this.miniIsWalking = x !== sim.state.player.x || y !== sim.state.player.y;
@@ -188,12 +199,27 @@ export class ForestScene extends Phaser.Scene {
  private shadow(x: number, y: number, w: number, h: number) { this.shadows.fillStyle(0x34475d, .26); this.shadows.fillEllipse(x, y, w * 2, h * 2); }
  private renderEnemies(s: RunState) {
   const living = s.enemies.filter(enemy => enemy.hp > 0);
-  living.forEach((e, i) => { const texture = this.storybook && e.middleWave === MIDDLE_BOSS_WAVES[0].at ? 'storybook-grorm' : e.kind; const image = this.actors.at(i, texture); image.setPosition(e.x, e.y + (s.timeStopRemaining > 0 ? 0 : Math.sin(this.clock * (e.kind === 'bat' ? 15 : 7) + e.seed) * (e.kind === 'bat' ? 4 : 1))).setOrigin(.5, .8).setDepth(100 + e.y).setScale(isBoss(e.kind) ? 2.9 : e.elite ? 2.6 : 2.2).setFlipX(e.x > s.player.x); image.setTint(s.timeStopRemaining > 0 ? 0xb7e2ff : e.hitFlash > 0 ? 0xffffff : e.elite ? 0xffdc98 : 0xffffff);
+  living.forEach((e, i) => {
+   const texture = this.miniEnemies ? miniEnemyTexture : this.storybook && e.middleWave === MIDDLE_BOSS_WAVES[0].at ? 'storybook-grorm' : e.kind;
+   const image = this.actors.at(i, texture);
+   if (this.miniEnemies) {
+    const pose = miniEnemyPose(e, s.player, this.enemyClock, this.enemyAttacks.get(e));
+    image.setFrame(pose.frame).setOrigin(.5, 22 / 24).setPosition(e.x, e.y + 8 + pose.lift)
+     .setScale(pose.scale).setFlipX(pose.flip);
+   } else {
+    const bob = s.timeStopRemaining > 0 ? 0 : Math.sin(this.clock * (e.kind === 'bat' ? 15 : 7) + e.seed) * (e.kind === 'bat' ? 4 : 1);
+    image.setPosition(e.x, e.y + bob).setOrigin(.5, .8).setScale(isBoss(e.kind) ? 2.9 : e.elite ? 2.6 : 2.2).setFlipX(e.x > s.player.x);
+   }
+   image.setDepth(100 + e.y).setTint(s.timeStopRemaining > 0 ? 0xb7e2ff : e.hitFlash > 0 ? 0xffffff : e.elite ? 0xffdc98 : 0xffffff);
    image.setAlpha(e.hitFlash > 0 ? .6 : 1); this.shadow(e.x, e.y + 5, e.radius * 1.2, 5);
-   if (isBoss(e.kind)) this.renderBossHealth(e, image.height);
+   if (isBoss(e.kind)) this.renderBossHealth(e, this.miniEnemies ? image.y - 16 * image.scaleY - 12 : e.y - image.height * 2.9 * .8 - 12);
    else if (e.hp < e.maxHp) {
     this.fx.fillStyle(0x172824, .8).fillRect(e.x - 13, e.y - 35, 26, 3);
     this.fx.fillStyle(e.elite ? 0xe1b46b : 0xaec17d).fillRect(e.x - 13, e.y - 35, 26 * Math.max(0, e.hp / e.maxHp), 3);
+   }
+   if (this.miniEnemies) {
+    renderMiniBossTell(this.fx, e);
+    return;
    }
    if (e.kind === 'warden') this.fx.lineStyle(2, 0xd0a3e9, .6).strokeCircle(e.x, e.y - 12, e.radius + 12 + Math.sin(this.clock * 3) * 4);
    if (e.kind === 'briar' && e.phase === 'warn') this.fx.lineStyle(2, 0xffcf91, .65).strokeEllipse(e.x, e.y - 3, e.radius * 2.2, e.radius);
@@ -230,13 +256,11 @@ export class ForestScene extends Phaser.Scene {
   const drop = progress * progress;
   const direction = impact.x > W.width / 2 ? -1 : 1;
   this.fallenWarden.setPosition(impact.x + direction * drop * 23, impact.y + drop * 15)
-   .setDepth(99 + impact.y).setScale(2.9 - drop * .42).setAngle(direction * 83 * drop)
+   .setDepth(99 + impact.y).setScale((this.miniEnemies ? miniWardenRest.scale : 2.9) - drop * .42).setAngle(direction * 83 * drop)
    .setTint(progress < .14 ? 0xffecbc : 0xd1a6a1).setAlpha(1 - .28 * drop);
   this.shadow(impact.x + direction * drop * 23, impact.y + 5, 34 + drop * 17, 12);
  }
- private renderBossHealth(boss: RunState['enemies'][number], height: number) {
-  // Same origin and scale as the sprite; the bar enters the field with its boss.
-  const head = boss.y - height * 2.9 * .8 - 12;
+ private renderBossHealth(boss: Enemy, head: number) {
   if (boss.entryTarget && head < 0) return;
   const y = Math.max(3, head);
   const final = boss.kind === 'warden', width = final ? 92 : 68;
@@ -302,6 +326,7 @@ export class ForestScene extends Phaser.Scene {
   for (const h of s.hazards) {
    const hostile = h.owner === 'enemy', color = hostile ? 0xd92e61 : 0x1b8cba;
    const progress = h.fired ? 1 : clamp(1 - h.delay / (h.windup ?? .65), 0, 1);
+   if (this.miniEnemies && hostile && renderMiniBossHazard(g, h, progress)) continue;
    g.fillStyle(color, h.fired ? .31 : .10 + progress * .10).fillCircle(h.x, h.y, h.radius);
    g.lineStyle(hostile ? 2.5 : 5, hostile ? 0x652b57 : 0x235477, hostile ? .40 : .77).strokeCircle(h.x, h.y, h.radius);
    g.lineStyle(hostile ? 1 : 2, hostile ? 0xffe2cf : 0xccfdff, hostile ? .63 : .95).strokeCircle(h.x, h.y, h.radius);
