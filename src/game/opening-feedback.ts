@@ -21,10 +21,10 @@ type Hurt = Extract<CombatFeedback, { kind: 'hurt' }>;
 export class OpeningFeedback {
  private strikes: Timed<Strike>[] = [];
  private hurt?: Timed<Hurt>;
- private chest?: Pickup;
+ private chests = new Set<Pickup>();
 
- relevant(s: RunState) {
-  return s.elapsed < firstGrormAt || s.enemies.some(enemy => this.isFirstGrorm(enemy));
+ relevant(_s: RunState) {
+  return true;
  }
 
  isFirstGrorm(e: Enemy) {
@@ -33,11 +33,12 @@ export class OpeningFeedback {
 
  record(event: CombatFeedback, clock: number) {
   if (event.kind === 'firstChest') {
-   this.chest = event.pickup;
+   this.chests.add(event.pickup);
    this.hurt = undefined;
-  } else if (event.kind === 'chestCollected' && event.pickup === this.chest) {
-   this.chest = undefined;
-   return true;
+  } else if (event.kind === 'chest') {
+   this.chests.add(event.pickup);
+  } else if (event.kind === 'chestCollected') {
+   return this.chests.delete(event.pickup);
   } else if (event.kind === 'hurt') {
    this.hurt = { ...event, source: { x: event.source.x, y: event.source.y }, atTime: clock };
   } else if (event.kind === 'strike') {
@@ -54,7 +55,8 @@ export class OpeningFeedback {
 
  reset() {
   this.strikes = [];
-  this.hurt = this.chest = undefined;
+  this.hurt = undefined;
+  this.chests.clear();
  }
 
  draw(g: Phaser.GameObjects.Graphics, s: RunState, clock: number) {
@@ -62,8 +64,12 @@ export class OpeningFeedback {
   this.strikes = this.strikes.filter(strike => clock - strike.atTime < .27);
   for (const strike of this.strikes) this.drawStrike(g, strike, clock - strike.atTime);
 
-  if (this.chest && s.pickups.includes(this.chest)) {
-   const { x, groundY } = this.chest, y = groundY + s.scroll;
+  for (const chest of [...this.chests]) {
+   if (!s.pickups.includes(chest)) {
+    this.chests.delete(chest);
+    continue;
+   }
+   const { x, groundY } = chest, y = groundY + s.scroll;
    if (y >= 0 && y < W.height - 8) {
     const pulse = .6 + .4 * Math.sin(clock * 6) ** 2;
     const bob = Math.sin(clock * 6) * 2.5;

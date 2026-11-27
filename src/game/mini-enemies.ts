@@ -13,6 +13,7 @@ const telegraphs = {
  grorm: { ink: 0x843518, light: 0xffead0, fill: 0xf48e39 },
  briar: { ink: 0x106459, light: 0xcdffea, fill: 0x36b897 },
  warden: { ink: 0x562679, light: 0xeddcff, fill: 0xb77ef5 },
+ shaman: { ink: 0x422659, light: 0xe6ffa6, fill: 0x76d658 },
 };
 
 export function miniEnemyPose(enemy: Enemy, player: Vec, clock: number, attackAt?: number) {
@@ -107,7 +108,7 @@ function renderRing(g: Graphics, e: Enemy) {
 
 export function renderMiniBossHazard(g: Graphics, h: Hazard, progress: number) {
  const kind = h.impactSound === 'briarImpact' ? 'briar' : h.impactSound === 'wardenSlam' ? 'warden'
-  : h.impactSound === 'grormSlam' ? 'grorm' : undefined;
+  : h.impactSound === 'grormSlam' ? 'grorm' : h.impactSound === 'shamanImpact' ? 'shaman' : undefined;
  if (!kind) return false;
  const { ink, light, fill } = telegraphs[kind];
  const { x, y, radius } = h;
@@ -132,6 +133,15 @@ export function renderMiniBossHazard(g: Graphics, h: Hazard, progress: number) {
    .map(([px, py]) => new Phaser.Math.Vector2(px, py));
   g.lineStyle(5, ink, .88).strokePoints(root, false).strokePoints(branch, false);
   g.lineStyle(2, light, .95).strokePoints(root, false).strokePoints(branch, false);
+ } else if (kind === 'shaman') {
+  for (let i = 0; i < 3; i++) {
+   const a = i * Math.PI * 2 / 3 - Math.PI / 6, bx = x + Math.cos(a) * size * .58, by = y + Math.sin(a) * size * .58;
+   const r = (4 + 3 * progress) * (h.fired ? 1.25 : 1);
+   g.lineStyle(2, ink, .9).strokeCircle(bx, by, r);
+   g.fillStyle(light, .85).fillCircle(bx, by, r * .45);
+  }
+  g.lineStyle(2, ink, .88).lineBetween(x - size * .4, y, x + size * .4, y).lineBetween(x, y - size * .4, x, y + size * .4);
+  g.fillStyle(light, 1).fillCircle(x, y, 2.5);
  } else {
   const crack = [[x - size, y - size * .28], [x - size * .27, y - size * .1],
    [x + size * .11, y - size * .58], [x + size * .24, y + size * .22], [x + size, y + size * .38]]

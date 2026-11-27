@@ -231,6 +231,19 @@ export function renderSkillEffect(g: Phaser.GameObjects.Graphics, effect: Effect
    }
    break;
   }
+  case 'evolve': {
+   const beamW = (18 + 16 * Math.sin(progress * Math.PI)) * opacity;
+   const beamH = 140 + progress * 80;
+   g.fillStyle(color, opacity * .28).fillRect(x - beamW, y - beamH, beamW * 2, beamH);
+   g.fillStyle(0xfff4c2, opacity * .52).fillRect(x - beamW * .42, y - beamH, beamW * .84, beamH);
+   g.lineStyle(3, 0xffe494, alpha).strokeEllipse(x, y + 4, radius * (.5 + progress * .7), radius * (.22 + progress * .32));
+   for (let i = 0; i < 6; i++) {
+    const a = i * Math.PI / 3 + progress * 1.4, r = radius * (.28 + progress * .72);
+    const px = x + Math.cos(a) * r, py = y + Math.sin(a) * r * .55 - progress * 32;
+    g.fillStyle(i % 2 ? 0xfff8d6 : color, opacity).fillRect(px - 2, py - 2, 4, 4);
+   }
+   break;
+  }
   default:
    return false;
  }

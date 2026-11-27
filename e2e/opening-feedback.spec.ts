@@ -131,3 +131,30 @@ test('hit feedback records projectiles, ground circles, and contact without canv
   expect(texts.some(text => text.includes('피격') || text.includes('충돌'))).toBe(false);
  }
 });
+
+test('keeps hurt feedback and multi-chest markers active at 4 minutes without text boxes', async ({ page }) => {
+ await start(page, 'archer');
+ await page.evaluate(() => {
+  const { sim } = (window as unknown as FixturePage).openingApp;
+  const s = sim.state;
+  s.elapsed = 239.99;
+  s.nextBoss = 240;
+  s.enemies = []; s.hazards = []; s.projectiles = []; s.player.invincible = 0;
+  sim.update(.02);
+  s.projectiles.push({
+   id: 60_000, x: s.player.x - 8, y: s.player.y, vx: 150, vy: 0, kind: 'enemy', radius: 4, damage: 10, life: 1, pierce: 1, hit: new Set(),
+  });
+  for (const boss of s.enemies.filter(e => e.middleWave === 240)) {
+   sim.damageEnemy(boss, boss.hp, 0);
+   while (s.choices.length) sim.chooseUpgrade(s.choices[0].id);
+  }
+ });
+ await page.clock.runFor(90);
+ expect(await events(page)).toContain('projectile');
+ const chests = await page.evaluate(() => {
+  const { sim } = (window as unknown as FixturePage).openingApp;
+  return sim.state.pickups.filter(p => p.kind === 'chest').length;
+ });
+ expect(chests).toBe(2);
+ expect((await visibleText(page)).some(t => t.includes('피격') || t.includes('보물 상자'))).toBe(false);
+});

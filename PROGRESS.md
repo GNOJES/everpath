@@ -1,6 +1,25 @@
 # EVERPATH 작업 현황
 
-## 현재 작업 · 폭발화살·장판 깊이·해골 화살·음악 페이드·모르바 패턴·레벨업 회복 개편 및 배포
+## 최근 완료 작업 · 1번 묶음 · 전 구간 전투 피드백·주술사·보스 탄환·드랍·진화 연출
+
+- **요구사항·목표** — 직접 접촉 회수 규칙(`PICKUPS.radius = 30`)을 유지한 채 (1) 피격 원인 방향·기본 타격 피드백과 4·6·8분 보물 상자 펄스 마커를 10분 전 구간으로 확장하고 (2) 독안개 주술사(`shaman`) 장판 예고/효과음과 그롬·모르바 탄환 스프라이트(`grorm-orb`, `warden-thorn`)를 구분하며 (3) 동전·회복 아이템·무기 진화 연출 및 효과음을 추가한다.
+- **구현 계획·완료 조건** — [설계 문서](docs/superpowers/specs/2026-11-27-full-run-feedback-and-tells-design.md) · [구현 계획](docs/superpowers/plans/2026-11-27-full-run-feedback-and-tells.md). (1) 선행 실패 테스트 작성·확인 (2) 시뮬레이션·렌더링·오디오·에셋 구현 (3) `320×568` 모바일 캡처 육안 검수 + `npm run build`·Vitest 20개 기능 스위트·Playwright Chrome 전체 통과 확인. (커밋·웹 배포 및 장기 밸런스 4종·실기기는 아직 미실행)
+
+| 단계 | 상태 |
+| --- | --- |
+| 설계·구현 계획 및 작업 현황 기록 | 완료 |
+| 선행 실패 테스트 작성 및 확인 (TDD RED) | 완료 |
+| 전 구간 피드백·적 예고·드랍/진화 연출 구현 (TDD GREEN) | 완료 |
+| 모바일 캡처 검수 및 전체 빌드·테스트 검증 | 완료 |
+| `main` 푸시 · Vercel 운영 배포 및 저장 확인 | 진행 중 |
+
+- **배포 전 운영 기준** — `https://everpath-roan.vercel.app/` 기준 `ver. 20261127-39`, 격리 프로필(`artifacts/local/release-40-profile`) 저장 기준 보유 골드 `355`, 영구 강화 `attack: 2, hp: 1, speed: 1, gold: 0, timeStop: 0`, `BGM 2`, 최근 원정 `로완 · 미완료 · 04:11 · 처치 134 · 놓침 66 (33.0%) · 골드 274`.
+
+- **로컬 변경 요약** — [opening-feedback.ts](src/game/opening-feedback.ts)·[scene.ts](src/game/scene.ts)·[audio.ts](src/game/audio.ts)에서 2분 제한을 제거하고 다중 상자(`Set<Pickup>`)를 추적하도록 확장해 4·6·8분 중간보스 상자와 전 구간 피격 방향·기본 타격 섬광이 유지되도록 했다(후반 다중 히트음 간격 `0.075s` 조절). [types.ts](src/game/types.ts)·[simulation.ts](src/game/simulation.ts)·[art.ts](src/game/art.ts)·[mini-enemies.ts](src/game/mini-enemies.ts)·[combat-sounds.ts](src/game/combat-sounds.ts)에서 `shaman` 독장판(`shamanCast`/`shamanImpact`, 자줏빛·독연두 3포자 그래픽), 첫 그롬 탄환(`grorm-orb` `11×11`), 모르바 탄환(`warden-thorn` `15×9`)을 분리하고, 동전·회복약 획득 시 링 파장과 `coinPickup`/`healPickup` 효과음, 무기 진화 시 `evolve` 효과음·빛기둥([skill-effects.ts](src/game/skill-effects.ts))·`★ 진화무기명` 텍스트를 연결했다. `PICKUPS.radius = 30` 직접 접촉 회수 규칙은 그대로 보존했다.
+- **로컬 검증 결과** — `npm run build` 성공(`ver. 20261127-34`). 장기 밸런스 4개 파일(`balance.test.ts`, `campaign-balance.test.ts`, `retry-economy.test.ts`, `skill-build.test.ts`)을 제외한 Vitest 20개 파일 250개 테스트 통과. Playwright Chrome 9개 파일 36개 테스트 통과(`e2e/audio.spec.ts` 69종 파형 유일성, `e2e/opening-feedback.spec.ts` 4분 피격·다중 상자, `e2e/storybook-preview.spec.ts` `shamanImpact`·`grorm-orb`·`warden-thorn` 포함). `320×568` 모바일 캡처에서 4분 다중 상자, 주술사 독장판, 보스 탄환 2종, 무기 진화 빛기둥을 육안 확인했다. 현재 변경은 미커밋 상태다.
+- **다음 작업 구상 · `Everpath` 고정 월드 분기 루트 탐험(제안)** — 무한 랜덤 생성 대신 `시작 숲 → 1차 분기(예: 좌측/직진) → 2차 분기(...)`처럼 재도전 시 같은 갈래를 다시 선택하면 동일한 지역·기믹·보스로 이어지는 **고정 월드 그래프 기반 분기 탐험** 설계 예정(배포 요청 시 1번 묶음 웹 배포 병행 가능).
+
+## 최근 완료 작업 · 폭발화살·장판 깊이·해골 화살·음악 페이드·모르바 패턴·레벨업 회복 개편 및 배포
 
 - **요구사항·목표** — (1) 궁수 `폭발 화살` 범위 70% 축소 및 최대 강화 기준 동시 중첩 최대 2개 제한 (2) 장판을 캐릭터·투사체 아래로 내리고 아군/적 색상 구분·투명도 완화 (3) 해골 궁수 적 화살 텍스처 적용 (4) 10분 보스 음악 전환 시 기존 곡 페이드아웃 (5) 10분 보스 모르바 4패턴 다양화 및 부채꼴 예고 종료 시 즉시 피격 수준 강화 (6) `생명의 뿌리` 최대 체력 증가 제거 및 고정 `+120 HP` 즉시 회복·HP 30% 미만 확정 보장. 로컬 검증 후 `main` 푸시로 Vercel 운영 웹에 배포한다.
 - **구현 계획·완료 조건** — [설계 문서](docs/superpowers/specs/2026-11-27-combat-fields-boss-audio-polish-design.md) · [구현 계획](docs/superpowers/plans/2026-11-27-combat-fields-boss-audio-polish.md). (1) 6가지 요구사항의 실패 테스트 작성·확인 (2) 시뮬레이션·렌더링·오디오·에셋 구현 (3) `npm run build`·Vitest·Playwright 모바일 Chrome 확인 및 캡처 육안 검증 (4) `main` 커밋·푸시 후 Vercel `READY`·누적 버전 증가·동일 Chrome 프로필 저장 보존 확인. (사용자 승인 및 웹 배포 요청 완료)
@@ -10,7 +29,9 @@
 | 설계·구현 계획 및 작업 현황 기록 | 완료 |
 | 선행 실패 테스트 작성 및 확인 (TDD RED) | 완료 |
 | 6가지 전투·렌더링·오디오·회복 구현 (TDD GREEN) | 완료 |
-| 전체 빌드·검증 및 Vercel 운영 배포·저장 확인 | 진행 중 |
+| 전체 빌드·검증 및 Vercel 운영 배포·저장 확인 | 완료 |
+
+- **운영 배포 및 저장 검증** — `8b48033` 커밋·`main` 푸시 후 Vercel `READY` 확인. [고정 웹 주소](https://everpath-roan.vercel.app/) 타이틀과 `/version.json`이 `20261126-38` → `20261127-39`로 갱신됐다. 동일 Chrome 격리 프로필(`artifacts/local/release-39-profile`)에서 배포 전후 `everpath.save.v1` 원문 일치(`saveIdentical: true`), 보유 골드 `355`, 영구 강화 `attack: 2, hp: 1, speed: 1, gold: 0, timeStop: 0`, `BGM 2`, 최근 원정 `로완 · 미완료 · 04:11 · 처치 134 · 놓침 66 (33.0%) · 골드 274` 유지를 확인했다. 영웅 선택 초상화 3종(`20×18`·`23×19`·`15×20`)과 원정 진입·우측 이동(`302/302` HP)이 `pageErrors: []`로 동작함을 확인했다. (실기기 터치·스피커 체감 및 장기 10분 밸런스 4종은 미실행)
 
 - **로컬 변경 요약** — [config.ts](src/game/config.ts)·[progression.ts](src/game/progression.ts)·[simulation.ts](src/game/simulation.ts)에서 `폭발 화살` 반경을 `74+41*lvl`→`52+29*lvl`·쿨다운을 `6.0s`(`haste` 레벨당 `+15%`)로 조정해 최대 강화 기준 `5s` 장판 동시 중첩을 2개 이하로 제한하고, `생명의 뿌리` 최대 체력 증가를 제거해 고정 `+120 HP` 즉시 회복·만피 시 선택지 제외·체력 30% 미만 확정 보장을 적용했다. 모르바는 4패턴 순환(`방사→부채꼴 예고 sweep+즉시 판정+고속 볼트 5발→방사→3연 뿌리 slam+2발`)으로 개편했다. [scene.ts](src/game/scene.ts)·[mini-enemies.ts](src/game/mini-enemies.ts)·[art.ts](src/game/art.ts)·[types.ts](src/game/types.ts)에서 아군 장판(`groundFx`, 깊이 10)·적 위험(`hazardFx`, 깊이 20)을 영웅·적·투사체 아래로 분리하고 옅은 호박색/세이지/하늘색 점선으로 구분했으며 해골 궁수에 `19×7` 적 화살 텍스처(`enemy-arrow`)를 연결했다. [audio.ts](src/game/audio.ts)는 10분 보스 전환 시 기존 곡을 전용 게인으로 `0.85s` 페이드아웃한 뒤 `'warden'`을 `0.25s` 페이드인으로 재생한다.
 - **로컬 검증 결과** — `npm run build` 성공(`ver. 20261127-31`). 장기 밸런스 4개 파일(`balance.test.ts`, `campaign-balance.test.ts`, `retry-economy.test.ts`, `skill-build.test.ts`)을 제외한 Vitest 20개 파일 246개 테스트 통과. Playwright Chrome 9개 파일 35개 테스트 통과, `320×568` 모바일 캡처에서 아군 장판·적 예고·모르바 부채꼴 sweep·해골 적 화살의 깊이와 시인성을 확인했다. (실기기 확인과 장기 10분 밸런스 4종은 미실행)

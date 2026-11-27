@@ -15,12 +15,13 @@ export type SkillId = 'whirl' | 'blade' | 'shield' | 'bash' | 'lunge' | 'quake' 
  | 'multishot' | 'pierce' | 'rain' | 'snare' | 'ricochet' | 'blastArrow' | 'deadeye'
  | 'chain' | 'fire' | 'frost' | 'meteor' | 'gravity' | 'prism' | 'runeCross';
 export type CombatSound = Exclude<SkillId, 'frost'> | 'shieldBlock' | 'rainImpact' | 'blastImpact' | 'meteorImpact' | 'timeStop' | 'chestPickup'
+ | 'coinPickup' | 'healPickup' | 'evolve' | 'shamanCast' | 'shamanImpact'
  | 'grormWarn' | 'grormVolley' | 'grormDash' | 'grormSlam' | 'grormDefeat'
  | 'briarWarn' | 'briarImpact' | 'wardenRoots' | 'wardenAim' | 'wardenFan' | 'wardenRing' | 'wardenSlam' | 'defeat' | 'victory';
-export type SkillEffect = 'whirl' | 'shieldRaise' | 'shieldBreak' | 'bash' | 'bashImpact' | 'lance' | 'quake' | 'sunder' | 'ricochet' | 'blast' | 'deadeye' | 'gravity' | 'prism' | 'runeCross';
+export type SkillEffect = 'whirl' | 'shieldRaise' | 'shieldBreak' | 'bash' | 'bashImpact' | 'lance' | 'quake' | 'sunder' | 'ricochet' | 'blast' | 'deadeye' | 'gravity' | 'prism' | 'runeCross' | 'evolve';
 export interface MeteorShower { elapsed: number; waves: number; damage: number }
 export type FieldShot = { radius: number; duration: number } & ({ kind: 'snare'; slow: number } | { kind: 'burn' });
-export interface Projectile extends Vec { id: number; vx: number; vy: number; radius: number; damage: number; life: number; kind: 'arrow' | 'magic' | 'blade' | 'enemy'; pierce: number; hit: Set<number>; target?: number; pierceScale?: number; skillShot?: SkillShot; field?: FieldShot; sprite?: 'enemy-arrow' }
+export interface Projectile extends Vec { id: number; vx: number; vy: number; radius: number; damage: number; life: number; kind: 'arrow' | 'magic' | 'blade' | 'enemy'; pierce: number; hit: Set<number>; target?: number; pierceScale?: number; skillShot?: SkillShot; field?: FieldShot; sprite?: 'enemy-arrow' | 'grorm-orb' | 'warden-thorn' }
 export type GroundField = { x: number; groundY: number; radius: number; remaining: number }
  & ({ kind: 'snare'; slow: number } | { kind: 'burn'; damage: number });
 export interface Effect extends Vec { id: number; kind: SkillEffect | 'slash' | 'crystal' | 'ring' | 'fire' | 'lightning' | 'hit' | 'death' | 'boss-death' | 'chestPickup' | 'heal' | 'text'; color: number; life: number; duration: number; radius: number; angle: number; halfAngle?: number; x2?: number; y2?: number; text?: string }
@@ -32,6 +33,7 @@ export type CombatFeedback =
  | { kind: 'hurt'; cause: DamageCause; source: Vec; amount: number }
  | { kind: 'strike'; style: StrikeFeedback; at: Vec; angle: number }
  | { kind: 'firstChest'; pickup: Pickup }
+ | { kind: 'chest'; pickup: Pickup }
  | { kind: 'chestCollected'; pickup: Pickup; amount: number };
 export interface RunState { runId: string; hero: HeroId; status: 'running' | 'paused' | 'upgrade' | 'gameover' | 'victory'; elapsed: number; rank: number; evolved: boolean; finalSpawned: boolean; timeStopCharges: number; timeStopRemaining: number; pickups: Pickup[]; scroll: number; player: Player; enemies: Enemy[]; projectiles: Projectile[]; effects: Effect[]; hazards: Hazard[]; groundFields: GroundField[]; meteorShower?: MeteorShower; level: number; xp: number; xpNext: number; kills: number; spawned: number; escaped: number; withdrawn: number; bosses: number; gold: number; weaponLevel: number; skills: Record<string, number>; passives: Record<PassiveId, number>; choices: Upgrade[]; nextBoss: number }
 export interface HeroConfig { id: HeroId; name: string; title: string; role: string; description: string; weapon: string; upgradeDescription: string; icon: string; color: string; hp: number; speed: number; weaponDamage: number; skillPower: number; cooldown: number; range: number; projectileSpeed: number; skills: SkillId[]; bars: [number, number, number] }

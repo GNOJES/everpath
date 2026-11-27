@@ -98,6 +98,24 @@ export function createArt(scene: Phaser.Scene, storybook = false, pack?: Preview
   rect(c, '#ffd4b8', 14, 2, 4, 3);
   rect(c, '#fff2e4', 17, 3, 2, 1);
  }));
+ add('grorm-orb', canvas(11, 11, c => {
+  rect(c, '#401b14', 2, 0, 7, 11);
+  rect(c, '#401b14', 0, 2, 11, 7);
+  rect(c, '#401b14', 1, 1, 9, 9);
+  rect(c, '#d85722', 2, 2, 7, 7);
+  rect(c, '#ffae4c', 3, 3, 5, 5);
+  rect(c, '#fff1bf', 4, 4, 3, 3);
+ }));
+ add('warden-thorn', canvas(15, 9, c => {
+  rect(c, '#2a153a', 0, 2, 12, 5);
+  rect(c, '#2a153a', 8, 0, 5, 9);
+  rect(c, '#2a153a', 11, 2, 4, 5);
+  rect(c, '#8c4fd9', 1, 3, 11, 3);
+  rect(c, '#8c4fd9', 9, 1, 3, 7);
+  rect(c, '#c592ff', 3, 3, 9, 3);
+  rect(c, '#f7e8ff', 10, 4, 4, 1);
+  rect(c, '#f7e8ff', 6, 4, 4, 1);
+ }));
  add('magic', canvas(13, 13, c => { rect(c, '#554875', 2, 2, 9, 9); rect(c, '#a89de0', 1, 4, 11, 5); rect(c, '#b5b1ee', 4, 1, 5, 11); rect(c, '#e0d9ff', 3, 3, 7, 7); rect(c, '#f4f0d4', 5, 4, 3, 4); }));
  add('blade', canvas(20, 13, c => { rect(c, '#a8e8da', 0, 5, 20, 3); rect(c, '#d5fff0', 3, 3, 13, 7); rect(c, '#efffe0', 7, 1, 4, 11); }));
  add('enemy', canvas(10, 10, c => { rect(c, '#a5564f', 0, 3, 10, 4); rect(c, '#e49c79', 2, 1, 6, 8); rect(c, '#ffd8a2', 4, 3, 3, 4); }));

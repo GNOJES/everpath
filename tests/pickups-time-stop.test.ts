@@ -154,6 +154,37 @@ describe('field pickups', () => {
   expect(s.status).toBe('running');
   expect(s.pickups).toHaveLength(0);
  });
+
+ it('emits coinPickup and healPickup cues and ring effects on direct 30px contact', () => {
+  const sim = new GameSimulation('warrior', parseSave(null), () => .5);
+  const s = sim.state, p = s.player;
+  s.elapsed = PICKUPS.from;
+  s.nextBoss = Infinity;
+  const cues: string[] = [];
+  sim.onSound = cue => cues.push(cue);
+  p.hp = p.maxHp - 40;
+  const healEnemy = sim.spawnEnemy('goblin', p.x + 65, p.y)!;
+  healEnemy.seed = 0;
+  sim.damageEnemy(healEnemy, 1e8);
+  const coinEnemy = sim.spawnEnemy('goblin', p.x + 115, p.y)!;
+  coinEnemy.seed = PICKUPS.healChance * Math.PI * 3;
+  sim.damageEnemy(coinEnemy, 1e8);
+
+  sim.update(.05);
+  expect(s.pickups).toHaveLength(2);
+  expect(cues).not.toContain('healPickup');
+  expect(cues).not.toContain('coinPickup');
+
+  p.x = s.pickups[0].x; p.y = s.pickups[0].groundY + s.scroll;
+  sim.update(.05);
+  expect(cues).toContain('healPickup');
+  expect(s.effects.some(e => e.kind === 'ring' && e.radius === 36)).toBe(true);
+
+  p.x = s.pickups[0].x; p.y = s.pickups[0].groundY + s.scroll;
+  sim.update(.05);
+  expect(cues).toContain('coinPickup');
+  expect(s.effects.some(e => e.kind === 'ring' && e.radius === 26)).toBe(true);
+ });
 });
 
 describe('time-stop pocket watch', () => {

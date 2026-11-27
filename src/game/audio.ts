@@ -175,7 +175,7 @@ export class GameAudio {
  }
  openingImpact(style: StrikeFeedback) {
   const context = this.context;
-  if (!this.canPlay(context) || context.currentTime - this.lastOpeningHit < .052) return;
+  if (!this.canPlay(context) || context.currentTime - this.lastOpeningHit < .075) return;
   this.lastOpeningHit = context.currentTime;
   if (style === 'parry') {
    this.tone(1175, .14, .073, 'triangle');

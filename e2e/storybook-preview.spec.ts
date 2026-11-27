@@ -291,6 +291,24 @@ test('Mini World enemy preview follows the existing attack and freeze states', a
  await expect.poll(async () => (await observe()).projectileCount, fresh).toBe(5);
  await setup('warden', 2);
  await expect.poll(async () => (await observe()).projectileCount, fresh).toBe(10);
+ const wardenThorn = await page.evaluate(() => {
+  const { scene } = (window as unknown as { enemyArtFixture: { scene: import('phaser').Scene } }).enemyArtFixture;
+  const thorn = scene.children.list.find(child => (child as Phaser.GameObjects.Image).visible && (child as Phaser.GameObjects.Image).texture?.key === 'warden-thorn') as Phaser.GameObjects.Image | undefined;
+  return thorn ? { key: thorn.texture.key, depth: thorn.depth } : null;
+ });
+ expect(wardenThorn).toEqual({ key: 'warden-thorn', depth: 1600 });
+
+ await setup('shaman', 0, .05);
+ await expect.poll(async () => (await observe()).marks, fresh).toEqual(['shamanImpact']);
+
+ await setup('boss', 0, .05);
+ await expect.poll(async () => (await observe()).projectileCount, fresh).toBe(3);
+ const grormOrb = await page.evaluate(() => {
+  const { scene } = (window as unknown as { enemyArtFixture: { scene: import('phaser').Scene } }).enemyArtFixture;
+  const orb = scene.children.list.find(child => (child as Phaser.GameObjects.Image).visible && (child as Phaser.GameObjects.Image).texture?.key === 'grorm-orb') as Phaser.GameObjects.Image | undefined;
+  return orb ? { key: orb.texture.key, depth: orb.depth } : null;
+ });
+ expect(grormOrb).toEqual({ key: 'grorm-orb', depth: 1600 });
 
  await setup('bat', 0, 2);
  await expect.poll(async () => Math.floor((await observe()).frame / 21), fresh).toBe(2);

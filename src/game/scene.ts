@@ -98,7 +98,6 @@ export class ForestScene extends Phaser.Scene {
    if (this.opening) {
     const opening = this.opening;
     sim.onFeedback = event => {
-     if (event.kind !== 'firstChest' && event.kind !== 'chestCollected' && !opening.relevant(sim.state)) return;
      if (opening.record(event, this.clock)) this.audio.openingTreasure();
      if (event.kind === 'strike') this.audio.openingImpact(event.style);
     };
@@ -456,7 +455,8 @@ export class ForestScene extends Phaser.Scene {
     }
     const text = this.opening ? this.opening.formatWorldText(e.text) : (e.text ?? '');
     const chestGold = Boolean(this.opening && e.text?.startsWith('중간보스 보물 · '));
-    label.setColor(chestGold ? '#ffea94' : '#fff0cd').setFontSize(chestGold ? 21 : 17)
+    const evolveText = Boolean(e.text?.startsWith('★ '));
+    label.setColor(chestGold || evolveText ? '#ffea94' : '#fff0cd').setFontSize(chestGold ? 21 : evolveText ? 19 : 17)
      .setText(text).setPosition(e.x, e.y - progress * 27).setAlpha(Math.min(1, f * 2)).setVisible(true);
     continue;
    }

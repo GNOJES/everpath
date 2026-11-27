@@ -1,4 +1,4 @@
-import { BALANCE as B, WORLD as W, HEROES, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, FIRST_GRORM, CAMPAIGN, PICKUPS, TIME_STOP, WARRIOR_PARRY, BLAST_ARROW_AIM_RANGE, ARCHER_FIELDS, SHIELD_RECHARGE, FROST_AURA, METEOR_SHOWER, GRAVITY_WELL, ATTACK_SKILL_UPGRADE, warriorSweepAngle, isBoss } from './config';
+import { BALANCE as B, WORLD as W, HEROES, EVOLUTIONS, ENEMIES, SKILLS, PERMANENT, BOSS_PATTERN, PAIRED_GRORM, FIRST_GRORM, CAMPAIGN, PICKUPS, TIME_STOP, WARRIOR_PARRY, BLAST_ARROW_AIM_RANGE, ARCHER_FIELDS, SHIELD_RECHARGE, FROST_AURA, METEOR_SHOWER, GRAVITY_WELL, ATTACK_SKILL_UPGRADE, warriorSweepAngle, isBoss } from './config';
 import { clamp, distance, normalize, unit } from './math';
 import { rollUpgrades } from './progression';
 import { spawnInterval, chooseEnemyKind, MIDDLE_BOSS_WAVES, openingProgress } from './encounters';
@@ -232,7 +232,7 @@ export class GameSimulation {
      e.phase = 'warn'; e.timer = BOSS_PATTERN.windup; e.aim = dir;
      this.onSound?.('grormWarn');
      if (!e.paired && distance(e, p) > FIRST_GRORM.volleyRange) {
-      for (const spread of [-.28, 0, .28]) this.shoot(e, p, 'enemy', e.damage * FIRST_GRORM.volleyDamage, FIRST_GRORM.volleySpeed, 1, spread);
+      for (const spread of [-.28, 0, .28]) this.shoot(e, p, 'enemy', e.damage * FIRST_GRORM.volleyDamage, FIRST_GRORM.volleySpeed, 1, spread, undefined, 1, undefined, undefined, 'grorm-orb');
       this.onSound?.('grormVolley');
      }
     }
@@ -251,7 +251,7 @@ export class GameSimulation {
     else if (e.phase === 'recover') { speed = 0; if (e.timer <= 0) { e.phase = 'chase'; e.timer = BOSS_PATTERN.chase; } }
    } else if (e.kind === 'shaman') {
     if (distance(e, p) < 200) speed = 0;
-    if (e.timer <= 0 && e.y > 80) { this.addHazard({ ...p }, 43, 1.55, e.damage, 'enemy', 'slam'); e.timer = 4.2; this.onEnemyAttack?.(e); }
+    if (e.timer <= 0 && e.y > 80) { this.addHazard({ ...p }, 43, 1.55, e.damage, 'enemy', 'slam', 'shamanImpact'); e.timer = 4.2; this.onEnemyAttack?.(e); this.onSound?.('shamanCast'); }
    } else if (e.kind === 'skeleton') {
     if (distance(e, p) < 220 && distance(e, p) > 140) { dir = { x: Math.sin(s.elapsed + e.seed) * .5, y: 0 }; }
     if (e.timer <= 0 && e.y > 70) {
@@ -293,7 +293,7 @@ export class GameSimulation {
     if (distance(e, player) <= 245 + W.playerRadius && this.inSweep(e, player, aimAngle, .42)) {
      this.damagePlayer(e.damage * .9, 'projectile', e);
     }
-    for (let i = -2; i <= 2; i++) this.shoot(e, { x: e.x + e.aim.x, y: e.y + e.aim.y }, 'enemy', e.damage * .72, enraged ? 620 : 520, 1, i * .21);
+    for (let i = -2; i <= 2; i++) this.shoot(e, { x: e.x + e.aim.x, y: e.y + e.aim.y }, 'enemy', e.damage * .72, enraged ? 620 : 520, 1, i * .21, undefined, 1, undefined, undefined, 'warden-thorn');
     this.onEnemyAttack?.(e);
     this.onSound?.('wardenFan');
     e.phase = 'chase'; e.timer = enraged ? 1.35 : 1.75;
@@ -319,7 +319,7 @@ export class GameSimulation {
     const count = enraged ? 14 : 10;
     for (let i = 0; i < count; i++) {
      const angle = e.seed + i * 2 * Math.PI / count;
-     this.shoot(e, { x: e.x + Math.cos(angle), y: e.y + Math.sin(angle) }, 'enemy', e.damage * .67, enraged ? 205 : 165, 1);
+     this.shoot(e, { x: e.x + Math.cos(angle), y: e.y + Math.sin(angle) }, 'enemy', e.damage * .67, enraged ? 205 : 165, 1, 0, undefined, 1, undefined, undefined, 'warden-thorn');
     }
     this.onSound?.('wardenRing');
     if (enraged) this.addHazard(player, 41, 1.05, e.damage, 'enemy', 'slam', 'wardenSlam');
@@ -332,7 +332,7 @@ export class GameSimulation {
       42, .95, e.damage * 1.1, 'enemy', 'slam', 'wardenSlam');
     }
     for (const spread of [-.16, .16]) {
-     this.shoot(e, player, 'enemy', e.damage * .72, enraged ? 310 : 260, 1, spread);
+     this.shoot(e, player, 'enemy', e.damage * .72, enraged ? 310 : 260, 1, spread, undefined, 1, undefined, undefined, 'warden-thorn');
     }
     this.onEnemyAttack?.(e);
    }
@@ -755,7 +755,7 @@ export class GameSimulation {
   const pickup = { kind, gold,
    x: clamp(enemy.x, W.margin, W.width - W.margin), groundY: clamp(enemy.y, W.minY, W.height - W.margin) - s.scroll };
   s.pickups.push(pickup);
-  if (kind === 'chest' && enemy.middleWave === MIDDLE_BOSS_WAVES[0].at) this.onFeedback?.({ kind: 'firstChest', pickup });
+  if (kind === 'chest') this.onFeedback?.({ kind: enemy.middleWave === MIDDLE_BOSS_WAVES[0].at ? 'firstChest' : 'chest', pickup });
  }
  private collectPickups() {
   const s = this.state, p = s.player;
@@ -767,6 +767,8 @@ export class GameSimulation {
     const heal = Math.min(p.maxHp - p.hp, p.maxHp * PICKUPS.healFraction);
     if (heal <= 0) return true;
     p.hp += heal;
+    this.onSound?.('healPickup');
+    this.effect('ring', p, 0x9ef7c6, 36, .35);
     this.effect('text', p, 0xcce8ad, 0, 1.3, 0, `체력 +${Math.ceil(heal)}`);
    } else {
     const before = s.gold;
@@ -778,6 +780,9 @@ export class GameSimulation {
      this.onFeedback?.({ kind: 'chestCollected', pickup, amount: s.gold - before });
      this.effect('chestPickup', { x: pickup.x, y }, 0xffce63, 58, .8);
      this.onSound?.('chestPickup');
+    } else {
+     this.onSound?.('coinPickup');
+     this.effect('ring', p, 0xffdf80, 26, .25);
     }
     this.effect('text', p, 0xffd38a, 0, 1.4, 0, `${label}+${s.gold - before}G`);
    }
@@ -810,7 +815,13 @@ export class GameSimulation {
  }
  chooseUpgrade(id: string): boolean {
   const s = this.state; if (s.status !== 'upgrade' || !s.choices.some(c => c.id === id)) return false;
-  if (id === 'evolve') { s.evolved = true; this.effect('ring', s.player, 0xffe2a4, 130, 1); }
+  if (id === 'evolve') {
+   s.evolved = true;
+   this.effect('ring', s.player, 0xffe2a4, 130, 1);
+   this.effect('evolve', s.player, parseInt(HEROES[s.hero].color.slice(1), 16), 96, .95);
+   this.effect('text', { x: s.player.x, y: s.player.y - 34 }, 0xffefad, 0, 1.8, 0, `★ ${EVOLUTIONS[s.hero].name}`);
+   this.onSound?.('evolve');
+  }
   else if (id === 'weapon') s.weaponLevel++;
   else if (id === 'reserve:gold') { this.goldRaw += 8; s.gold = Math.floor(this.goldRaw); }
   else if (id === 'reserve:hp') s.player.maxHp += 4;

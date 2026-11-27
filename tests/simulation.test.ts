@@ -201,3 +201,43 @@ it('takes another hit after the shortened damage immunity window', () => {
  sim.damagePlayer(10);
  expect(player.hp).toBe(player.maxHp - 20);
 });
+
+it('tags shaman hazards, Grorm/Warden shots, and emits evolution cue and pillar effect', () => {
+ const sim = new GameSimulation('mage', parseSave(null), () => .5);
+ sim.state.player.hp = sim.state.player.maxHp = 100000;
+ const cues: string[] = [];
+ sim.onSound = cue => cues.push(cue);
+
+ const shaman = sim.spawnEnemy('shaman', 216, 180)!;
+ shaman.timer = 0;
+ sim.update(.05);
+ expect(cues).toContain('shamanCast');
+ expect(sim.state.hazards.some(h => h.impactSound === ('shamanImpact' as string))).toBe(true);
+
+ sim.state.enemies = []; sim.state.hazards = []; sim.state.projectiles = [];
+ const grorm = sim.spawnEnemy('boss', 216, 180)!;
+ grorm.timer = 0;
+ sim.update(.05);
+ const orbs = sim.state.projectiles.filter(p => p.kind === 'enemy');
+ expect(orbs).toHaveLength(3);
+ expect(orbs.every(p => p.sprite === ('grorm-orb' as string))).toBe(true);
+
+ sim.state.enemies = []; sim.state.projectiles = [];
+ const warden = sim.spawnEnemy('warden', 216, 180)!;
+ warden.wardenAttack = 1;
+ warden.timer = 0;
+ sim.update(.05);
+ warden.timer = 0;
+ sim.update(.05);
+ const thorns = sim.state.projectiles.filter(p => p.kind === 'enemy');
+ expect(thorns).toHaveLength(5);
+ expect(thorns.every(p => p.sprite === ('warden-thorn' as string))).toBe(true);
+
+ sim.state.weaponLevel = 5;
+ sim.state.passives.power = 2;
+ sim.gainXp(sim.state.xpNext);
+ expect(sim.chooseUpgrade('evolve')).toBe(true);
+ expect(cues).toContain('evolve');
+ expect(sim.state.effects.some(e => (e.kind as string) === 'evolve')).toBe(true);
+ expect(sim.state.effects.some(e => e.kind === 'text' && e.text?.includes('천체의 지팡이'))).toBe(true);
+});

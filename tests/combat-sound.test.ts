@@ -80,3 +80,10 @@ it('emits the death cue once at lethal damage', () => {
  sim.damagePlayer(10000);
  expect(cues).toEqual(['defeat']);
 });
+
+it('defines distinct sound profiles for shaman, pickups, and weapon evolution', () => {
+ const additions = ['shamanCast', 'shamanImpact', 'coinPickup', 'healPickup', 'evolve'] as unknown as CombatSound[];
+ const profiles = additions.map(id => COMBAT_SOUNDS[id]);
+ expect(profiles.every(Boolean)).toBe(true);
+ expect(new Set(profiles.map(profile => JSON.stringify(profile))).size).toBe(profiles.length);
+});
